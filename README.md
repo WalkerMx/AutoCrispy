@@ -20,10 +20,14 @@ Latest Release Here: https://github.com/WalkerMx/AutoCrispy/releases
   As the textures dump, new Waifu2x'd textures are generated, and the originals are optionally deleted.
   
   # Notes:
-    -Works great for PPSSPP. Make a textures.ini with these options:
+    -Works great for PPSSPP. Make a textures.ini with these options set:
       hash = xxh64
       ignoreAddress = true
       
     -There's no reason you can't use this with other programs, eg. Dolphin.
       The programs need to support custom textures
       The programs need to support hotloading textures (load custom textures without a restart)
+      
+    -Last, make sure your system can run Waifu2x.
+      CPU processing is Super Slow!
+      GPU/cuDNN works good if your program isn't GPU heavy.
