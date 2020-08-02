@@ -31,3 +31,4 @@ Latest Release Here: https://github.com/WalkerMx/AutoCrispy/releases
     -Last, make sure your system can run Waifu2x.
       CPU processing is Super Slow!
       GPU/cuDNN works good if your program isn't GPU heavy.
+      Won't run on a potato.  Two networked potatoes could probaby do it though.
