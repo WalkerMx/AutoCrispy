@@ -2,6 +2,7 @@
 Automatically Run Waifu2x-Caffe on Dumped Textures
 
 Requires Waifu2x-Caffe: https://github.com/lltcggie/waifu2x-caffe/releases
+Latest Release Here: https://github.com/WalkerMx/AutoCrispy/releases
 
 # How to use:
     -Toss AutoCrispy into the Waifu2x-Caffe folder, and run it.
