@@ -1,7 +1,11 @@
 # AutoCrispy
-Automatically Run Waifu2x-Caffe on Dumped Textures
+Automatically Run Waifu2x on Dumped Textures
 
-Requires Waifu2x-Caffe: https://github.com/lltcggie/waifu2x-caffe/releases
+Requires Waifu2x-Caffe or Waifu2x-ncnn-vulkan:
+
+https://github.com/lltcggie/waifu2x-caffe/releases
+
+https://github.com/nihui/waifu2x-ncnn-vulkan/releases
 
 Latest Release Here: https://github.com/WalkerMx/AutoCrispy/releases
 
