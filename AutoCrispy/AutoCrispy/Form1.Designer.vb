@@ -29,30 +29,32 @@ Partial Class Form1
         Me.Label2 = New System.Windows.Forms.Label()
         Me.Label1 = New System.Windows.Forms.Label()
         Me.GroupBox2 = New System.Windows.Forms.GroupBox()
-        Me.TAAComboBox = New System.Windows.Forms.ComboBox()
+        Me.Label8 = New System.Windows.Forms.Label()
         Me.ComputeComboBox = New System.Windows.Forms.ComboBox()
-        Me.Label7 = New System.Windows.Forms.Label()
         Me.ModeComboBox = New System.Windows.Forms.ComboBox()
+        Me.Label7 = New System.Windows.Forms.Label()
         Me.Label6 = New System.Windows.Forms.Label()
         Me.Label5 = New System.Windows.Forms.Label()
+        Me.TAAComboBox = New System.Windows.Forms.ComboBox()
         Me.Label4 = New System.Windows.Forms.Label()
         Me.Label3 = New System.Windows.Forms.Label()
         Me.WatchDog = New System.Windows.Forms.Timer(Me.components)
         Me.Button3 = New System.Windows.Forms.Button()
         Me.GroupBox3 = New System.Windows.Forms.GroupBox()
-        Me.Label8 = New System.Windows.Forms.Label()
-        Me.NumericGPU = New System.Windows.Forms.NumericUpDown()
+        Me.ExeComboBox = New System.Windows.Forms.ComboBox()
+        Me.DebugCheckBox = New System.Windows.Forms.CheckBox()
         Me.CheckBox1 = New System.Windows.Forms.CheckBox()
         Me.NumericNoise = New System.Windows.Forms.NumericUpDown()
         Me.NumericScale = New System.Windows.Forms.NumericUpDown()
+        Me.NumericGPU = New System.Windows.Forms.NumericUpDown()
         Me.OutputTextBox = New System.Windows.Forms.TextBox()
         Me.InputTextBox = New System.Windows.Forms.TextBox()
         Me.GroupBox1.SuspendLayout()
         Me.GroupBox2.SuspendLayout()
         Me.GroupBox3.SuspendLayout()
-        CType(Me.NumericGPU, System.ComponentModel.ISupportInitialize).BeginInit()
         CType(Me.NumericNoise, System.ComponentModel.ISupportInitialize).BeginInit()
         CType(Me.NumericScale, System.ComponentModel.ISupportInitialize).BeginInit()
+        CType(Me.NumericGPU, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.SuspendLayout()
         '
         'GroupBox1
@@ -127,15 +129,14 @@ Partial Class Form1
         Me.GroupBox2.TabStop = False
         Me.GroupBox2.Text = "Waifu2x Settings"
         '
-        'TAAComboBox
+        'Label8
         '
-        Me.TAAComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
-        Me.TAAComboBox.FormattingEnabled = True
-        Me.TAAComboBox.Items.AddRange(New Object() {"OFF", "ON"})
-        Me.TAAComboBox.Location = New System.Drawing.Point(295, 46)
-        Me.TAAComboBox.Name = "TAAComboBox"
-        Me.TAAComboBox.Size = New System.Drawing.Size(81, 21)
-        Me.TAAComboBox.TabIndex = 3
+        Me.Label8.AutoSize = True
+        Me.Label8.Location = New System.Drawing.Point(194, 75)
+        Me.Label8.Name = "Label8"
+        Me.Label8.Size = New System.Drawing.Size(62, 13)
+        Me.Label8.TabIndex = 2
+        Me.Label8.Text = "GPU Index:"
         '
         'ComputeComboBox
         '
@@ -147,15 +148,6 @@ Partial Class Form1
         Me.ComputeComboBox.Size = New System.Drawing.Size(81, 21)
         Me.ComputeComboBox.TabIndex = 3
         '
-        'Label7
-        '
-        Me.Label7.AutoSize = True
-        Me.Label7.Location = New System.Drawing.Point(194, 49)
-        Me.Label7.Name = "Label7"
-        Me.Label7.Size = New System.Drawing.Size(31, 13)
-        Me.Label7.TabIndex = 0
-        Me.Label7.Text = "TAA:"
-        '
         'ModeComboBox
         '
         Me.ModeComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
@@ -165,6 +157,15 @@ Partial Class Form1
         Me.ModeComboBox.Name = "ModeComboBox"
         Me.ModeComboBox.Size = New System.Drawing.Size(81, 21)
         Me.ModeComboBox.TabIndex = 3
+        '
+        'Label7
+        '
+        Me.Label7.AutoSize = True
+        Me.Label7.Location = New System.Drawing.Point(194, 49)
+        Me.Label7.Name = "Label7"
+        Me.Label7.Size = New System.Drawing.Size(31, 13)
+        Me.Label7.TabIndex = 0
+        Me.Label7.Text = "TAA:"
         '
         'Label6
         '
@@ -183,6 +184,16 @@ Partial Class Form1
         Me.Label5.Size = New System.Drawing.Size(37, 13)
         Me.Label5.TabIndex = 0
         Me.Label5.Text = "Mode:"
+        '
+        'TAAComboBox
+        '
+        Me.TAAComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
+        Me.TAAComboBox.FormattingEnabled = True
+        Me.TAAComboBox.Items.AddRange(New Object() {"OFF", "ON"})
+        Me.TAAComboBox.Location = New System.Drawing.Point(295, 46)
+        Me.TAAComboBox.Name = "TAAComboBox"
+        Me.TAAComboBox.Size = New System.Drawing.Size(81, 21)
+        Me.TAAComboBox.TabIndex = 3
         '
         'Label4
         '
@@ -217,6 +228,8 @@ Partial Class Form1
         '
         'GroupBox3
         '
+        Me.GroupBox3.Controls.Add(Me.DebugCheckBox)
+        Me.GroupBox3.Controls.Add(Me.ExeComboBox)
         Me.GroupBox3.Controls.Add(Me.CheckBox1)
         Me.GroupBox3.Location = New System.Drawing.Point(414, 98)
         Me.GroupBox3.Name = "GroupBox3"
@@ -225,24 +238,28 @@ Partial Class Form1
         Me.GroupBox3.TabStop = False
         Me.GroupBox3.Text = "Program Settings"
         '
-        'Label8
+        'ExeComboBox
         '
-        Me.Label8.AutoSize = True
-        Me.Label8.Location = New System.Drawing.Point(194, 75)
-        Me.Label8.Name = "Label8"
-        Me.Label8.Size = New System.Drawing.Size(62, 13)
-        Me.Label8.TabIndex = 2
-        Me.Label8.Text = "GPU Index:"
+        Me.ExeComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
+        Me.ExeComboBox.Enabled = False
+        Me.ExeComboBox.FormattingEnabled = True
+        Me.ExeComboBox.Items.AddRange(New Object() {"Waifu2x Caffe", "Waifu2x Vulkan"})
+        Me.ExeComboBox.Location = New System.Drawing.Point(6, 42)
+        Me.ExeComboBox.Name = "ExeComboBox"
+        Me.ExeComboBox.Size = New System.Drawing.Size(109, 21)
+        Me.ExeComboBox.TabIndex = 1
         '
-        'NumericGPU
+        'DebugCheckBox
         '
-        Me.NumericGPU.DataBindings.Add(New System.Windows.Forms.Binding("Value", Global.AutoCrispy.My.MySettings.Default, "GPUIndex", True, System.Windows.Forms.DataSourceUpdateMode.OnPropertyChanged))
-        Me.NumericGPU.Location = New System.Drawing.Point(295, 73)
-        Me.NumericGPU.Maximum = New Decimal(New Integer() {9, 0, 0, 0})
-        Me.NumericGPU.Name = "NumericGPU"
-        Me.NumericGPU.Size = New System.Drawing.Size(81, 20)
-        Me.NumericGPU.TabIndex = 1
-        Me.NumericGPU.Value = Global.AutoCrispy.My.MySettings.Default.GPUIndex
+        Me.DebugCheckBox.AutoSize = True
+        Me.DebugCheckBox.Checked = Global.AutoCrispy.My.MySettings.Default.DebugOn
+        Me.DebugCheckBox.DataBindings.Add(New System.Windows.Forms.Binding("Checked", Global.AutoCrispy.My.MySettings.Default, "DebugOn", True, System.Windows.Forms.DataSourceUpdateMode.OnPropertyChanged))
+        Me.DebugCheckBox.Location = New System.Drawing.Point(93, 19)
+        Me.DebugCheckBox.Name = "DebugCheckBox"
+        Me.DebugCheckBox.Size = New System.Drawing.Size(93, 17)
+        Me.DebugCheckBox.TabIndex = 2
+        Me.DebugCheckBox.Text = "Debug Output"
+        Me.DebugCheckBox.UseVisualStyleBackColor = True
         '
         'CheckBox1
         '
@@ -279,6 +296,16 @@ Partial Class Form1
         Me.NumericScale.TabIndex = 3
         Me.NumericScale.Value = Global.AutoCrispy.My.MySettings.Default.Scale
         '
+        'NumericGPU
+        '
+        Me.NumericGPU.DataBindings.Add(New System.Windows.Forms.Binding("Value", Global.AutoCrispy.My.MySettings.Default, "GPUIndex", True, System.Windows.Forms.DataSourceUpdateMode.OnPropertyChanged))
+        Me.NumericGPU.Location = New System.Drawing.Point(295, 73)
+        Me.NumericGPU.Maximum = New Decimal(New Integer() {9, 0, 0, 0})
+        Me.NumericGPU.Name = "NumericGPU"
+        Me.NumericGPU.Size = New System.Drawing.Size(81, 20)
+        Me.NumericGPU.TabIndex = 1
+        Me.NumericGPU.Value = Global.AutoCrispy.My.MySettings.Default.GPUIndex
+        '
         'OutputTextBox
         '
         Me.OutputTextBox.DataBindings.Add(New System.Windows.Forms.Binding("Text", Global.AutoCrispy.My.MySettings.Default, "Output", True, System.Windows.Forms.DataSourceUpdateMode.OnPropertyChanged))
@@ -314,9 +341,9 @@ Partial Class Form1
         Me.GroupBox2.PerformLayout()
         Me.GroupBox3.ResumeLayout(False)
         Me.GroupBox3.PerformLayout()
-        CType(Me.NumericGPU, System.ComponentModel.ISupportInitialize).EndInit()
         CType(Me.NumericNoise, System.ComponentModel.ISupportInitialize).EndInit()
         CType(Me.NumericScale, System.ComponentModel.ISupportInitialize).EndInit()
+        CType(Me.NumericGPU, System.ComponentModel.ISupportInitialize).EndInit()
         Me.ResumeLayout(False)
 
     End Sub
@@ -345,4 +372,6 @@ Partial Class Form1
     Friend WithEvents CheckBox1 As CheckBox
     Friend WithEvents Label8 As Label
     Friend WithEvents NumericGPU As NumericUpDown
+    Friend WithEvents ExeComboBox As ComboBox
+    Friend WithEvents DebugCheckBox As CheckBox
 End Class

@@ -1,14 +1,27 @@
-﻿Public Class Form1
+﻿Imports System.IO
+
+Public Class Form1
 
     Dim vbQuote As Char = """"c
+    Dim MakeFilePath As String = Application.StartupPath() & "\make.bat"
+    Dim VulkanPath As String = Application.StartupPath() & "\" & "waifu2x-ncnn-vulkan.exe"
     Dim CaffePath As String = Application.StartupPath() & "\" & "waifu2x-caffe-cui.exe"
     Dim WaitScale As Integer = 0
     Dim Mode As String = "noise"
+    Dim UsedExtensions As String() = {".png", ".jpg", ".jpeg", ".tif", ".tiff", ".bmp", ".tga"}
 
     Private Sub Form1_Load(sender As Object, e As EventArgs) Handles MyBase.Load
         ModeComboBox.SelectedIndex = My.Settings.Mode
         ComputeComboBox.SelectedIndex = My.Settings.Method
         TAAComboBox.SelectedIndex = My.Settings.TAA
+        If File.Exists(CaffePath) AndAlso (Not File.Exists(VulkanPath)) Then
+            ExeComboBox.SelectedIndex = 0
+        ElseIf (Not File.Exists(CaffePath)) AndAlso File.Exists(VulkanPath) Then
+            ExeComboBox.SelectedIndex = 1
+        ElseIf File.Exists(CaffePath) AndAlso File.Exists(VulkanPath) Then
+            ExeComboBox.SelectedIndex = 0
+            ExeComboBox.Enabled = True
+        End If
     End Sub
 
     Private Sub Form1_Closing(sender As Object, e As EventArgs) Handles MyBase.Closing
@@ -26,10 +39,10 @@
     End Sub
 
     Private Sub Button3_Click(sender As Object, e As EventArgs) Handles Button3.Click
-        If (Not (IO.Directory.Exists(InputTextBox.Text) = True)) OrElse (Not (IO.Directory.Exists(OutputTextBox.Text) = True)) Then
+        If (Not (Directory.Exists(InputTextBox.Text) = True)) OrElse (Not (Directory.Exists(OutputTextBox.Text) = True)) Then
             MsgBox("No path specified, or path invalid!", MsgBoxStyle.Critical, "Error")
-        ElseIf Not IO.File.Exists(CaffePath) Then
-            MsgBox("Waifu2x-Caffe not found!", MsgBoxStyle.Critical, "Error")
+        ElseIf (Not File.Exists(CaffePath)) AndAlso (Not File.Exists(VulkanPath)) Then
+            MsgBox("No Waifu2x executable found!", MsgBoxStyle.Critical, "Error")
         Else
             Button3.Text = "Running: " & Not WatchDog.Enabled
             WatchDog.Enabled = Not WatchDog.Enabled
@@ -59,16 +72,21 @@
                 Mode = "auto_scale"
         End Select
     End Sub
+    Private Sub ExeComboBox_SelectedIndexChanged(sender As Object, e As EventArgs) Handles ExeComboBox.SelectedIndexChanged
+        Select Case ExeComboBox.SelectedIndex
+            Case 0
+                ModeComboBox.Enabled = True
+                ComputeComboBox.Enabled = True
+            Case 1
+                ModeComboBox.SelectedIndex = 3
+                ModeComboBox.Enabled = False
+                ComputeComboBox.Enabled = False
+        End Select
+    End Sub
 
     Private Sub WatchDog_Tick(sender As Object, e As EventArgs) Handles WatchDog.Tick
-        Dim Source As New List(Of String)
-        For Each File As String In IO.Directory.GetFileSystemEntries(InputTextBox.Text, "*.*", IO.SearchOption.TopDirectoryOnly)
-            Source.Add(IO.Path.GetFileName(File))
-        Next
-        Dim Dest As New List(Of String)
-        For Each File As String In IO.Directory.GetFileSystemEntries(OutputTextBox.Text, "*.*", IO.SearchOption.TopDirectoryOnly).ToList
-            Dest.Add(IO.Path.GetFileName(File))
-        Next
+        Dim Source As List(Of String) = GetFileNameList(InputTextBox.Text)
+        Dim Dest As List(Of String) = GetFileNameList(OutputTextBox.Text)
         Dim FileCheck As Boolean = Dest.SequenceEqual(Source)
         If FileCheck = True Or Source.Count = 0 Then
             WaitScale = Math.Min(WaitScale + 1, 100)
@@ -79,7 +97,7 @@
             Dim NewImages As New List(Of String)
             Dim DiffImages = Source.Except(Dest)
             For Each NewImage As String In DiffImages
-                If IO.File.Exists(InputTextBox.Text & "\" & NewImage) AndAlso {".png", ".jpg", ".jpeg", ".tif", ".tiff", ".bmp", ".tga"}.Contains(IO.Path.GetExtension(NewImage).ToLower) Then
+                If File.Exists(InputTextBox.Text & "\" & NewImage) AndAlso UsedExtensions.Contains(Path.GetExtension(NewImage).ToLower) Then
                     NewImages.Add(InputTextBox.Text & "\" & NewImage)
                 End If
             Next
@@ -92,32 +110,61 @@
     Private Sub MakeWaifus(Source As String())
         WatchDog.Enabled = False
         Dim BatchText As String = ""
-        For Each NewImage As String In Source
-            Dim NewImageLoc As String = OutputTextBox.Text & "\" & IO.Path.GetFileName(NewImage)
-            BatchText += vbQuote & CaffePath & vbQuote
-            BatchText += " -m " & Mode
-            BatchText += " -i " & vbQuote & NewImage & vbQuote
-            BatchText += " -o " & vbQuote & NewImageLoc & vbQuote
-            BatchText += " -n " & NumericNoise.Value
-            BatchText += " -s " & NumericScale.Value
-            BatchText += " -t " & TAAComboBox.SelectedIndex
-            BatchText += " -p " & ComputeComboBox.SelectedItem.ToString.ToLower
-            BatchText += " --gpu " & NumericGPU.Value
-            BatchText += vbNewLine
+        For Each OldImage As String In Source
+            Dim NewImage As String = OutputTextBox.Text & "\" & Path.GetFileName(OldImage)
+            Select Case ExeComboBox.SelectedIndex
+                Case 0
+                    BatchText += MakeCaffeCommand(OldImage, NewImage)
+                Case 1
+                    BatchText += MakeVulkanCommand(OldImage, NewImage)
+            End Select
         Next
-        IO.File.WriteAllText(Application.StartupPath() & "\make.bat", BatchText)
-        Dim BuildProcess As New ProcessStartInfo(Application.StartupPath() & "\make.bat")
-        BuildProcess.WindowStyle = ProcessWindowStyle.Hidden
+        File.WriteAllText(MakeFilePath, BatchText)
+        Dim BuildProcess As New ProcessStartInfo(MakeFilePath)
+        Select Case DebugCheckBox.Checked
+            Case True
+                BuildProcess.WindowStyle = ProcessWindowStyle.Normal
+            Case Else
+                BuildProcess.WindowStyle = ProcessWindowStyle.Hidden
+        End Select
         Dim BatchProcess As Process = Process.Start(BuildProcess)
         BatchProcess.WaitForExit()
-        IO.File.Delete(Application.StartupPath() & "\make.bat")
+        File.Delete(MakeFilePath)
         If CheckBox1.Checked = True Then
             For Each OldImage As String In Source
-                IO.File.Delete(OldImage)
+                File.Delete(OldImage)
             Next
         End If
         WatchDog.Enabled = True
     End Sub
+
+    Private Function MakeCaffeCommand(OldImage As String, NewImage As String) As String
+        Dim Result As String = ""
+        Result += vbQuote & CaffePath & vbQuote
+        Result += " -m " & Mode
+        Result += " -i " & vbQuote & OldImage & vbQuote
+        Result += " -o " & vbQuote & NewImage & vbQuote
+        Result += " -n " & NumericNoise.Value
+        Result += " -s " & NumericScale.Value
+        Result += " -t " & TAAComboBox.SelectedIndex
+        Result += " -p " & ComputeComboBox.SelectedItem.ToString.ToLower
+        Result += " --gpu " & NumericGPU.Value
+        Result += vbNewLine & IIf(DebugCheckBox.Checked = True, "pause" & vbNewLine, "")
+        Return Result
+    End Function
+
+    Private Function MakeVulkanCommand(OldImage As String, NewImage As String) As String
+        Dim Result As String = ""
+        Result += vbQuote & VulkanPath & vbQuote
+        Result += " -i " & vbQuote & OldImage & vbQuote
+        Result += " -o " & vbQuote & NewImage.Remove(NewImage.Count - 3, 3) & "png" & vbQuote
+        Result += " -n " & NumericNoise.Value
+        Result += " -s " & NumericScale.Value
+        Result += IIf(TAAComboBox.SelectedIndex = 1, " -x ", "")
+        Result += " -g " & NumericGPU.Value
+        Result += vbNewLine & IIf(DebugCheckBox.Checked = True, "pause" & vbNewLine, "")
+        Return Result
+    End Function
 
     Private Function GetFolder() As String
         Using FBD As New FolderBrowserDialog
@@ -126,6 +173,14 @@
             End If
         End Using
         Return ""
+    End Function
+
+    Private Function GetFileNameList(Source As String) As List(Of String)
+        Dim Result As New List(Of String)
+        For Each File As String In Directory.GetFileSystemEntries(Source, "*.*", SearchOption.TopDirectoryOnly).ToList
+            Result.Add(Path.GetFileName(File))
+        Next
+        Return Result
     End Function
 
 End Class

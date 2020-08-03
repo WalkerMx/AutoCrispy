@@ -161,6 +161,18 @@ Namespace My
                 Me("GPUIndex") = value
             End Set
         End Property
+        
+        <Global.System.Configuration.UserScopedSettingAttribute(),  _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.Configuration.DefaultSettingValueAttribute("False")>  _
+        Public Property DebugOn() As Boolean
+            Get
+                Return CType(Me("DebugOn"),Boolean)
+            End Get
+            Set
+                Me("DebugOn") = value
+            End Set
+        End Property
     End Class
 End Namespace
 
