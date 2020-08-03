@@ -10,7 +10,7 @@ https://github.com/nihui/waifu2x-ncnn-vulkan/releases
 Latest Release Here: https://github.com/WalkerMx/AutoCrispy/releases
 
 # How to use:
-    -Toss AutoCrispy into the Waifu2x-Caffe folder, and run it.
+    -Toss AutoCrispy into the Waifu2x-Caffe/Waifu2x-ncnn folder, and run it.
   
     -Pick the folder where the textures dump.
   
