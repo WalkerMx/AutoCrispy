@@ -40,8 +40,3 @@ Latest AutoCrispy Release Here: https://github.com/WalkerMx/AutoCrispy/releases
     -There's no reason you can't use this with other programs, eg. Dolphin.
       The programs need to support custom textures
       The programs need to support hotloading textures (load custom textures without a restart)
-      
-    -Last, make sure your system can run Waifu2x.
-      CPU processing is Super Slow!
-      GPU/cuDNN works good if your program isn't GPU heavy.
-      Won't run on a potato.  Two networked potatoes could probaby do it though.
