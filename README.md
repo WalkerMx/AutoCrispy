@@ -1,16 +1,16 @@
 # AutoCrispy
 Automatically Run Waifu2x on Dumped Textures
 
-Requires Waifu2x-Caffe or Waifu2x-ncnn-vulkan:
+Requires at least one of the following:
 
-https://github.com/lltcggie/waifu2x-caffe/releases
-
-https://github.com/nihui/waifu2x-ncnn-vulkan/releases
+- Waifu2x-Caffe: https://github.com/lltcggie/waifu2x-caffe/releases
+- Waifu2x-ncnn-vulkan: https://github.com/nihui/waifu2x-ncnn-vulkan/releases
+- Waifu2x-converter-cpp: https://github.com/DeadSix27/waifu2x-converter-cpp/releases
 
 Latest Release Here: https://github.com/WalkerMx/AutoCrispy/releases
 
 # How to use:
-    -Toss AutoCrispy into the Waifu2x-Caffe or Waifu2x-ncnn folder, and run it.
+    -Toss AutoCrispy into the Waifu2x folder, and run it.
   
     -Pick the folder where the textures dump.
   
