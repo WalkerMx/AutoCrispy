@@ -85,9 +85,11 @@ Public Class Form1
     End Sub
 
     Private Sub WatchDog_Tick(sender As Object, e As EventArgs) Handles WatchDog.Tick
-        Dim Source As List(Of String) = GetFileNameList(InputTextBox.Text)
-        Dim Dest As List(Of String) = GetFileNameList(OutputTextBox.Text)
+        Dim Source As List(Of String) = GetFileNameListNoExtension(InputTextBox.Text)
+        Dim Dest As List(Of String) = GetFileNameListNoExtension(OutputTextBox.Text)
         Dim FileCheck As Boolean = Dest.SequenceEqual(Source)
+        Source = GetFileNameList(InputTextBox.Text)
+        Dest = GetFileNameList(OutputTextBox.Text)
         If FileCheck = True Or Source.Count = 0 Then
             WaitScale = Math.Min(WaitScale + 1, 100)
             WatchDog.Interval = 1000 + (WaitScale * 590)
@@ -111,8 +113,8 @@ Public Class Form1
                 End If
             Next
             If NewImages.Count > 0 Then
-                Dim SWatch As New Stopwatch
-                SWatch.Start()
+                'Dim SWatch As New Stopwatch
+                'SWatch.Start()
                 Select Case ThreadComboBox.SelectedIndex
                     Case 0
                         MakeWaifus(NewImages.ToArray)
@@ -123,8 +125,8 @@ Public Class Form1
                     Case 3
                         MakeWaifusParallel(NewImages.ToArray, 4096)
                 End Select
-                SWatch.Stop()
-                Me.Text = SWatch.ElapsedMilliseconds
+                'SWatch.Stop()
+                'Me.Text = SWatch.ElapsedMilliseconds
             End If
         End If
     End Sub
@@ -251,6 +253,14 @@ Public Class Form1
         Dim Result As New List(Of String)
         For Each File As String In Directory.GetFileSystemEntries(Source, "*.*", SearchOption.TopDirectoryOnly).ToList
             Result.Add(Path.GetFileName(File))
+        Next
+        Return Result
+    End Function
+
+    Private Function GetFileNameListNoExtension(Source As String) As List(Of String)
+        Dim Result As New List(Of String)
+        For Each File As String In Directory.GetFileSystemEntries(Source, "*.*", SearchOption.TopDirectoryOnly).ToList
+            Result.Add(Path.GetFileNameWithoutExtension(File))
         Next
         Return Result
     End Function
