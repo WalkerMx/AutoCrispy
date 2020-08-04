@@ -7,7 +7,7 @@ Requires at least one of the following:
 - Waifu2x-ncnn-vulkan: https://github.com/nihui/waifu2x-ncnn-vulkan/releases
 - Waifu2x-converter-cpp: https://github.com/DeadSix27/waifu2x-converter-cpp/releases
 
-Latest Release Here: https://github.com/WalkerMx/AutoCrispy/releases
+Latest AutoCrispy Release Here: https://github.com/WalkerMx/AutoCrispy/releases
 
 # How to use:
     -Toss AutoCrispy into the Waifu2x folder, and run it.
