@@ -6,21 +6,23 @@ Public Class Form1
     Dim MakeFilePath As String = Application.StartupPath() & "\make.bat"
     Dim VulkanPath As String = Application.StartupPath() & "\" & "waifu2x-ncnn-vulkan.exe"
     Dim CaffePath As String = Application.StartupPath() & "\" & "waifu2x-caffe-cui.exe"
+    Dim CPPPath As String = Application.StartupPath() & "\" & "waifu2x-converter-cpp.exe"
     Dim WaitScale As Integer = 0
     Dim Mode As String = "noise"
-    Dim UsedExtensions As String() = {".png", ".jpg", ".jpeg", ".tif", ".tiff", ".bmp", ".tga"}
+    Dim CaffeExtensions As String() = {".png", ".jpg", ".jpeg", ".tif", ".tiff", ".bmp", ".tga"}
+    Dim VulkanExtensions As String() = {".png", ".webp"}
+    Dim CPPExtensions As String() = {".bmp", ".dib", ".exr", ".hdr", ".jpe", ".jpeg", ".jpg", ".pbm", ".pgm", ".pic", ".png", ".pnm", ".ppm", ".pxm", ".ras", ".sr", ".tif", ".tiff", ".webp"}
 
     Private Sub Form1_Load(sender As Object, e As EventArgs) Handles MyBase.Load
         ModeComboBox.SelectedIndex = My.Settings.Mode
         ComputeComboBox.SelectedIndex = My.Settings.Method
         TAAComboBox.SelectedIndex = My.Settings.TAA
-        If File.Exists(CaffePath) AndAlso (Not File.Exists(VulkanPath)) Then
+        FormatComboBox.SelectedIndex = My.Settings.DfFormat
+        If File.Exists(CaffePath) Then ExeComboBox.Items.Add("Waifu2x Caffe")
+        If File.Exists(VulkanPath) Then ExeComboBox.Items.Add("Waifu2x Vulkan")
+        If File.Exists(CPPPath) Then ExeComboBox.Items.Add("Waifu2x CPP")
+        If ExeComboBox.Items.Count > 0 Then
             ExeComboBox.SelectedIndex = 0
-        ElseIf (Not File.Exists(CaffePath)) AndAlso File.Exists(VulkanPath) Then
-            ExeComboBox.SelectedIndex = 1
-        ElseIf File.Exists(CaffePath) AndAlso File.Exists(VulkanPath) Then
-            ExeComboBox.SelectedIndex = 0
-            ExeComboBox.Enabled = True
         End If
     End Sub
 
@@ -28,6 +30,41 @@ Public Class Form1
         My.Settings.Mode = ModeComboBox.SelectedIndex
         My.Settings.Method = ComputeComboBox.SelectedIndex
         My.Settings.TAA = TAAComboBox.SelectedIndex
+        My.Settings.DfFormat = FormatComboBox.SelectedIndex
+    End Sub
+    Private Sub ExeComboBox_SelectedIndexChanged(sender As Object, e As EventArgs) Handles ExeComboBox.SelectedIndexChanged
+        Select Case ExeComboBox.SelectedItem
+            Case "Waifu2x Caffe"
+                ModeComboBox.Enabled = True
+                NumericNoise.Enabled = True
+                NumericScale.Enabled = True
+                FormatComboBox.Enabled = False
+                ComputeComboBox.Enabled = True
+                TAAComboBox.Enabled = True
+                NumericGPU.Enabled = True
+                NumericPNG.Enabled = False
+                NumericJPWP.Enabled = False
+            Case "Waifu2x Vulkan"
+                ModeComboBox.Enabled = False
+                NumericNoise.Enabled = True
+                NumericScale.Enabled = True
+                FormatComboBox.Enabled = True
+                ComputeComboBox.Enabled = False
+                TAAComboBox.Enabled = True
+                NumericGPU.Enabled = True
+                NumericPNG.Enabled = False
+                NumericJPWP.Enabled = False
+            Case "Waifu2x CPP"
+                ModeComboBox.Enabled = True
+                NumericNoise.Enabled = True
+                NumericScale.Enabled = True
+                FormatComboBox.Enabled = True
+                ComputeComboBox.Enabled = False
+                TAAComboBox.Enabled = False
+                NumericGPU.Enabled = False
+                NumericPNG.Enabled = True
+                NumericJPWP.Enabled = True
+        End Select
     End Sub
 
     Private Sub Button1_Click(sender As Object, e As EventArgs) Handles Button1.Click
@@ -41,7 +78,7 @@ Public Class Form1
     Private Sub Button3_Click(sender As Object, e As EventArgs) Handles Button3.Click
         If (Not (Directory.Exists(InputTextBox.Text) = True)) OrElse (Not (Directory.Exists(OutputTextBox.Text) = True)) Then
             MsgBox("No path specified, or path invalid!", MsgBoxStyle.Critical, "Error")
-        ElseIf (Not File.Exists(CaffePath)) AndAlso (Not File.Exists(VulkanPath)) Then
+        ElseIf (Not File.Exists(CaffePath)) AndAlso (Not File.Exists(VulkanPath)) AndAlso (Not File.Exists(CPPPath)) Then
             MsgBox("No Waifu2x executable found!", MsgBoxStyle.Critical, "Error")
         Else
             Button3.Text = "Running: " & Not WatchDog.Enabled
@@ -66,21 +103,6 @@ Public Class Form1
                 NumericNoise.Enabled = True
                 NumericScale.Enabled = True
                 Mode = "noise_scale"
-            Case 3
-                NumericNoise.Enabled = True
-                NumericScale.Enabled = True
-                Mode = "auto_scale"
-        End Select
-    End Sub
-    Private Sub ExeComboBox_SelectedIndexChanged(sender As Object, e As EventArgs) Handles ExeComboBox.SelectedIndexChanged
-        Select Case ExeComboBox.SelectedIndex
-            Case 0
-                ModeComboBox.Enabled = True
-                ComputeComboBox.Enabled = True
-            Case 1
-                ModeComboBox.SelectedIndex = 3
-                ModeComboBox.Enabled = False
-                ComputeComboBox.Enabled = False
         End Select
     End Sub
 
@@ -97,7 +119,16 @@ Public Class Form1
             Dim NewImages As New List(Of String)
             Dim DiffImages = Source.Except(Dest)
             For Each NewImage As String In DiffImages
-                If File.Exists(InputTextBox.Text & "\" & NewImage) AndAlso UsedExtensions.Contains(Path.GetExtension(NewImage).ToLower) Then
+                Dim AcceptExt As Boolean = False
+                Select Case ExeComboBox.SelectedItem
+                    Case "Waifu2x Caffe"
+                        AcceptExt = CaffeExtensions.Contains(Path.GetExtension(NewImage).ToLower)
+                    Case "Waifu2x Vulkan"
+                        AcceptExt = VulkanExtensions.Contains(Path.GetExtension(NewImage).ToLower)
+                    Case "Waifu2x CPP"
+                        AcceptExt = CPPExtensions.Contains(Path.GetExtension(NewImage).ToLower)
+                End Select
+                If File.Exists(InputTextBox.Text & "\" & NewImage) AndAlso AcceptExt = True Then
                     NewImages.Add(InputTextBox.Text & "\" & NewImage)
                 End If
             Next
@@ -112,11 +143,13 @@ Public Class Form1
         Dim BatchText As String = ""
         For Each OldImage As String In Source
             Dim NewImage As String = OutputTextBox.Text & "\" & Path.GetFileName(OldImage)
-            Select Case ExeComboBox.SelectedIndex
-                Case 0
+            Select Case ExeComboBox.SelectedItem
+                Case "Waifu2x Caffe"
                     BatchText += MakeCaffeCommand(OldImage, NewImage)
-                Case 1
+                Case "Waifu2x Vulkan"
                     BatchText += MakeVulkanCommand(OldImage, NewImage)
+                Case "Waifu2x CPP"
+                    BatchText += MakeCPPCommand(OldImage, NewImage)
             End Select
         Next
         File.WriteAllText(MakeFilePath, BatchText)
@@ -157,11 +190,27 @@ Public Class Form1
         Dim Result As String = ""
         Result += vbQuote & VulkanPath & vbQuote
         Result += " -i " & vbQuote & OldImage & vbQuote
-        Result += " -o " & vbQuote & NewImage.Remove(NewImage.Count - 3, 3) & "png" & vbQuote
+        Result += " -o " & vbQuote & NewImage.Remove(NewImage.Count - 3, 3) & FormatComboBox.Text.ToLower & vbQuote
         Result += " -n " & NumericNoise.Value
         Result += " -s " & NumericScale.Value
         Result += IIf(TAAComboBox.SelectedIndex = 1, " -x ", "")
         Result += " -g " & NumericGPU.Value
+        Result += " -f " & FormatComboBox.Text.ToLower
+        Result += vbNewLine & IIf(DebugCheckBox.Checked = True, "pause" & vbNewLine, "")
+        Return Result
+    End Function
+
+    Private Function MakeCPPCommand(OldImage As String, NewImage As String) As String
+        Dim Result As String = ""
+        Result += vbQuote & CPPPath & vbQuote
+        Result += " -m " & Mode.Replace("_", "-")
+        Result += " -i " & vbQuote & OldImage & vbQuote
+        Result += " -o " & vbQuote & NewImage.Remove(NewImage.Count - 3, 3) & FormatComboBox.Text.ToLower & vbQuote
+        Result += " --noise-level " & NumericNoise.Value
+        Result += " --scale-ratio " & NumericScale.Value
+        Result += " -f " & FormatComboBox.Text.ToLower
+        Result += IIf(FormatComboBox.SelectedIndex = 0, " -c " & NumericPNG.Value, " -q " & NumericJPWP.Value)
+        Result += IIf(CheckBox2.Checked = True, " --force-OpenCL ", "")
         Result += vbNewLine & IIf(DebugCheckBox.Checked = True, "pause" & vbNewLine, "")
         Return Result
     End Function

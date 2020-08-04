@@ -173,6 +173,42 @@ Namespace My
                 Me("DebugOn") = value
             End Set
         End Property
+        
+        <Global.System.Configuration.UserScopedSettingAttribute(),  _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.Configuration.DefaultSettingValueAttribute("9")>  _
+        Public Property PNGc() As Decimal
+            Get
+                Return CType(Me("PNGc"),Decimal)
+            End Get
+            Set
+                Me("PNGc") = value
+            End Set
+        End Property
+        
+        <Global.System.Configuration.UserScopedSettingAttribute(),  _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.Configuration.DefaultSettingValueAttribute("101")>  _
+        Public Property JPWPc() As Decimal
+            Get
+                Return CType(Me("JPWPc"),Decimal)
+            End Get
+            Set
+                Me("JPWPc") = value
+            End Set
+        End Property
+        
+        <Global.System.Configuration.UserScopedSettingAttribute(),  _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.Configuration.DefaultSettingValueAttribute("0")>  _
+        Public Property DfFormat() As Integer
+            Get
+                Return CType(Me("DfFormat"),Integer)
+            End Get
+            Set
+                Me("DfFormat") = value
+            End Set
+        End Property
     End Class
 End Namespace
 
