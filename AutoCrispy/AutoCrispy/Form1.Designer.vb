@@ -26,6 +26,8 @@ Partial Class Form1
         Me.GroupBox1 = New System.Windows.Forms.GroupBox()
         Me.Button2 = New System.Windows.Forms.Button()
         Me.Button1 = New System.Windows.Forms.Button()
+        Me.OutputTextBox = New System.Windows.Forms.TextBox()
+        Me.InputTextBox = New System.Windows.Forms.TextBox()
         Me.Label2 = New System.Windows.Forms.Label()
         Me.Label1 = New System.Windows.Forms.Label()
         Me.GroupBox2 = New System.Windows.Forms.GroupBox()
@@ -33,7 +35,12 @@ Partial Class Form1
         Me.Label11 = New System.Windows.Forms.Label()
         Me.Label10 = New System.Windows.Forms.Label()
         Me.Label8 = New System.Windows.Forms.Label()
+        Me.NumericNoise = New System.Windows.Forms.NumericUpDown()
+        Me.NumericScale = New System.Windows.Forms.NumericUpDown()
         Me.ComputeComboBox = New System.Windows.Forms.ComboBox()
+        Me.NumericJPWP = New System.Windows.Forms.NumericUpDown()
+        Me.NumericPNG = New System.Windows.Forms.NumericUpDown()
+        Me.NumericGPU = New System.Windows.Forms.NumericUpDown()
         Me.ModeComboBox = New System.Windows.Forms.ComboBox()
         Me.Label7 = New System.Windows.Forms.Label()
         Me.Label6 = New System.Windows.Forms.Label()
@@ -46,24 +53,18 @@ Partial Class Form1
         Me.Button3 = New System.Windows.Forms.Button()
         Me.GroupBox3 = New System.Windows.Forms.GroupBox()
         Me.CheckBox2 = New System.Windows.Forms.CheckBox()
-        Me.ExeComboBox = New System.Windows.Forms.ComboBox()
         Me.DebugCheckBox = New System.Windows.Forms.CheckBox()
+        Me.ExeComboBox = New System.Windows.Forms.ComboBox()
         Me.CheckBox1 = New System.Windows.Forms.CheckBox()
-        Me.NumericNoise = New System.Windows.Forms.NumericUpDown()
-        Me.NumericScale = New System.Windows.Forms.NumericUpDown()
-        Me.NumericJPWP = New System.Windows.Forms.NumericUpDown()
-        Me.NumericPNG = New System.Windows.Forms.NumericUpDown()
-        Me.NumericGPU = New System.Windows.Forms.NumericUpDown()
-        Me.OutputTextBox = New System.Windows.Forms.TextBox()
-        Me.InputTextBox = New System.Windows.Forms.TextBox()
+        Me.ThreadComboBox = New System.Windows.Forms.ComboBox()
         Me.GroupBox1.SuspendLayout()
         Me.GroupBox2.SuspendLayout()
-        Me.GroupBox3.SuspendLayout()
         CType(Me.NumericNoise, System.ComponentModel.ISupportInitialize).BeginInit()
         CType(Me.NumericScale, System.ComponentModel.ISupportInitialize).BeginInit()
         CType(Me.NumericJPWP, System.ComponentModel.ISupportInitialize).BeginInit()
         CType(Me.NumericPNG, System.ComponentModel.ISupportInitialize).BeginInit()
         CType(Me.NumericGPU, System.ComponentModel.ISupportInitialize).BeginInit()
+        Me.GroupBox3.SuspendLayout()
         Me.SuspendLayout()
         '
         'GroupBox1
@@ -98,6 +99,24 @@ Partial Class Form1
         Me.Button1.TabIndex = 3
         Me.Button1.Text = "..."
         Me.Button1.UseVisualStyleBackColor = True
+        '
+        'OutputTextBox
+        '
+        Me.OutputTextBox.DataBindings.Add(New System.Windows.Forms.Binding("Text", Global.AutoCrispy.My.MySettings.Default, "Output", True, System.Windows.Forms.DataSourceUpdateMode.OnPropertyChanged))
+        Me.OutputTextBox.Location = New System.Drawing.Point(86, 45)
+        Me.OutputTextBox.Name = "OutputTextBox"
+        Me.OutputTextBox.Size = New System.Drawing.Size(486, 20)
+        Me.OutputTextBox.TabIndex = 3
+        Me.OutputTextBox.Text = Global.AutoCrispy.My.MySettings.Default.Output
+        '
+        'InputTextBox
+        '
+        Me.InputTextBox.DataBindings.Add(New System.Windows.Forms.Binding("Text", Global.AutoCrispy.My.MySettings.Default, "Input", True, System.Windows.Forms.DataSourceUpdateMode.OnPropertyChanged))
+        Me.InputTextBox.Location = New System.Drawing.Point(86, 19)
+        Me.InputTextBox.Name = "InputTextBox"
+        Me.InputTextBox.Size = New System.Drawing.Size(486, 20)
+        Me.InputTextBox.TabIndex = 3
+        Me.InputTextBox.Text = Global.AutoCrispy.My.MySettings.Default.Input
         '
         'Label2
         '
@@ -181,6 +200,29 @@ Partial Class Form1
         Me.Label8.TabIndex = 2
         Me.Label8.Text = "GPU Index:"
         '
+        'NumericNoise
+        '
+        Me.NumericNoise.DataBindings.Add(New System.Windows.Forms.Binding("Value", Global.AutoCrispy.My.MySettings.Default, "Noise", True, System.Windows.Forms.DataSourceUpdateMode.OnPropertyChanged))
+        Me.NumericNoise.Location = New System.Drawing.Point(107, 46)
+        Me.NumericNoise.Maximum = New Decimal(New Integer() {3, 0, 0, 0})
+        Me.NumericNoise.Name = "NumericNoise"
+        Me.NumericNoise.Size = New System.Drawing.Size(81, 20)
+        Me.NumericNoise.TabIndex = 3
+        Me.NumericNoise.Value = Global.AutoCrispy.My.MySettings.Default.Noise
+        '
+        'NumericScale
+        '
+        Me.NumericScale.DataBindings.Add(New System.Windows.Forms.Binding("Value", Global.AutoCrispy.My.MySettings.Default, "Scale", True, System.Windows.Forms.DataSourceUpdateMode.OnPropertyChanged))
+        Me.NumericScale.DecimalPlaces = 1
+        Me.NumericScale.Increment = New Decimal(New Integer() {1, 0, 0, 65536})
+        Me.NumericScale.Location = New System.Drawing.Point(107, 72)
+        Me.NumericScale.Maximum = New Decimal(New Integer() {40, 0, 0, 65536})
+        Me.NumericScale.Minimum = New Decimal(New Integer() {10, 0, 0, 65536})
+        Me.NumericScale.Name = "NumericScale"
+        Me.NumericScale.Size = New System.Drawing.Size(81, 20)
+        Me.NumericScale.TabIndex = 3
+        Me.NumericScale.Value = Global.AutoCrispy.My.MySettings.Default.Scale
+        '
         'ComputeComboBox
         '
         Me.ComputeComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
@@ -190,6 +232,36 @@ Partial Class Form1
         Me.ComputeComboBox.Name = "ComputeComboBox"
         Me.ComputeComboBox.Size = New System.Drawing.Size(81, 21)
         Me.ComputeComboBox.TabIndex = 3
+        '
+        'NumericJPWP
+        '
+        Me.NumericJPWP.DataBindings.Add(New System.Windows.Forms.Binding("Value", Global.AutoCrispy.My.MySettings.Default, "JPWPc", True, System.Windows.Forms.DataSourceUpdateMode.OnPropertyChanged))
+        Me.NumericJPWP.Location = New System.Drawing.Point(302, 126)
+        Me.NumericJPWP.Maximum = New Decimal(New Integer() {101, 0, 0, 0})
+        Me.NumericJPWP.Name = "NumericJPWP"
+        Me.NumericJPWP.Size = New System.Drawing.Size(81, 20)
+        Me.NumericJPWP.TabIndex = 1
+        Me.NumericJPWP.Value = Global.AutoCrispy.My.MySettings.Default.JPWPc
+        '
+        'NumericPNG
+        '
+        Me.NumericPNG.DataBindings.Add(New System.Windows.Forms.Binding("Value", Global.AutoCrispy.My.MySettings.Default, "PNGc", True, System.Windows.Forms.DataSourceUpdateMode.OnPropertyChanged))
+        Me.NumericPNG.Location = New System.Drawing.Point(302, 100)
+        Me.NumericPNG.Maximum = New Decimal(New Integer() {9, 0, 0, 0})
+        Me.NumericPNG.Name = "NumericPNG"
+        Me.NumericPNG.Size = New System.Drawing.Size(81, 20)
+        Me.NumericPNG.TabIndex = 1
+        Me.NumericPNG.Value = Global.AutoCrispy.My.MySettings.Default.PNGc
+        '
+        'NumericGPU
+        '
+        Me.NumericGPU.DataBindings.Add(New System.Windows.Forms.Binding("Value", Global.AutoCrispy.My.MySettings.Default, "GPUIndex", True, System.Windows.Forms.DataSourceUpdateMode.OnPropertyChanged))
+        Me.NumericGPU.Location = New System.Drawing.Point(302, 74)
+        Me.NumericGPU.Maximum = New Decimal(New Integer() {9, 0, 0, 0})
+        Me.NumericGPU.Name = "NumericGPU"
+        Me.NumericGPU.Size = New System.Drawing.Size(81, 20)
+        Me.NumericGPU.TabIndex = 1
+        Me.NumericGPU.Value = Global.AutoCrispy.My.MySettings.Default.GPUIndex
         '
         'ModeComboBox
         '
@@ -271,7 +343,7 @@ Partial Class Form1
         '
         'Button3
         '
-        Me.Button3.Location = New System.Drawing.Point(486, 229)
+        Me.Button3.Location = New System.Drawing.Point(486, 258)
         Me.Button3.Name = "Button3"
         Me.Button3.Size = New System.Drawing.Size(150, 23)
         Me.Button3.TabIndex = 2
@@ -280,13 +352,14 @@ Partial Class Form1
         '
         'GroupBox3
         '
+        Me.GroupBox3.Controls.Add(Me.ThreadComboBox)
         Me.GroupBox3.Controls.Add(Me.CheckBox2)
         Me.GroupBox3.Controls.Add(Me.DebugCheckBox)
         Me.GroupBox3.Controls.Add(Me.ExeComboBox)
         Me.GroupBox3.Controls.Add(Me.CheckBox1)
         Me.GroupBox3.Location = New System.Drawing.Point(414, 98)
         Me.GroupBox3.Name = "GroupBox3"
-        Me.GroupBox3.Size = New System.Drawing.Size(222, 125)
+        Me.GroupBox3.Size = New System.Drawing.Size(222, 154)
         Me.GroupBox3.TabIndex = 3
         Me.GroupBox3.TabStop = False
         Me.GroupBox3.Text = "Program Settings"
@@ -301,15 +374,6 @@ Partial Class Form1
         Me.CheckBox2.Text = "Force OpenCL"
         Me.CheckBox2.UseVisualStyleBackColor = True
         '
-        'ExeComboBox
-        '
-        Me.ExeComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
-        Me.ExeComboBox.FormattingEnabled = True
-        Me.ExeComboBox.Location = New System.Drawing.Point(6, 19)
-        Me.ExeComboBox.Name = "ExeComboBox"
-        Me.ExeComboBox.Size = New System.Drawing.Size(109, 21)
-        Me.ExeComboBox.TabIndex = 1
-        '
         'DebugCheckBox
         '
         Me.DebugCheckBox.AutoSize = True
@@ -321,6 +385,15 @@ Partial Class Form1
         Me.DebugCheckBox.TabIndex = 2
         Me.DebugCheckBox.Text = "Debug Output"
         Me.DebugCheckBox.UseVisualStyleBackColor = True
+        '
+        'ExeComboBox
+        '
+        Me.ExeComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
+        Me.ExeComboBox.FormattingEnabled = True
+        Me.ExeComboBox.Location = New System.Drawing.Point(6, 19)
+        Me.ExeComboBox.Name = "ExeComboBox"
+        Me.ExeComboBox.Size = New System.Drawing.Size(109, 21)
+        Me.ExeComboBox.TabIndex = 1
         '
         'CheckBox1
         '
@@ -334,82 +407,21 @@ Partial Class Form1
         Me.CheckBox1.Text = "Delete Input Files"
         Me.CheckBox1.UseVisualStyleBackColor = True
         '
-        'NumericNoise
+        'ThreadComboBox
         '
-        Me.NumericNoise.DataBindings.Add(New System.Windows.Forms.Binding("Value", Global.AutoCrispy.My.MySettings.Default, "Noise", True, System.Windows.Forms.DataSourceUpdateMode.OnPropertyChanged))
-        Me.NumericNoise.Location = New System.Drawing.Point(107, 46)
-        Me.NumericNoise.Maximum = New Decimal(New Integer() {3, 0, 0, 0})
-        Me.NumericNoise.Name = "NumericNoise"
-        Me.NumericNoise.Size = New System.Drawing.Size(81, 20)
-        Me.NumericNoise.TabIndex = 3
-        Me.NumericNoise.Value = Global.AutoCrispy.My.MySettings.Default.Noise
-        '
-        'NumericScale
-        '
-        Me.NumericScale.DataBindings.Add(New System.Windows.Forms.Binding("Value", Global.AutoCrispy.My.MySettings.Default, "Scale", True, System.Windows.Forms.DataSourceUpdateMode.OnPropertyChanged))
-        Me.NumericScale.DecimalPlaces = 1
-        Me.NumericScale.Increment = New Decimal(New Integer() {1, 0, 0, 65536})
-        Me.NumericScale.Location = New System.Drawing.Point(107, 72)
-        Me.NumericScale.Maximum = New Decimal(New Integer() {40, 0, 0, 65536})
-        Me.NumericScale.Minimum = New Decimal(New Integer() {10, 0, 0, 65536})
-        Me.NumericScale.Name = "NumericScale"
-        Me.NumericScale.Size = New System.Drawing.Size(81, 20)
-        Me.NumericScale.TabIndex = 3
-        Me.NumericScale.Value = Global.AutoCrispy.My.MySettings.Default.Scale
-        '
-        'NumericJPWP
-        '
-        Me.NumericJPWP.DataBindings.Add(New System.Windows.Forms.Binding("Value", Global.AutoCrispy.My.MySettings.Default, "JPWPc", True, System.Windows.Forms.DataSourceUpdateMode.OnPropertyChanged))
-        Me.NumericJPWP.Location = New System.Drawing.Point(302, 126)
-        Me.NumericJPWP.Maximum = New Decimal(New Integer() {101, 0, 0, 0})
-        Me.NumericJPWP.Name = "NumericJPWP"
-        Me.NumericJPWP.Size = New System.Drawing.Size(81, 20)
-        Me.NumericJPWP.TabIndex = 1
-        Me.NumericJPWP.Value = Global.AutoCrispy.My.MySettings.Default.JPWPc
-        '
-        'NumericPNG
-        '
-        Me.NumericPNG.DataBindings.Add(New System.Windows.Forms.Binding("Value", Global.AutoCrispy.My.MySettings.Default, "PNGc", True, System.Windows.Forms.DataSourceUpdateMode.OnPropertyChanged))
-        Me.NumericPNG.Location = New System.Drawing.Point(302, 100)
-        Me.NumericPNG.Maximum = New Decimal(New Integer() {9, 0, 0, 0})
-        Me.NumericPNG.Name = "NumericPNG"
-        Me.NumericPNG.Size = New System.Drawing.Size(81, 20)
-        Me.NumericPNG.TabIndex = 1
-        Me.NumericPNG.Value = Global.AutoCrispy.My.MySettings.Default.PNGc
-        '
-        'NumericGPU
-        '
-        Me.NumericGPU.DataBindings.Add(New System.Windows.Forms.Binding("Value", Global.AutoCrispy.My.MySettings.Default, "GPUIndex", True, System.Windows.Forms.DataSourceUpdateMode.OnPropertyChanged))
-        Me.NumericGPU.Location = New System.Drawing.Point(302, 74)
-        Me.NumericGPU.Maximum = New Decimal(New Integer() {9, 0, 0, 0})
-        Me.NumericGPU.Name = "NumericGPU"
-        Me.NumericGPU.Size = New System.Drawing.Size(81, 20)
-        Me.NumericGPU.TabIndex = 1
-        Me.NumericGPU.Value = Global.AutoCrispy.My.MySettings.Default.GPUIndex
-        '
-        'OutputTextBox
-        '
-        Me.OutputTextBox.DataBindings.Add(New System.Windows.Forms.Binding("Text", Global.AutoCrispy.My.MySettings.Default, "Output", True, System.Windows.Forms.DataSourceUpdateMode.OnPropertyChanged))
-        Me.OutputTextBox.Location = New System.Drawing.Point(86, 45)
-        Me.OutputTextBox.Name = "OutputTextBox"
-        Me.OutputTextBox.Size = New System.Drawing.Size(486, 20)
-        Me.OutputTextBox.TabIndex = 3
-        Me.OutputTextBox.Text = Global.AutoCrispy.My.MySettings.Default.Output
-        '
-        'InputTextBox
-        '
-        Me.InputTextBox.DataBindings.Add(New System.Windows.Forms.Binding("Text", Global.AutoCrispy.My.MySettings.Default, "Input", True, System.Windows.Forms.DataSourceUpdateMode.OnPropertyChanged))
-        Me.InputTextBox.Location = New System.Drawing.Point(86, 19)
-        Me.InputTextBox.Name = "InputTextBox"
-        Me.InputTextBox.Size = New System.Drawing.Size(486, 20)
-        Me.InputTextBox.TabIndex = 3
-        Me.InputTextBox.Text = Global.AutoCrispy.My.MySettings.Default.Input
+        Me.ThreadComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
+        Me.ThreadComboBox.FormattingEnabled = True
+        Me.ThreadComboBox.Items.AddRange(New Object() {"Serial", "Half Threads", "All Threads", "Unlimited (!!)"})
+        Me.ThreadComboBox.Location = New System.Drawing.Point(6, 118)
+        Me.ThreadComboBox.Name = "ThreadComboBox"
+        Me.ThreadComboBox.Size = New System.Drawing.Size(109, 21)
+        Me.ThreadComboBox.TabIndex = 4
         '
         'Form1
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
-        Me.ClientSize = New System.Drawing.Size(652, 264)
+        Me.ClientSize = New System.Drawing.Size(652, 292)
         Me.Controls.Add(Me.GroupBox3)
         Me.Controls.Add(Me.Button3)
         Me.Controls.Add(Me.GroupBox2)
@@ -420,13 +432,13 @@ Partial Class Form1
         Me.GroupBox1.PerformLayout()
         Me.GroupBox2.ResumeLayout(False)
         Me.GroupBox2.PerformLayout()
-        Me.GroupBox3.ResumeLayout(False)
-        Me.GroupBox3.PerformLayout()
         CType(Me.NumericNoise, System.ComponentModel.ISupportInitialize).EndInit()
         CType(Me.NumericScale, System.ComponentModel.ISupportInitialize).EndInit()
         CType(Me.NumericJPWP, System.ComponentModel.ISupportInitialize).EndInit()
         CType(Me.NumericPNG, System.ComponentModel.ISupportInitialize).EndInit()
         CType(Me.NumericGPU, System.ComponentModel.ISupportInitialize).EndInit()
+        Me.GroupBox3.ResumeLayout(False)
+        Me.GroupBox3.PerformLayout()
         Me.ResumeLayout(False)
 
     End Sub
@@ -464,4 +476,5 @@ Partial Class Form1
     Friend WithEvents Label11 As Label
     Friend WithEvents NumericJPWP As NumericUpDown
     Friend WithEvents CheckBox2 As CheckBox
+    Friend WithEvents ThreadComboBox As ComboBox
 End Class

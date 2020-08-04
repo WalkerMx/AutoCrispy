@@ -3,12 +3,12 @@
 Public Class Form1
 
     Dim vbQuote As Char = """"c
+    Dim WaitScale As Integer = 0
+    Dim Mode As String = "noise"
     Dim MakeFilePath As String = Application.StartupPath() & "\make.bat"
     Dim VulkanPath As String = Application.StartupPath() & "\" & "waifu2x-ncnn-vulkan.exe"
     Dim CaffePath As String = Application.StartupPath() & "\" & "waifu2x-caffe-cui.exe"
     Dim CPPPath As String = Application.StartupPath() & "\" & "waifu2x-converter-cpp.exe"
-    Dim WaitScale As Integer = 0
-    Dim Mode As String = "noise"
     Dim CaffeExtensions As String() = {".png", ".jpg", ".jpeg", ".tif", ".tiff", ".bmp", ".tga"}
     Dim VulkanExtensions As String() = {".png", ".webp"}
     Dim CPPExtensions As String() = {".bmp", ".dib", ".exr", ".hdr", ".jpe", ".jpeg", ".jpg", ".pbm", ".pgm", ".pic", ".png", ".pnm", ".ppm", ".pxm", ".ras", ".sr", ".tif", ".tiff", ".webp"}
@@ -18,6 +18,7 @@ Public Class Form1
         ComputeComboBox.SelectedIndex = My.Settings.Method
         TAAComboBox.SelectedIndex = My.Settings.TAA
         FormatComboBox.SelectedIndex = My.Settings.DfFormat
+        ThreadComboBox.SelectedIndex = My.Settings.Thread
         If File.Exists(CaffePath) Then ExeComboBox.Items.Add("Waifu2x Caffe")
         If File.Exists(VulkanPath) Then ExeComboBox.Items.Add("Waifu2x Vulkan")
         If File.Exists(CPPPath) Then ExeComboBox.Items.Add("Waifu2x CPP")
@@ -31,39 +32,16 @@ Public Class Form1
         My.Settings.Method = ComputeComboBox.SelectedIndex
         My.Settings.TAA = TAAComboBox.SelectedIndex
         My.Settings.DfFormat = FormatComboBox.SelectedIndex
+        My.Settings.Thread = ThreadComboBox.SelectedIndex
     End Sub
     Private Sub ExeComboBox_SelectedIndexChanged(sender As Object, e As EventArgs) Handles ExeComboBox.SelectedIndexChanged
         Select Case ExeComboBox.SelectedItem
             Case "Waifu2x Caffe"
-                ModeComboBox.Enabled = True
-                NumericNoise.Enabled = True
-                NumericScale.Enabled = True
-                FormatComboBox.Enabled = False
-                ComputeComboBox.Enabled = True
-                TAAComboBox.Enabled = True
-                NumericGPU.Enabled = True
-                NumericPNG.Enabled = False
-                NumericJPWP.Enabled = False
+                UnlockOptions(True, True, True, False, True, True, True, False, False)
             Case "Waifu2x Vulkan"
-                ModeComboBox.Enabled = False
-                NumericNoise.Enabled = True
-                NumericScale.Enabled = True
-                FormatComboBox.Enabled = True
-                ComputeComboBox.Enabled = False
-                TAAComboBox.Enabled = True
-                NumericGPU.Enabled = True
-                NumericPNG.Enabled = False
-                NumericJPWP.Enabled = False
+                UnlockOptions(False, True, True, True, False, True, True, False, False)
             Case "Waifu2x CPP"
-                ModeComboBox.Enabled = True
-                NumericNoise.Enabled = True
-                NumericScale.Enabled = True
-                FormatComboBox.Enabled = True
-                ComputeComboBox.Enabled = False
-                TAAComboBox.Enabled = False
-                NumericGPU.Enabled = False
-                NumericPNG.Enabled = True
-                NumericJPWP.Enabled = True
+                UnlockOptions(True, True, True, True, False, False, False, True, True)
         End Select
     End Sub
 
@@ -133,7 +111,20 @@ Public Class Form1
                 End If
             Next
             If NewImages.Count > 0 Then
-                MakeWaifus(NewImages.ToArray)
+                Dim SWatch As New Stopwatch
+                SWatch.Start()
+                Select Case ThreadComboBox.SelectedIndex
+                    Case 0
+                        MakeWaifus(NewImages.ToArray)
+                    Case 1
+                        MakeWaifusParallel(NewImages.ToArray, Environment.ProcessorCount / 2)
+                    Case 2
+                        MakeWaifusParallel(NewImages.ToArray, Environment.ProcessorCount)
+                    Case 3
+                        MakeWaifusParallel(NewImages.ToArray, 4096)
+                End Select
+                SWatch.Stop()
+                Me.Text = SWatch.ElapsedMilliseconds
             End If
         End If
     End Sub
@@ -163,6 +154,38 @@ Public Class Form1
         Dim BatchProcess As Process = Process.Start(BuildProcess)
         BatchProcess.WaitForExit()
         File.Delete(MakeFilePath)
+        If CheckBox1.Checked = True Then
+            For Each OldImage As String In Source
+                File.Delete(OldImage)
+            Next
+        End If
+        WatchDog.Enabled = True
+    End Sub
+
+    Private Sub MakeWaifusParallel(Source As String(), Limit As Integer)
+        WatchDog.Enabled = False
+        Dim BuildProcess As New ProcessStartInfo()
+        For i = 0 To Source.Count - 1
+            Dim NewImage As String = OutputTextBox.Text & "\" & Path.GetFileName(Source(i))
+            Select Case ExeComboBox.SelectedItem
+                Case "Waifu2x Caffe"
+                    BuildProcess = New ProcessStartInfo(CaffePath, MakeCaffeCommand(Source(i), NewImage).Replace(vbQuote & CaffePath & vbQuote, "").Replace("pause", "").Trim)
+                Case "Waifu2x Vulkan"
+                    BuildProcess = New ProcessStartInfo(VulkanPath, MakeVulkanCommand(Source(i), NewImage).Replace(vbQuote & VulkanPath & vbQuote, "").Replace("pause", "").Trim)
+                Case "Waifu2x CPP"
+                    BuildProcess = New ProcessStartInfo(CPPPath, MakeCPPCommand(Source(i), NewImage).Replace(vbQuote & CPPPath & vbQuote, "").Replace("pause", "").Trim)
+            End Select
+            Select Case DebugCheckBox.Checked
+                Case True
+                    BuildProcess.WindowStyle = ProcessWindowStyle.Normal
+                Case Else
+                    BuildProcess.WindowStyle = ProcessWindowStyle.Hidden
+            End Select
+            Dim BatchProcess As Process = Process.Start(BuildProcess)
+            If (i + 1) Mod Limit = 0 OrElse (i = Source.Count - 1) Then
+                BatchProcess.WaitForExit()
+            End If
+        Next
         If CheckBox1.Checked = True Then
             For Each OldImage As String In Source
                 File.Delete(OldImage)
@@ -231,5 +254,17 @@ Public Class Form1
         Next
         Return Result
     End Function
+
+    Private Sub UnlockOptions(Mode As Boolean, Noise As Boolean, Scale As Boolean, Format As Boolean, Compute As Boolean, TAA As Boolean, GPU As Boolean, PNG As Boolean, JPWP As Boolean)
+        ModeComboBox.Enabled = Mode
+        NumericNoise.Enabled = Noise
+        NumericScale.Enabled = Scale
+        FormatComboBox.Enabled = Format
+        ComputeComboBox.Enabled = Compute
+        TAAComboBox.Enabled = TAA
+        NumericGPU.Enabled = GPU
+        NumericPNG.Enabled = PNG
+        NumericJPWP.Enabled = JPWP
+    End Sub
 
 End Class
