@@ -23,6 +23,8 @@ Latest AutoCrispy Release Here: https://github.com/WalkerMx/AutoCrispy/releases
   
   As the textures dump, new Waifu2x'd textures are generated, and the originals are optionally deleted.
   
+  Also, make sure you have enough VRAM if you use multithreading. More threads & higher upscales dramatically increase the memory requirements!
+  
 # About Backends:
    Each of the backends have their own characteristics and quirks when used with AutoCrispy:
    
