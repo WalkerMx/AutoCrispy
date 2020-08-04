@@ -28,7 +28,7 @@ Latest AutoCrispy Release Here: https://github.com/WalkerMx/AutoCrispy/releases
 # About Backends:
    Each of the backends have their own characteristics and quirks when used with AutoCrispy:
    
-   - **Waifu2x-converter-cpp** is built using OpenCV. When doing actual upscaling, it uses very little CPU and GPU resources. It allows for variable amounts of compression to be applied to the output. It has many options available for output. Currently, this is fastest, and can be used even on lower-end machines. This also works best with Half or All Threads.
+   - **Waifu2x-converter-cpp** is built using OpenCV. When doing actual upscaling, it uses very little CPU and GPU resources. It allows for variable amounts of compression to be applied to the output. It has many options available for output. Currently, this is fastest, and can be used even on lower-end mid-tier machines. This also works best with Half or All Threads.
    
    - **Waifu2x-Caffe** is intended for nVidia GPUs with CUDA, and has the highest VRAM memory requirements of the three. It has a decent amount of options, and can run at a decant speed, depending on your hardware.
     
