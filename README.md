@@ -26,11 +26,11 @@ Latest AutoCrispy Release Here: https://github.com/WalkerMx/AutoCrispy/releases
 # About Backends:
    Each of the backends have their own characteristics and quirks when used with AutoCrispy:
    
-   - Waifu2x-Caffe is intended for nVidia GPUs with CUDA, and has the highest VRAM memory requirements of the three. It has a decent amount of options, and can run at a decant speed, depending on your hardware.
+   - **Waifu2x-Caffe** is intended for nVidia GPUs with CUDA, and has the highest VRAM memory requirements of the three. It has a decent amount of options, and can run at a decant speed, depending on your hardware.
     
-   - Waifu2x-ncnn-vulkan is designed to run on (what else?) Vulkan. It can run on AMD and nVidia GPUs that support Vulkan. It has few options, and can be picky about your Vulkan interface, but once working, you can get very good speed coupled with a much lower VRAM overhead.
+   - **Waifu2x-ncnn-vulkan** is designed to run on (what else?) Vulkan. It can run on AMD and nVidia GPUs that support Vulkan. It has few options, and can be picky about your Vulkan interface, but once working, you can get very good speed coupled with a much lower VRAM overhead.
     
-   - Waifu2x-converter-cpp is built using OpenCV. When doing actual upscaling, it uses very little CPU and GPU resources. It allows for variable amounts of compression to be applied to the output. It has many options available for output. Currently, it isn't notably faster than the other two.
+   - **Waifu2x-converter-cpp** is built using OpenCV. When doing actual upscaling, it uses very little CPU and GPU resources. It allows for variable amounts of compression to be applied to the output. It has many options available for output. Currently, it isn't notably faster than the other two.
     
 # Notes:
     -Works great for PPSSPP. Make a textures.ini with these options set:
