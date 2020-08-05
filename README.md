@@ -34,7 +34,27 @@ Latest AutoCrispy Release Here: https://github.com/WalkerMx/AutoCrispy/releases
     
    - **Waifu2x-ncnn-vulkan** is designed to run on (what else?) Vulkan. It can run on AMD and nVidia GPUs that support Vulkan. It has few options, and can be picky about your Vulkan interface, but once working, you can get very good speed coupled with a much lower VRAM overhead. This tends to be the middle ground. Faster than Caffe, but limited to 2x resolution. Simulating higher resolutions (by running the textures through again) results in minor haloing.
    
+
+# Reference Images:
+Images for comparison. The source is not mine, and these images exist purely for edification.
     
+Caffe 2x | Vulkan 2x 
+---------|----------
+---------|----------
+<img src="https://github.com/WalkerMx/AutoCrispy/blob/master/Reference_Assets/caffe2x.png">|<img src="https://github.com/WalkerMx/AutoCrispy/blob/master/Reference_Assets/vulkan2x.png">
+---------|----------
+<img src="https://github.com/WalkerMx/AutoCrispy/blob/master/Reference_Assets/cpp2x.png">|<img src="https://github.com/WalkerMx/AutoCrispy/blob/master/Reference_Assets/xBRX2x.png">
+  CPP 2x | xBRZ 2x
+  
+
+Caffe 4x | Vulkan 4x (Simulated)
+---------|----------
+---------|----------
+<img src="https://github.com/WalkerMx/AutoCrispy/blob/master/Reference_Assets/caffe4x.png">|<img src="https://github.com/WalkerMx/AutoCrispy/blob/master/Reference_Assets/vulkan4x sim.png">
+---------|----------
+<img src="https://github.com/WalkerMx/AutoCrispy/blob/master/Reference_Assets/cpp4x.png">|<img src="https://github.com/WalkerMx/AutoCrispy/blob/master/Reference_Assets/xBRZ4x.png">
+  CPP 4x | xBRZ 4x
+  
 # Notes:
     -Works great for PPSSPP. Make a textures.ini with these options set:
       hash = xxh64
