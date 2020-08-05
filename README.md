@@ -28,11 +28,11 @@ Latest AutoCrispy Release Here: https://github.com/WalkerMx/AutoCrispy/releases
 # About Backends:
    Each of the backends have their own characteristics and quirks when used with AutoCrispy:
    
-   - **Waifu2x-converter-cpp** is built using OpenCV. When doing actual upscaling, it uses very little CPU and GPU resources. It allows for variable amounts of compression to be applied to the output. It has many options available for output. Currently, this is fastest, and can be used even on lower-end mid-tier machines. This also works best with Half or All Threads.
+   - **Waifu2x-converter-cpp** is built using OpenCV. When doing actual upscaling, it uses very little CPU and GPU resources. It allows for variable amounts of compression to be applied to the output. It has many options available for output, and can be used even on lower-end mid-tier machines. This works best with Half or All Threads. This is the fastest, but tends to have halo artifacts.
    
-   - **Waifu2x-Caffe** is intended for nVidia GPUs with CUDA, and has the highest VRAM memory requirements of the three. It has a decent amount of options, and can run at a decant speed, depending on your hardware.
+   - **Waifu2x-Caffe** is intended for nVidia GPUs with CUDA, and has the highest VRAM memory requirements of the three. It has a decent amount of options. This runs the slowest, and has high requirements. It's output tends to looks the nicest.
     
-   - **Waifu2x-ncnn-vulkan** is designed to run on (what else?) Vulkan. It can run on AMD and nVidia GPUs that support Vulkan. It has few options, and can be picky about your Vulkan interface, but once working, you can get very good speed coupled with a much lower VRAM overhead.
+   - **Waifu2x-ncnn-vulkan** is designed to run on (what else?) Vulkan. It can run on AMD and nVidia GPUs that support Vulkan. It has few options, and can be picky about your Vulkan interface, but once working, you can get very good speed coupled with a much lower VRAM overhead. This tends to be the middle ground. Faster than Caffe, but limited to 2x resolution. Simulating higher resolutions (by running the textures through again) results in minor haloing.
    
     
 # Notes:
