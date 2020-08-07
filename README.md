@@ -35,7 +35,7 @@ Latest AutoCrispy Release Here: https://github.com/WalkerMx/AutoCrispy/releases
     
    - **Waifu2x-ncnn-vulkan** is designed to run on (what else?) Vulkan. It can run on AMD and nVidia GPUs that support Vulkan. It has few options, and can be picky about your Vulkan interface, but once working, you can get very good speed coupled with a much lower VRAM overhead. This tends to be the middle ground. Faster than Caffe, but limited to 2x resolution. Simulating higher resolutions (by running the textures through again) results in minor fringing.
    
-   - **Anime4KCPP** is the C++ implementation of the Anime4K algorithm. Intended for real-time anime video upscaling, also works for still images. Excellent speed even on weaker systems, many options, and good output mean that this has tons of potential. Because of the many settings, sometimes it takes a little tweaking to get the output *just* right. The default settings will have the faintest hint of fringes on the edges, but tweaking the settigns and filters can more than compensate for this.
+   - **Anime4KCPP** is the C++ implementation of the Anime4K algorithm. The algorithm is intended for real-time anime video upscaling, but also works for still images. Excellent speed even on weaker systems, many options, and good output mean that this has tons of potential. Because of the many settings, sometimes it takes a little tweaking to get the output *just* right. The default settings will have the faintest hint of fringes on the edges, but tweaking the settigns and filters can more than compensate for this.
    
 
 # Reference Images:
