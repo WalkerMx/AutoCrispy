@@ -2,13 +2,13 @@
 
 Public Class Form1
 
-    Dim SettingsLoc As Point = New Point(240, 98)
     Dim vbQuote As Char = """"c
     Dim WaitScale As Integer = 0
-    Dim VulkanPath As String = Application.StartupPath() & "\" & "waifu2x-ncnn-vulkan.exe"
-    Dim CaffePath As String = Application.StartupPath() & "\" & "waifu2x-caffe-cui.exe"
-    Dim CPPPath As String = Application.StartupPath() & "\" & "waifu2x-converter-cpp.exe"
-    Dim A4KPath As String = Application.StartupPath() & "\" & "Anime4KCPP_CLI.exe"
+    Dim SettingsLoc As Point = New Point(240, 98)
+    Dim VulkanPath As String = Application.StartupPath() & "\waifu2x-ncnn-vulkan.exe"
+    Dim CaffePath As String = Application.StartupPath() & "\waifu2x-caffe-cui.exe"
+    Dim CPPPath As String = Application.StartupPath() & "\waifu2x-converter-cpp.exe"
+    Dim A4KPath As String = Application.StartupPath() & "\Anime4KCPP_CLI.exe"
     Dim CaffeExtensions As String() = {".png", ".jpg", ".jpeg", ".tif", ".tiff", ".bmp", ".tga"}
     Dim VulkanExtensions As String() = {".png", ".webp"}
     Dim CPPExtensions As String() = {".bmp", ".dib", ".exr", ".hdr", ".jpe", ".jpeg", ".jpg", ".pbm", ".pgm", ".pic", ".png", ".pnm", ".ppm", ".pxm", ".ras", ".sr", ".tif", ".tiff", ".webp"}
@@ -29,6 +29,7 @@ Public Class Form1
 
     Private Sub Form1_Load(sender As Object, e As EventArgs) Handles MyBase.Load
         Me.Size = New Size(660, 375)
+        LoadBindingString()
         If File.Exists(CaffePath) Then ExeComboBox.Items.Add("Waifu2x Caffe")
         If File.Exists(VulkanPath) Then ExeComboBox.Items.Add("Waifu2x Vulkan")
         If File.Exists(CPPPath) Then ExeComboBox.Items.Add("Waifu2x CPP")
@@ -40,7 +41,7 @@ Public Class Form1
     End Sub
 
     Private Sub Form1_Closing(sender As Object, e As EventArgs) Handles MyBase.Closing
-
+        SaveBindingString()
     End Sub
 
     Private Sub ExeComboBox_SelectedIndexChanged(sender As Object, e As EventArgs) Handles ExeComboBox.SelectedIndexChanged
@@ -59,7 +60,7 @@ Public Class Form1
         If (Not (Directory.Exists(InputTextBox.Text) = True)) OrElse (Not (Directory.Exists(OutputTextBox.Text) = True)) Then
             MsgBox("No path specified, or path invalid!", MsgBoxStyle.Critical, "Error")
         ElseIf (Not File.Exists(CaffePath)) AndAlso (Not File.Exists(VulkanPath)) AndAlso (Not File.Exists(CPPPath)) AndAlso (Not File.Exists(A4KPath)) Then
-            MsgBox("No Waifu2x executable found!", MsgBoxStyle.Critical, "Error")
+            MsgBox("No compatible executable found!", MsgBoxStyle.Critical, "Error")
         Else
             WatchDog.Enabled = Not WatchDog.Enabled
             WatchDogButton.Text = "Running: " & WatchDog.Enabled
@@ -79,14 +80,14 @@ Public Class Form1
         Dim Source As List(Of String) = GetFileNameListNoExtension(InputTextBox.Text)
         Dim Dest As List(Of String) = GetFileNameListNoExtension(OutputTextBox.Text)
         Dim FileCheck As Boolean = Dest.SequenceEqual(Source)
-        Source = GetFileNameList(InputTextBox.Text)
-        Dest = GetFileNameList(OutputTextBox.Text)
         If FileCheck = True Or Source.Count = 0 Then
             WaitScale = Math.Min(WaitScale + 1, 100)
             WatchDog.Interval = 1000 + (WaitScale * 590)
         Else
             WaitScale = 0
-            WatchDog.Interval = 1000 + (WaitScale * 590)
+            WatchDog.Interval = 1000
+            Source = GetFileNameList(InputTextBox.Text)
+            Dest = GetFileNameList(OutputTextBox.Text)
             Dim NewImages As New List(Of String)
             Dim DiffImages = Source.Except(Dest)
             For Each NewImage As String In DiffImages
@@ -106,8 +107,6 @@ Public Class Form1
                 End If
             Next
             If NewImages.Count > 0 Then
-                Dim SWatch As New Stopwatch
-                SWatch.Start()
                 Select Case ThreadComboBox.SelectedIndex
                     Case 0
                         MakeWaifus(NewImages.ToArray, 1)
@@ -118,8 +117,6 @@ Public Class Form1
                     Case 3
                         MakeWaifus(NewImages.ToArray, 4096)
                 End Select
-                SWatch.Stop()
-                Me.Text = SWatch.ElapsedMilliseconds
             End If
         End If
     End Sub
@@ -139,15 +136,14 @@ Public Class Form1
                 Case "Anime4k CPP"
                     BuildProcess = New ProcessStartInfo(A4KPath, MakeA4KCommand(Source(i), NewImage).Trim)
             End Select
-            Select Case DebugCheckBox.Checked
-                Case True
-                    BuildProcess.UseShellExecute = False
-                    BuildProcess.RedirectStandardInput = True
-                    BuildProcess.RedirectStandardOutput = True
-                    BuildProcess.RedirectStandardError = True
-                Case Else
-                    BuildProcess.WindowStyle = ProcessWindowStyle.Hidden
-            End Select
+            If DebugCheckBox.Checked = True Then
+                BuildProcess.UseShellExecute = False
+                BuildProcess.RedirectStandardInput = True
+                BuildProcess.RedirectStandardOutput = True
+                BuildProcess.RedirectStandardError = True
+            Else
+                BuildProcess.WindowStyle = ProcessWindowStyle.Hidden
+            End If
             Dim BatchProcess As Process = Process.Start(BuildProcess)
             If DebugCheckBox.Checked = True Then
                 Dim DebugOutput As String = BatchProcess.StandardError.ReadToEnd
@@ -163,16 +159,16 @@ Public Class Form1
             End If
         Next
         If CleanupCheckBox.Checked = True Then
-            For Each OldImage As String In Source
-                File.Delete(OldImage)
+            For Each SourceImage As String In Source
+                File.Delete(SourceImage)
             Next
         End If
         WatchDog.Enabled = True
     End Sub
 
-    Private Function MakeCaffeCommand(OldImage As String, NewImage As String) As String
+    Private Function MakeCaffeCommand(SourceImage As String, NewImage As String) As String
         Dim Result As New ArguementString
-        Result.AddArguement("-i", Quote(OldImage))
+        Result.AddArguement("-i", Quote(SourceImage))
         Result.AddArguement("-o", Quote(NewImage))
         Result.AddArguement("-m", CaffeMode.Text.ToLower)
         Result.AddArguement("-s", CaffeScale.Value)
@@ -182,9 +178,9 @@ Public Class Form1
         Return Result.GetArguements
     End Function
 
-    Private Function MakeVulkanCommand(OldImage As String, NewImage As String) As String
+    Private Function MakeVulkanCommand(SourceImage As String, NewImage As String) As String
         Dim Result As New ArguementString
-        Result.AddArguement("-i", Quote(OldImage))
+        Result.AddArguement("-i", Quote(SourceImage))
         Result.AddArguement("-o", Quote(NewImage))
         Result.AddArguement("-s", VulkanScale.Value)
         Result.AddArguement("-n", VulkanNoise.Value)
@@ -193,9 +189,9 @@ Public Class Form1
         Return Result.GetArguements
     End Function
 
-    Private Function MakeCPPCommand(OldImage As String, NewImage As String) As String
+    Private Function MakeCPPCommand(SourceImage As String, NewImage As String) As String
         Dim Result As New ArguementString
-        Result.AddArguement("-i", Quote(OldImage))
+        Result.AddArguement("-i", Quote(SourceImage))
         Result.AddArguement("-o", Quote(NewImage))
         Result.AddArguement("-m", WaifuCPPMode.Text.ToLower)
         Result.AddArguement("--scale-ratio", WaifuCPPScale.Value)
@@ -207,9 +203,9 @@ Public Class Form1
         Return Result.GetArguements
     End Function
 
-    Private Function MakeA4KCommand(OldImage As String, NewImage As String) As String
+    Private Function MakeA4KCommand(SourceImage As String, NewImage As String) As String
         Dim Result As New ArguementString
-        Result.AddArguement("-i", Quote(OldImage))
+        Result.AddArguement("-i", Quote(SourceImage))
         Result.AddArguement("-o", Quote(NewImage))
         Result.AddArguement("-p", AnimeCPPPasses.Value)
         Result.AddArguement("-n", AnimeCPPPushColors.Value)
@@ -226,7 +222,6 @@ Public Class Form1
         End Select
         Result.AddArguement(IIf(AnimeCPPGpu.Checked = True, "-q", ""))
         Result.AddArguement(IIf(AnimeCPPCnn.Checked = True, "-w", ""))
-        Result.AddArguement(IIf(AnimeCPPHdn.Checked = True, "-h", ""))
         Return Result.GetArguements
     End Function
 
@@ -249,6 +244,40 @@ Public Class Form1
                 AnimeCPPGroup.Location = SettingsLoc
                 AnimeCPPGroup.Visible = True
         End Select
+    End Sub
+
+    Private Sub SaveBindingString()
+        Dim Binding As String = ""
+        Binding += ThreadComboBox.SelectedIndex.ToString
+        Binding += CaffeMode.SelectedIndex.ToString
+        Binding += CaffeProcess.SelectedIndex.ToString
+        Binding += VulkanFormat.SelectedIndex.ToString
+        Binding += WaifuCPPMode.SelectedIndex.ToString
+        Binding += WaifuCPPFormat.SelectedIndex.ToString
+        Binding += AnimeCPPFilterType.SelectedIndex.ToString
+        For i = 0 To 6
+            If AnimeCPPFilters.GetItemChecked(i) = True Then
+                Binding += "1"
+            Else
+                Binding += "0"
+            End If
+        Next
+        My.Settings.BindingString = Binding
+    End Sub
+
+    Private Sub LoadBindingString()
+        ThreadComboBox.SelectedIndex = Val(My.Settings.BindingString(0))
+        CaffeMode.SelectedIndex = Val(My.Settings.BindingString(1))
+        CaffeProcess.SelectedIndex = Val(My.Settings.BindingString(2))
+        VulkanFormat.SelectedIndex = Val(My.Settings.BindingString(3))
+        WaifuCPPMode.SelectedIndex = Val(My.Settings.BindingString(4))
+        WaifuCPPFormat.SelectedIndex = Val(My.Settings.BindingString(5))
+        AnimeCPPFilterType.SelectedIndex = Val(My.Settings.BindingString(6))
+        For i = 7 To 13
+            If Val(My.Settings.BindingString(i)) = 1 Then
+                AnimeCPPFilters.SetItemChecked(i - 7, True)
+            End If
+        Next
     End Sub
 
     Private Sub SwitchGroups()

@@ -113,6 +113,162 @@ Namespace My
                 Me("TAA") = value
             End Set
         End Property
+        
+        <Global.System.Configuration.UserScopedSettingAttribute(),  _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.Configuration.DefaultSettingValueAttribute("False")>  _
+        Public Property WaifuTTA() As Boolean
+            Get
+                Return CType(Me("WaifuTTA"),Boolean)
+            End Get
+            Set
+                Me("WaifuTTA") = value
+            End Set
+        End Property
+        
+        <Global.System.Configuration.UserScopedSettingAttribute(),  _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.Configuration.DefaultSettingValueAttribute("False")>  _
+        Public Property WaifuOCL() As Boolean
+            Get
+                Return CType(Me("WaifuOCL"),Boolean)
+            End Get
+            Set
+                Me("WaifuOCL") = value
+            End Set
+        End Property
+        
+        <Global.System.Configuration.UserScopedSettingAttribute(),  _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.Configuration.DefaultSettingValueAttribute("False")>  _
+        Public Property WaifuDGPU() As Boolean
+            Get
+                Return CType(Me("WaifuDGPU"),Boolean)
+            End Get
+            Set
+                Me("WaifuDGPU") = value
+            End Set
+        End Property
+        
+        <Global.System.Configuration.UserScopedSettingAttribute(),  _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.Configuration.DefaultSettingValueAttribute("2")>  _
+        Public Property A4KPasses() As Decimal
+            Get
+                Return CType(Me("A4KPasses"),Decimal)
+            End Get
+            Set
+                Me("A4KPasses") = value
+            End Set
+        End Property
+        
+        <Global.System.Configuration.UserScopedSettingAttribute(),  _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.Configuration.DefaultSettingValueAttribute("2")>  _
+        Public Property A4KPColors() As Decimal
+            Get
+                Return CType(Me("A4KPColors"),Decimal)
+            End Get
+            Set
+                Me("A4KPColors") = value
+            End Set
+        End Property
+        
+        <Global.System.Configuration.UserScopedSettingAttribute(),  _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.Configuration.DefaultSettingValueAttribute("0.3")>  _
+        Public Property A4KCStrength() As Decimal
+            Get
+                Return CType(Me("A4KCStrength"),Decimal)
+            End Get
+            Set
+                Me("A4KCStrength") = value
+            End Set
+        End Property
+        
+        <Global.System.Configuration.UserScopedSettingAttribute(),  _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.Configuration.DefaultSettingValueAttribute("1")>  _
+        Public Property A4KGradStrength() As Decimal
+            Get
+                Return CType(Me("A4KGradStrength"),Decimal)
+            End Get
+            Set
+                Me("A4KGradStrength") = value
+            End Set
+        End Property
+        
+        <Global.System.Configuration.UserScopedSettingAttribute(),  _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.Configuration.DefaultSettingValueAttribute("True")>  _
+        Public Property A4KPreCheck() As Boolean
+            Get
+                Return CType(Me("A4KPreCheck"),Boolean)
+            End Get
+            Set
+                Me("A4KPreCheck") = value
+            End Set
+        End Property
+        
+        <Global.System.Configuration.UserScopedSettingAttribute(),  _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.Configuration.DefaultSettingValueAttribute("False")>  _
+        Public Property A4KPostCheck() As Boolean
+            Get
+                Return CType(Me("A4KPostCheck"),Boolean)
+            End Get
+            Set
+                Me("A4KPostCheck") = value
+            End Set
+        End Property
+        
+        <Global.System.Configuration.UserScopedSettingAttribute(),  _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.Configuration.DefaultSettingValueAttribute("True")>  _
+        Public Property A4KGPUCheck() As Boolean
+            Get
+                Return CType(Me("A4KGPUCheck"),Boolean)
+            End Get
+            Set
+                Me("A4KGPUCheck") = value
+            End Set
+        End Property
+        
+        <Global.System.Configuration.UserScopedSettingAttribute(),  _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.Configuration.DefaultSettingValueAttribute("False")>  _
+        Public Property A4KCNNCheck() As Boolean
+            Get
+                Return CType(Me("A4KCNNCheck"),Boolean)
+            End Get
+            Set
+                Me("A4KCNNCheck") = value
+            End Set
+        End Property
+        
+        <Global.System.Configuration.UserScopedSettingAttribute(),  _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.Configuration.DefaultSettingValueAttribute("02102010001010")>  _
+        Public Property BindingString() As String
+            Get
+                Return CType(Me("BindingString"),String)
+            End Get
+            Set
+                Me("BindingString") = value
+            End Set
+        End Property
+        
+        <Global.System.Configuration.UserScopedSettingAttribute(),  _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.Configuration.DefaultSettingValueAttribute("1")>  _
+        Public Property ThreadCount() As Decimal
+            Get
+                Return CType(Me("ThreadCount"),Decimal)
+            End Get
+            Set
+                Me("ThreadCount") = value
+            End Set
+        End Property
     End Class
 End Namespace
 
