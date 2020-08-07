@@ -222,6 +222,7 @@ Public Class Form1
         End Select
         Result.AddArguement(IIf(AnimeCPPGpu.Checked = True, "-q", ""))
         Result.AddArguement(IIf(AnimeCPPCnn.Checked = True, "-w", ""))
+        Result.AddArguement("-A")
         Return Result.GetArguements
     End Function
 
