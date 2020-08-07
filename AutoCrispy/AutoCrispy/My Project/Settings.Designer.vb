@@ -104,121 +104,13 @@ Namespace My
         
         <Global.System.Configuration.UserScopedSettingAttribute(),  _
          Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
-         Global.System.Configuration.DefaultSettingValueAttribute("3")>  _
-        Public Property Mode() As Integer
+         Global.System.Configuration.DefaultSettingValueAttribute("False")>  _
+        Public Property TAA() As Boolean
             Get
-                Return CType(Me("Mode"),Integer)
-            End Get
-            Set
-                Me("Mode") = value
-            End Set
-        End Property
-        
-        <Global.System.Configuration.UserScopedSettingAttribute(),  _
-         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
-         Global.System.Configuration.DefaultSettingValueAttribute("2")>  _
-        Public Property Method() As Integer
-            Get
-                Return CType(Me("Method"),Integer)
-            End Get
-            Set
-                Me("Method") = value
-            End Set
-        End Property
-        
-        <Global.System.Configuration.UserScopedSettingAttribute(),  _
-         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
-         Global.System.Configuration.DefaultSettingValueAttribute("0")>  _
-        Public Property TAA() As Integer
-            Get
-                Return CType(Me("TAA"),Integer)
+                Return CType(Me("TAA"),Boolean)
             End Get
             Set
                 Me("TAA") = value
-            End Set
-        End Property
-        
-        <Global.System.Configuration.UserScopedSettingAttribute(),  _
-         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
-         Global.System.Configuration.DefaultSettingValueAttribute("False")>  _
-        Public Property DeleteFiles() As Boolean
-            Get
-                Return CType(Me("DeleteFiles"),Boolean)
-            End Get
-            Set
-                Me("DeleteFiles") = value
-            End Set
-        End Property
-        
-        <Global.System.Configuration.UserScopedSettingAttribute(),  _
-         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
-         Global.System.Configuration.DefaultSettingValueAttribute("0")>  _
-        Public Property GPUIndex() As Decimal
-            Get
-                Return CType(Me("GPUIndex"),Decimal)
-            End Get
-            Set
-                Me("GPUIndex") = value
-            End Set
-        End Property
-        
-        <Global.System.Configuration.UserScopedSettingAttribute(),  _
-         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
-         Global.System.Configuration.DefaultSettingValueAttribute("False")>  _
-        Public Property DebugOn() As Boolean
-            Get
-                Return CType(Me("DebugOn"),Boolean)
-            End Get
-            Set
-                Me("DebugOn") = value
-            End Set
-        End Property
-        
-        <Global.System.Configuration.UserScopedSettingAttribute(),  _
-         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
-         Global.System.Configuration.DefaultSettingValueAttribute("9")>  _
-        Public Property PNGc() As Decimal
-            Get
-                Return CType(Me("PNGc"),Decimal)
-            End Get
-            Set
-                Me("PNGc") = value
-            End Set
-        End Property
-        
-        <Global.System.Configuration.UserScopedSettingAttribute(),  _
-         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
-         Global.System.Configuration.DefaultSettingValueAttribute("101")>  _
-        Public Property JPWPc() As Decimal
-            Get
-                Return CType(Me("JPWPc"),Decimal)
-            End Get
-            Set
-                Me("JPWPc") = value
-            End Set
-        End Property
-        
-        <Global.System.Configuration.UserScopedSettingAttribute(),  _
-         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
-         Global.System.Configuration.DefaultSettingValueAttribute("0")>  _
-        Public Property DfFormat() As Integer
-            Get
-                Return CType(Me("DfFormat"),Integer)
-            End Get
-            Set
-                Me("DfFormat") = value
-            End Set
-        End Property
-        
-        <Global.System.Configuration.UserScopedSettingAttribute(),  _
-         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
-         Global.System.Configuration.DefaultSettingValueAttribute("0")>  _
-        Public Property Thread() As Integer
-            Get
-                Return CType(Me("Thread"),Integer)
-            End Get
-            Set
-                Me("Thread") = value
             End Set
         End Property
     End Class

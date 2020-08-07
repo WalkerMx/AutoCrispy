@@ -23,82 +23,123 @@ Partial Class Form1
     <System.Diagnostics.DebuggerStepThrough()>
     Private Sub InitializeComponent()
         Me.components = New System.ComponentModel.Container()
-        Me.GroupBox1 = New System.Windows.Forms.GroupBox()
-        Me.Button2 = New System.Windows.Forms.Button()
-        Me.Button1 = New System.Windows.Forms.Button()
+        Me.PathGroup = New System.Windows.Forms.GroupBox()
+        Me.OutputBrowse = New System.Windows.Forms.Button()
+        Me.InputBrowse = New System.Windows.Forms.Button()
         Me.OutputTextBox = New System.Windows.Forms.TextBox()
         Me.InputTextBox = New System.Windows.Forms.TextBox()
         Me.Label2 = New System.Windows.Forms.Label()
         Me.Label1 = New System.Windows.Forms.Label()
-        Me.GroupBox2 = New System.Windows.Forms.GroupBox()
-        Me.FormatComboBox = New System.Windows.Forms.ComboBox()
-        Me.Label11 = New System.Windows.Forms.Label()
-        Me.Label10 = New System.Windows.Forms.Label()
-        Me.Label8 = New System.Windows.Forms.Label()
-        Me.NumericNoise = New System.Windows.Forms.NumericUpDown()
-        Me.NumericScale = New System.Windows.Forms.NumericUpDown()
-        Me.ComputeComboBox = New System.Windows.Forms.ComboBox()
-        Me.NumericJPWP = New System.Windows.Forms.NumericUpDown()
-        Me.NumericPNG = New System.Windows.Forms.NumericUpDown()
-        Me.NumericGPU = New System.Windows.Forms.NumericUpDown()
-        Me.ModeComboBox = New System.Windows.Forms.ComboBox()
-        Me.Label7 = New System.Windows.Forms.Label()
+        Me.CaffeGroup = New System.Windows.Forms.GroupBox()
+        Me.CaffeTAA = New System.Windows.Forms.CheckBox()
+        Me.CaffeProcess = New System.Windows.Forms.ComboBox()
+        Me.CaffeScale = New System.Windows.Forms.NumericUpDown()
+        Me.CaffeNoise = New System.Windows.Forms.NumericUpDown()
         Me.Label6 = New System.Windows.Forms.Label()
         Me.Label5 = New System.Windows.Forms.Label()
-        Me.TAAComboBox = New System.Windows.Forms.ComboBox()
-        Me.Label9 = New System.Windows.Forms.Label()
         Me.Label4 = New System.Windows.Forms.Label()
         Me.Label3 = New System.Windows.Forms.Label()
+        Me.CaffeMode = New System.Windows.Forms.ComboBox()
         Me.WatchDog = New System.Windows.Forms.Timer(Me.components)
-        Me.Button3 = New System.Windows.Forms.Button()
-        Me.GroupBox3 = New System.Windows.Forms.GroupBox()
-        Me.CheckBox2 = New System.Windows.Forms.CheckBox()
+        Me.WatchDogButton = New System.Windows.Forms.Button()
+        Me.SettingsGroup = New System.Windows.Forms.GroupBox()
+        Me.NumericThreads = New System.Windows.Forms.NumericUpDown()
+        Me.ThreadComboBox = New System.Windows.Forms.ComboBox()
         Me.DebugCheckBox = New System.Windows.Forms.CheckBox()
         Me.ExeComboBox = New System.Windows.Forms.ComboBox()
-        Me.CheckBox1 = New System.Windows.Forms.CheckBox()
-        Me.ThreadComboBox = New System.Windows.Forms.ComboBox()
-        Me.GroupBox1.SuspendLayout()
-        Me.GroupBox2.SuspendLayout()
-        CType(Me.NumericNoise, System.ComponentModel.ISupportInitialize).BeginInit()
-        CType(Me.NumericScale, System.ComponentModel.ISupportInitialize).BeginInit()
-        CType(Me.NumericJPWP, System.ComponentModel.ISupportInitialize).BeginInit()
-        CType(Me.NumericPNG, System.ComponentModel.ISupportInitialize).BeginInit()
-        CType(Me.NumericGPU, System.ComponentModel.ISupportInitialize).BeginInit()
-        Me.GroupBox3.SuspendLayout()
+        Me.CleanupCheckBox = New System.Windows.Forms.CheckBox()
+        Me.Label12 = New System.Windows.Forms.Label()
+        Me.VulkanGroup = New System.Windows.Forms.GroupBox()
+        Me.VulkanTAA = New System.Windows.Forms.CheckBox()
+        Me.VulkanFormat = New System.Windows.Forms.ComboBox()
+        Me.Label7 = New System.Windows.Forms.Label()
+        Me.VulkanScale = New System.Windows.Forms.NumericUpDown()
+        Me.Label8 = New System.Windows.Forms.Label()
+        Me.VulkanNoise = New System.Windows.Forms.NumericUpDown()
+        Me.Label9 = New System.Windows.Forms.Label()
+        Me.WaifuCPPGroup = New System.Windows.Forms.GroupBox()
+        Me.WaifuCPPNoGPU = New System.Windows.Forms.CheckBox()
+        Me.WaifuCPPOpenCL = New System.Windows.Forms.CheckBox()
+        Me.WaifuCPPTTA = New System.Windows.Forms.CheckBox()
+        Me.WaifuCPPMode = New System.Windows.Forms.ComboBox()
+        Me.WaifuCPPFormat = New System.Windows.Forms.ComboBox()
+        Me.Label10 = New System.Windows.Forms.Label()
+        Me.Label14 = New System.Windows.Forms.Label()
+        Me.WaifuCPPScale = New System.Windows.Forms.NumericUpDown()
+        Me.Label11 = New System.Windows.Forms.Label()
+        Me.WaifuCPPNoise = New System.Windows.Forms.NumericUpDown()
+        Me.Label13 = New System.Windows.Forms.Label()
+        Me.AnimeCPPGroup = New System.Windows.Forms.GroupBox()
+        Me.AnimeCPPHdn = New System.Windows.Forms.CheckBox()
+        Me.AnimeCPPCnn = New System.Windows.Forms.CheckBox()
+        Me.AnimeCPPGpu = New System.Windows.Forms.CheckBox()
+        Me.AnimeCPPPost = New System.Windows.Forms.CheckBox()
+        Me.AnimeCPPPre = New System.Windows.Forms.CheckBox()
+        Me.AnimeCPPScale = New System.Windows.Forms.NumericUpDown()
+        Me.AnimeCPPGradStrength = New System.Windows.Forms.NumericUpDown()
+        Me.AnimeCPPColorStrength = New System.Windows.Forms.NumericUpDown()
+        Me.AnimeCPPPushColors = New System.Windows.Forms.NumericUpDown()
+        Me.AnimeCPPPasses = New System.Windows.Forms.NumericUpDown()
+        Me.AnimeCPPFilterType = New System.Windows.Forms.ComboBox()
+        Me.AnimeCPPFilters = New System.Windows.Forms.CheckedListBox()
+        Me.Label20 = New System.Windows.Forms.Label()
+        Me.Label19 = New System.Windows.Forms.Label()
+        Me.Label18 = New System.Windows.Forms.Label()
+        Me.Label17 = New System.Windows.Forms.Label()
+        Me.Label16 = New System.Windows.Forms.Label()
+        Me.Label15 = New System.Windows.Forms.Label()
+        Me.PathGroup.SuspendLayout()
+        Me.CaffeGroup.SuspendLayout()
+        CType(Me.CaffeScale, System.ComponentModel.ISupportInitialize).BeginInit()
+        CType(Me.CaffeNoise, System.ComponentModel.ISupportInitialize).BeginInit()
+        Me.SettingsGroup.SuspendLayout()
+        CType(Me.NumericThreads, System.ComponentModel.ISupportInitialize).BeginInit()
+        Me.VulkanGroup.SuspendLayout()
+        CType(Me.VulkanScale, System.ComponentModel.ISupportInitialize).BeginInit()
+        CType(Me.VulkanNoise, System.ComponentModel.ISupportInitialize).BeginInit()
+        Me.WaifuCPPGroup.SuspendLayout()
+        CType(Me.WaifuCPPScale, System.ComponentModel.ISupportInitialize).BeginInit()
+        CType(Me.WaifuCPPNoise, System.ComponentModel.ISupportInitialize).BeginInit()
+        Me.AnimeCPPGroup.SuspendLayout()
+        CType(Me.AnimeCPPScale, System.ComponentModel.ISupportInitialize).BeginInit()
+        CType(Me.AnimeCPPGradStrength, System.ComponentModel.ISupportInitialize).BeginInit()
+        CType(Me.AnimeCPPColorStrength, System.ComponentModel.ISupportInitialize).BeginInit()
+        CType(Me.AnimeCPPPushColors, System.ComponentModel.ISupportInitialize).BeginInit()
+        CType(Me.AnimeCPPPasses, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.SuspendLayout()
         '
-        'GroupBox1
+        'PathGroup
         '
-        Me.GroupBox1.Controls.Add(Me.Button2)
-        Me.GroupBox1.Controls.Add(Me.Button1)
-        Me.GroupBox1.Controls.Add(Me.OutputTextBox)
-        Me.GroupBox1.Controls.Add(Me.InputTextBox)
-        Me.GroupBox1.Controls.Add(Me.Label2)
-        Me.GroupBox1.Controls.Add(Me.Label1)
-        Me.GroupBox1.Location = New System.Drawing.Point(12, 12)
-        Me.GroupBox1.Name = "GroupBox1"
-        Me.GroupBox1.Size = New System.Drawing.Size(624, 80)
-        Me.GroupBox1.TabIndex = 0
-        Me.GroupBox1.TabStop = False
-        Me.GroupBox1.Text = "Paths"
+        Me.PathGroup.Controls.Add(Me.OutputBrowse)
+        Me.PathGroup.Controls.Add(Me.InputBrowse)
+        Me.PathGroup.Controls.Add(Me.OutputTextBox)
+        Me.PathGroup.Controls.Add(Me.InputTextBox)
+        Me.PathGroup.Controls.Add(Me.Label2)
+        Me.PathGroup.Controls.Add(Me.Label1)
+        Me.PathGroup.Location = New System.Drawing.Point(12, 12)
+        Me.PathGroup.Name = "PathGroup"
+        Me.PathGroup.Size = New System.Drawing.Size(624, 80)
+        Me.PathGroup.TabIndex = 0
+        Me.PathGroup.TabStop = False
+        Me.PathGroup.Text = "Paths"
         '
-        'Button2
+        'OutputBrowse
         '
-        Me.Button2.Location = New System.Drawing.Point(578, 45)
-        Me.Button2.Name = "Button2"
-        Me.Button2.Size = New System.Drawing.Size(30, 20)
-        Me.Button2.TabIndex = 4
-        Me.Button2.Text = "..."
-        Me.Button2.UseVisualStyleBackColor = True
+        Me.OutputBrowse.Location = New System.Drawing.Point(578, 45)
+        Me.OutputBrowse.Name = "OutputBrowse"
+        Me.OutputBrowse.Size = New System.Drawing.Size(30, 20)
+        Me.OutputBrowse.TabIndex = 4
+        Me.OutputBrowse.Text = "..."
+        Me.OutputBrowse.UseVisualStyleBackColor = True
         '
-        'Button1
+        'InputBrowse
         '
-        Me.Button1.Location = New System.Drawing.Point(578, 19)
-        Me.Button1.Name = "Button1"
-        Me.Button1.Size = New System.Drawing.Size(30, 20)
-        Me.Button1.TabIndex = 3
-        Me.Button1.Text = "..."
-        Me.Button1.UseVisualStyleBackColor = True
+        Me.InputBrowse.Location = New System.Drawing.Point(578, 19)
+        Me.InputBrowse.Name = "InputBrowse"
+        Me.InputBrowse.Size = New System.Drawing.Size(30, 20)
+        Me.InputBrowse.TabIndex = 3
+        Me.InputBrowse.Text = "..."
+        Me.InputBrowse.UseVisualStyleBackColor = True
         '
         'OutputTextBox
         '
@@ -136,249 +177,166 @@ Partial Class Form1
         Me.Label1.TabIndex = 0
         Me.Label1.Text = "Input Folder:"
         '
-        'GroupBox2
+        'CaffeGroup
         '
-        Me.GroupBox2.Controls.Add(Me.FormatComboBox)
-        Me.GroupBox2.Controls.Add(Me.Label11)
-        Me.GroupBox2.Controls.Add(Me.Label10)
-        Me.GroupBox2.Controls.Add(Me.Label8)
-        Me.GroupBox2.Controls.Add(Me.NumericNoise)
-        Me.GroupBox2.Controls.Add(Me.NumericScale)
-        Me.GroupBox2.Controls.Add(Me.ComputeComboBox)
-        Me.GroupBox2.Controls.Add(Me.NumericJPWP)
-        Me.GroupBox2.Controls.Add(Me.NumericPNG)
-        Me.GroupBox2.Controls.Add(Me.NumericGPU)
-        Me.GroupBox2.Controls.Add(Me.ModeComboBox)
-        Me.GroupBox2.Controls.Add(Me.Label7)
-        Me.GroupBox2.Controls.Add(Me.Label6)
-        Me.GroupBox2.Controls.Add(Me.Label5)
-        Me.GroupBox2.Controls.Add(Me.TAAComboBox)
-        Me.GroupBox2.Controls.Add(Me.Label9)
-        Me.GroupBox2.Controls.Add(Me.Label4)
-        Me.GroupBox2.Controls.Add(Me.Label3)
-        Me.GroupBox2.Location = New System.Drawing.Point(12, 98)
-        Me.GroupBox2.Name = "GroupBox2"
-        Me.GroupBox2.Size = New System.Drawing.Size(396, 154)
-        Me.GroupBox2.TabIndex = 1
-        Me.GroupBox2.TabStop = False
-        Me.GroupBox2.Text = "Waifu2x Settings"
+        Me.CaffeGroup.Controls.Add(Me.CaffeTAA)
+        Me.CaffeGroup.Controls.Add(Me.CaffeProcess)
+        Me.CaffeGroup.Controls.Add(Me.CaffeScale)
+        Me.CaffeGroup.Controls.Add(Me.CaffeNoise)
+        Me.CaffeGroup.Controls.Add(Me.Label6)
+        Me.CaffeGroup.Controls.Add(Me.Label5)
+        Me.CaffeGroup.Controls.Add(Me.Label4)
+        Me.CaffeGroup.Controls.Add(Me.Label3)
+        Me.CaffeGroup.Controls.Add(Me.CaffeMode)
+        Me.CaffeGroup.Location = New System.Drawing.Point(643, 12)
+        Me.CaffeGroup.Name = "CaffeGroup"
+        Me.CaffeGroup.Size = New System.Drawing.Size(396, 200)
+        Me.CaffeGroup.TabIndex = 1
+        Me.CaffeGroup.TabStop = False
+        Me.CaffeGroup.Text = "Caffe Settings"
         '
-        'FormatComboBox
+        'CaffeTAA
         '
-        Me.FormatComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
-        Me.FormatComboBox.FormattingEnabled = True
-        Me.FormatComboBox.Items.AddRange(New Object() {"PNG", "WEBP", "JPG"})
-        Me.FormatComboBox.Location = New System.Drawing.Point(107, 98)
-        Me.FormatComboBox.Name = "FormatComboBox"
-        Me.FormatComboBox.Size = New System.Drawing.Size(81, 21)
-        Me.FormatComboBox.TabIndex = 4
+        Me.CaffeTAA.AutoSize = True
+        Me.CaffeTAA.Checked = Global.AutoCrispy.My.MySettings.Default.TAA
+        Me.CaffeTAA.DataBindings.Add(New System.Windows.Forms.Binding("Checked", Global.AutoCrispy.My.MySettings.Default, "TAA", True, System.Windows.Forms.DataSourceUpdateMode.OnPropertyChanged))
+        Me.CaffeTAA.Location = New System.Drawing.Point(301, 75)
+        Me.CaffeTAA.Name = "CaffeTAA"
+        Me.CaffeTAA.Size = New System.Drawing.Size(47, 17)
+        Me.CaffeTAA.TabIndex = 4
+        Me.CaffeTAA.Text = "TAA"
+        Me.CaffeTAA.UseVisualStyleBackColor = True
         '
-        'Label11
+        'CaffeProcess
         '
-        Me.Label11.AutoSize = True
-        Me.Label11.Location = New System.Drawing.Point(194, 128)
-        Me.Label11.Name = "Label11"
-        Me.Label11.Size = New System.Drawing.Size(102, 13)
-        Me.Label11.TabIndex = 2
-        Me.Label11.Text = "JPG/WEBP Quality:"
+        Me.CaffeProcess.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
+        Me.CaffeProcess.FormattingEnabled = True
+        Me.CaffeProcess.Items.AddRange(New Object() {"CPU", "GPU", "cuDNN"})
+        Me.CaffeProcess.Location = New System.Drawing.Point(234, 19)
+        Me.CaffeProcess.Name = "CaffeProcess"
+        Me.CaffeProcess.Size = New System.Drawing.Size(114, 21)
+        Me.CaffeProcess.TabIndex = 3
         '
-        'Label10
+        'CaffeScale
         '
-        Me.Label10.AutoSize = True
-        Me.Label10.Location = New System.Drawing.Point(194, 102)
-        Me.Label10.Name = "Label10"
-        Me.Label10.Size = New System.Drawing.Size(96, 13)
-        Me.Label10.TabIndex = 2
-        Me.Label10.Text = "PNG Compression:"
+        Me.CaffeScale.DataBindings.Add(New System.Windows.Forms.Binding("Value", Global.AutoCrispy.My.MySettings.Default, "Scale", True, System.Windows.Forms.DataSourceUpdateMode.OnPropertyChanged))
+        Me.CaffeScale.DecimalPlaces = 1
+        Me.CaffeScale.Increment = New Decimal(New Integer() {1, 0, 0, 65536})
+        Me.CaffeScale.Location = New System.Drawing.Point(60, 72)
+        Me.CaffeScale.Maximum = New Decimal(New Integer() {4, 0, 0, 0})
+        Me.CaffeScale.Minimum = New Decimal(New Integer() {1, 0, 0, 0})
+        Me.CaffeScale.Name = "CaffeScale"
+        Me.CaffeScale.Size = New System.Drawing.Size(114, 20)
+        Me.CaffeScale.TabIndex = 2
+        Me.CaffeScale.Value = Global.AutoCrispy.My.MySettings.Default.Scale
         '
-        'Label8
+        'CaffeNoise
         '
-        Me.Label8.AutoSize = True
-        Me.Label8.Location = New System.Drawing.Point(194, 75)
-        Me.Label8.Name = "Label8"
-        Me.Label8.Size = New System.Drawing.Size(62, 13)
-        Me.Label8.TabIndex = 2
-        Me.Label8.Text = "GPU Index:"
-        '
-        'NumericNoise
-        '
-        Me.NumericNoise.DataBindings.Add(New System.Windows.Forms.Binding("Value", Global.AutoCrispy.My.MySettings.Default, "Noise", True, System.Windows.Forms.DataSourceUpdateMode.OnPropertyChanged))
-        Me.NumericNoise.Location = New System.Drawing.Point(107, 46)
-        Me.NumericNoise.Maximum = New Decimal(New Integer() {3, 0, 0, 0})
-        Me.NumericNoise.Name = "NumericNoise"
-        Me.NumericNoise.Size = New System.Drawing.Size(81, 20)
-        Me.NumericNoise.TabIndex = 3
-        Me.NumericNoise.Value = Global.AutoCrispy.My.MySettings.Default.Noise
-        '
-        'NumericScale
-        '
-        Me.NumericScale.DataBindings.Add(New System.Windows.Forms.Binding("Value", Global.AutoCrispy.My.MySettings.Default, "Scale", True, System.Windows.Forms.DataSourceUpdateMode.OnPropertyChanged))
-        Me.NumericScale.DecimalPlaces = 1
-        Me.NumericScale.Increment = New Decimal(New Integer() {1, 0, 0, 65536})
-        Me.NumericScale.Location = New System.Drawing.Point(107, 72)
-        Me.NumericScale.Maximum = New Decimal(New Integer() {40, 0, 0, 65536})
-        Me.NumericScale.Minimum = New Decimal(New Integer() {10, 0, 0, 65536})
-        Me.NumericScale.Name = "NumericScale"
-        Me.NumericScale.Size = New System.Drawing.Size(81, 20)
-        Me.NumericScale.TabIndex = 3
-        Me.NumericScale.Value = Global.AutoCrispy.My.MySettings.Default.Scale
-        '
-        'ComputeComboBox
-        '
-        Me.ComputeComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
-        Me.ComputeComboBox.FormattingEnabled = True
-        Me.ComputeComboBox.Items.AddRange(New Object() {"CPU", "GPU", "cuDNN"})
-        Me.ComputeComboBox.Location = New System.Drawing.Point(302, 20)
-        Me.ComputeComboBox.Name = "ComputeComboBox"
-        Me.ComputeComboBox.Size = New System.Drawing.Size(81, 21)
-        Me.ComputeComboBox.TabIndex = 3
-        '
-        'NumericJPWP
-        '
-        Me.NumericJPWP.DataBindings.Add(New System.Windows.Forms.Binding("Value", Global.AutoCrispy.My.MySettings.Default, "JPWPc", True, System.Windows.Forms.DataSourceUpdateMode.OnPropertyChanged))
-        Me.NumericJPWP.Location = New System.Drawing.Point(302, 126)
-        Me.NumericJPWP.Maximum = New Decimal(New Integer() {101, 0, 0, 0})
-        Me.NumericJPWP.Name = "NumericJPWP"
-        Me.NumericJPWP.Size = New System.Drawing.Size(81, 20)
-        Me.NumericJPWP.TabIndex = 1
-        Me.NumericJPWP.Value = Global.AutoCrispy.My.MySettings.Default.JPWPc
-        '
-        'NumericPNG
-        '
-        Me.NumericPNG.DataBindings.Add(New System.Windows.Forms.Binding("Value", Global.AutoCrispy.My.MySettings.Default, "PNGc", True, System.Windows.Forms.DataSourceUpdateMode.OnPropertyChanged))
-        Me.NumericPNG.Location = New System.Drawing.Point(302, 100)
-        Me.NumericPNG.Maximum = New Decimal(New Integer() {9, 0, 0, 0})
-        Me.NumericPNG.Name = "NumericPNG"
-        Me.NumericPNG.Size = New System.Drawing.Size(81, 20)
-        Me.NumericPNG.TabIndex = 1
-        Me.NumericPNG.Value = Global.AutoCrispy.My.MySettings.Default.PNGc
-        '
-        'NumericGPU
-        '
-        Me.NumericGPU.DataBindings.Add(New System.Windows.Forms.Binding("Value", Global.AutoCrispy.My.MySettings.Default, "GPUIndex", True, System.Windows.Forms.DataSourceUpdateMode.OnPropertyChanged))
-        Me.NumericGPU.Location = New System.Drawing.Point(302, 74)
-        Me.NumericGPU.Maximum = New Decimal(New Integer() {9, 0, 0, 0})
-        Me.NumericGPU.Name = "NumericGPU"
-        Me.NumericGPU.Size = New System.Drawing.Size(81, 20)
-        Me.NumericGPU.TabIndex = 1
-        Me.NumericGPU.Value = Global.AutoCrispy.My.MySettings.Default.GPUIndex
-        '
-        'ModeComboBox
-        '
-        Me.ModeComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
-        Me.ModeComboBox.FormattingEnabled = True
-        Me.ModeComboBox.Items.AddRange(New Object() {"Noise", "Scale", "Both"})
-        Me.ModeComboBox.Location = New System.Drawing.Point(107, 19)
-        Me.ModeComboBox.Name = "ModeComboBox"
-        Me.ModeComboBox.Size = New System.Drawing.Size(81, 21)
-        Me.ModeComboBox.TabIndex = 3
-        '
-        'Label7
-        '
-        Me.Label7.AutoSize = True
-        Me.Label7.Location = New System.Drawing.Point(194, 49)
-        Me.Label7.Name = "Label7"
-        Me.Label7.Size = New System.Drawing.Size(31, 13)
-        Me.Label7.TabIndex = 0
-        Me.Label7.Text = "TAA:"
+        Me.CaffeNoise.DataBindings.Add(New System.Windows.Forms.Binding("Value", Global.AutoCrispy.My.MySettings.Default, "Noise", True, System.Windows.Forms.DataSourceUpdateMode.OnPropertyChanged))
+        Me.CaffeNoise.Location = New System.Drawing.Point(60, 46)
+        Me.CaffeNoise.Maximum = New Decimal(New Integer() {3, 0, 0, 0})
+        Me.CaffeNoise.Name = "CaffeNoise"
+        Me.CaffeNoise.Size = New System.Drawing.Size(114, 20)
+        Me.CaffeNoise.TabIndex = 2
+        Me.CaffeNoise.Value = Global.AutoCrispy.My.MySettings.Default.Noise
         '
         'Label6
         '
         Me.Label6.AutoSize = True
-        Me.Label6.Location = New System.Drawing.Point(194, 22)
+        Me.Label6.Location = New System.Drawing.Point(180, 22)
         Me.Label6.Name = "Label6"
-        Me.Label6.Size = New System.Drawing.Size(91, 13)
-        Me.Label6.TabIndex = 0
-        Me.Label6.Text = "Compute Method:"
+        Me.Label6.Size = New System.Drawing.Size(48, 13)
+        Me.Label6.TabIndex = 1
+        Me.Label6.Text = "Process:"
         '
         'Label5
         '
         Me.Label5.AutoSize = True
-        Me.Label5.Location = New System.Drawing.Point(6, 22)
+        Me.Label5.Location = New System.Drawing.Point(6, 74)
         Me.Label5.Name = "Label5"
         Me.Label5.Size = New System.Drawing.Size(37, 13)
-        Me.Label5.TabIndex = 0
-        Me.Label5.Text = "Mode:"
-        '
-        'TAAComboBox
-        '
-        Me.TAAComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
-        Me.TAAComboBox.FormattingEnabled = True
-        Me.TAAComboBox.Items.AddRange(New Object() {"OFF", "ON"})
-        Me.TAAComboBox.Location = New System.Drawing.Point(302, 47)
-        Me.TAAComboBox.Name = "TAAComboBox"
-        Me.TAAComboBox.Size = New System.Drawing.Size(81, 21)
-        Me.TAAComboBox.TabIndex = 3
-        '
-        'Label9
-        '
-        Me.Label9.AutoSize = True
-        Me.Label9.Location = New System.Drawing.Point(6, 101)
-        Me.Label9.Name = "Label9"
-        Me.Label9.Size = New System.Drawing.Size(77, 13)
-        Me.Label9.TabIndex = 0
-        Me.Label9.Text = "Output Format:"
+        Me.Label5.TabIndex = 1
+        Me.Label5.Text = "Scale:"
         '
         'Label4
         '
         Me.Label4.AutoSize = True
-        Me.Label4.Location = New System.Drawing.Point(6, 74)
+        Me.Label4.Location = New System.Drawing.Point(6, 48)
         Me.Label4.Name = "Label4"
         Me.Label4.Size = New System.Drawing.Size(37, 13)
-        Me.Label4.TabIndex = 0
-        Me.Label4.Text = "Scale:"
+        Me.Label4.TabIndex = 1
+        Me.Label4.Text = "Noise:"
         '
         'Label3
         '
         Me.Label3.AutoSize = True
-        Me.Label3.Location = New System.Drawing.Point(6, 48)
+        Me.Label3.Location = New System.Drawing.Point(6, 22)
         Me.Label3.Name = "Label3"
         Me.Label3.Size = New System.Drawing.Size(37, 13)
-        Me.Label3.TabIndex = 0
-        Me.Label3.Text = "Noise:"
+        Me.Label3.TabIndex = 1
+        Me.Label3.Text = "Mode:"
+        '
+        'CaffeMode
+        '
+        Me.CaffeMode.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
+        Me.CaffeMode.FormattingEnabled = True
+        Me.CaffeMode.Items.AddRange(New Object() {"Noise", "Scale", "Noise_Scale", "Auto_Scale"})
+        Me.CaffeMode.Location = New System.Drawing.Point(60, 19)
+        Me.CaffeMode.Name = "CaffeMode"
+        Me.CaffeMode.Size = New System.Drawing.Size(114, 21)
+        Me.CaffeMode.TabIndex = 0
         '
         'WatchDog
         '
         Me.WatchDog.Interval = 1000
         '
-        'Button3
+        'WatchDogButton
         '
-        Me.Button3.Location = New System.Drawing.Point(486, 258)
-        Me.Button3.Name = "Button3"
-        Me.Button3.Size = New System.Drawing.Size(150, 23)
-        Me.Button3.TabIndex = 2
-        Me.Button3.Text = "Running: False"
-        Me.Button3.UseVisualStyleBackColor = True
+        Me.WatchDogButton.Location = New System.Drawing.Point(12, 304)
+        Me.WatchDogButton.Name = "WatchDogButton"
+        Me.WatchDogButton.Size = New System.Drawing.Size(150, 23)
+        Me.WatchDogButton.TabIndex = 2
+        Me.WatchDogButton.Text = "Running: False"
+        Me.WatchDogButton.UseVisualStyleBackColor = True
         '
-        'GroupBox3
+        'SettingsGroup
         '
-        Me.GroupBox3.Controls.Add(Me.ThreadComboBox)
-        Me.GroupBox3.Controls.Add(Me.CheckBox2)
-        Me.GroupBox3.Controls.Add(Me.DebugCheckBox)
-        Me.GroupBox3.Controls.Add(Me.ExeComboBox)
-        Me.GroupBox3.Controls.Add(Me.CheckBox1)
-        Me.GroupBox3.Location = New System.Drawing.Point(414, 98)
-        Me.GroupBox3.Name = "GroupBox3"
-        Me.GroupBox3.Size = New System.Drawing.Size(222, 154)
-        Me.GroupBox3.TabIndex = 3
-        Me.GroupBox3.TabStop = False
-        Me.GroupBox3.Text = "Program Settings"
+        Me.SettingsGroup.Controls.Add(Me.NumericThreads)
+        Me.SettingsGroup.Controls.Add(Me.ThreadComboBox)
+        Me.SettingsGroup.Controls.Add(Me.DebugCheckBox)
+        Me.SettingsGroup.Controls.Add(Me.ExeComboBox)
+        Me.SettingsGroup.Controls.Add(Me.CleanupCheckBox)
+        Me.SettingsGroup.Controls.Add(Me.Label12)
+        Me.SettingsGroup.Location = New System.Drawing.Point(12, 98)
+        Me.SettingsGroup.Name = "SettingsGroup"
+        Me.SettingsGroup.Size = New System.Drawing.Size(222, 200)
+        Me.SettingsGroup.TabIndex = 3
+        Me.SettingsGroup.TabStop = False
+        Me.SettingsGroup.Text = "Program Settings"
         '
-        'CheckBox2
+        'NumericThreads
         '
-        Me.CheckBox2.AutoSize = True
-        Me.CheckBox2.Location = New System.Drawing.Point(6, 95)
-        Me.CheckBox2.Name = "CheckBox2"
-        Me.CheckBox2.Size = New System.Drawing.Size(95, 17)
-        Me.CheckBox2.TabIndex = 3
-        Me.CheckBox2.Text = "Force OpenCL"
-        Me.CheckBox2.UseVisualStyleBackColor = True
+        Me.NumericThreads.Location = New System.Drawing.Point(166, 119)
+        Me.NumericThreads.Maximum = New Decimal(New Integer() {64, 0, 0, 0})
+        Me.NumericThreads.Minimum = New Decimal(New Integer() {1, 0, 0, 0})
+        Me.NumericThreads.Name = "NumericThreads"
+        Me.NumericThreads.Size = New System.Drawing.Size(40, 20)
+        Me.NumericThreads.TabIndex = 5
+        Me.NumericThreads.Value = New Decimal(New Integer() {1, 0, 0, 0})
+        '
+        'ThreadComboBox
+        '
+        Me.ThreadComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
+        Me.ThreadComboBox.FormattingEnabled = True
+        Me.ThreadComboBox.Items.AddRange(New Object() {"Single", "Custom", "All", "Unlimited (!!)"})
+        Me.ThreadComboBox.Location = New System.Drawing.Point(61, 118)
+        Me.ThreadComboBox.Name = "ThreadComboBox"
+        Me.ThreadComboBox.Size = New System.Drawing.Size(99, 21)
+        Me.ThreadComboBox.TabIndex = 4
         '
         'DebugCheckBox
         '
         Me.DebugCheckBox.AutoSize = True
-        Me.DebugCheckBox.Checked = Global.AutoCrispy.My.MySettings.Default.DebugOn
-        Me.DebugCheckBox.DataBindings.Add(New System.Windows.Forms.Binding("Checked", Global.AutoCrispy.My.MySettings.Default, "DebugOn", True, System.Windows.Forms.DataSourceUpdateMode.OnPropertyChanged))
         Me.DebugCheckBox.Location = New System.Drawing.Point(6, 72)
         Me.DebugCheckBox.Name = "DebugCheckBox"
         Me.DebugCheckBox.Size = New System.Drawing.Size(93, 17)
@@ -395,86 +353,552 @@ Partial Class Form1
         Me.ExeComboBox.Size = New System.Drawing.Size(109, 21)
         Me.ExeComboBox.TabIndex = 1
         '
-        'CheckBox1
+        'CleanupCheckBox
         '
-        Me.CheckBox1.AutoSize = True
-        Me.CheckBox1.Checked = Global.AutoCrispy.My.MySettings.Default.DeleteFiles
-        Me.CheckBox1.DataBindings.Add(New System.Windows.Forms.Binding("Checked", Global.AutoCrispy.My.MySettings.Default, "DeleteFiles", True, System.Windows.Forms.DataSourceUpdateMode.OnPropertyChanged))
-        Me.CheckBox1.Location = New System.Drawing.Point(6, 49)
-        Me.CheckBox1.Name = "CheckBox1"
-        Me.CheckBox1.Size = New System.Drawing.Size(108, 17)
-        Me.CheckBox1.TabIndex = 0
-        Me.CheckBox1.Text = "Delete Input Files"
-        Me.CheckBox1.UseVisualStyleBackColor = True
+        Me.CleanupCheckBox.AutoSize = True
+        Me.CleanupCheckBox.Location = New System.Drawing.Point(6, 49)
+        Me.CleanupCheckBox.Name = "CleanupCheckBox"
+        Me.CleanupCheckBox.Size = New System.Drawing.Size(108, 17)
+        Me.CleanupCheckBox.TabIndex = 0
+        Me.CleanupCheckBox.Text = "Delete Input Files"
+        Me.CleanupCheckBox.UseVisualStyleBackColor = True
         '
-        'ThreadComboBox
+        'Label12
         '
-        Me.ThreadComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
-        Me.ThreadComboBox.FormattingEnabled = True
-        Me.ThreadComboBox.Items.AddRange(New Object() {"Serial", "Half Threads", "All Threads", "Unlimited (!!)"})
-        Me.ThreadComboBox.Location = New System.Drawing.Point(6, 118)
-        Me.ThreadComboBox.Name = "ThreadComboBox"
-        Me.ThreadComboBox.Size = New System.Drawing.Size(109, 21)
-        Me.ThreadComboBox.TabIndex = 4
+        Me.Label12.AutoSize = True
+        Me.Label12.Location = New System.Drawing.Point(6, 121)
+        Me.Label12.Name = "Label12"
+        Me.Label12.Size = New System.Drawing.Size(49, 13)
+        Me.Label12.TabIndex = 0
+        Me.Label12.Text = "Threads:"
+        '
+        'VulkanGroup
+        '
+        Me.VulkanGroup.Controls.Add(Me.VulkanTAA)
+        Me.VulkanGroup.Controls.Add(Me.VulkanFormat)
+        Me.VulkanGroup.Controls.Add(Me.Label7)
+        Me.VulkanGroup.Controls.Add(Me.VulkanScale)
+        Me.VulkanGroup.Controls.Add(Me.Label8)
+        Me.VulkanGroup.Controls.Add(Me.VulkanNoise)
+        Me.VulkanGroup.Controls.Add(Me.Label9)
+        Me.VulkanGroup.Location = New System.Drawing.Point(1045, 12)
+        Me.VulkanGroup.Name = "VulkanGroup"
+        Me.VulkanGroup.Size = New System.Drawing.Size(396, 200)
+        Me.VulkanGroup.TabIndex = 5
+        Me.VulkanGroup.TabStop = False
+        Me.VulkanGroup.Text = "Vulkan Settings"
+        '
+        'VulkanTAA
+        '
+        Me.VulkanTAA.AutoSize = True
+        Me.VulkanTAA.Checked = Global.AutoCrispy.My.MySettings.Default.TAA
+        Me.VulkanTAA.DataBindings.Add(New System.Windows.Forms.Binding("Checked", Global.AutoCrispy.My.MySettings.Default, "TAA", True, System.Windows.Forms.DataSourceUpdateMode.OnPropertyChanged))
+        Me.VulkanTAA.Location = New System.Drawing.Point(301, 52)
+        Me.VulkanTAA.Name = "VulkanTAA"
+        Me.VulkanTAA.Size = New System.Drawing.Size(47, 17)
+        Me.VulkanTAA.TabIndex = 4
+        Me.VulkanTAA.Text = "TAA"
+        Me.VulkanTAA.UseVisualStyleBackColor = True
+        '
+        'VulkanFormat
+        '
+        Me.VulkanFormat.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
+        Me.VulkanFormat.FormattingEnabled = True
+        Me.VulkanFormat.Items.AddRange(New Object() {"PNG", "JPG", "WEBP"})
+        Me.VulkanFormat.Location = New System.Drawing.Point(234, 22)
+        Me.VulkanFormat.Name = "VulkanFormat"
+        Me.VulkanFormat.Size = New System.Drawing.Size(114, 21)
+        Me.VulkanFormat.TabIndex = 0
+        '
+        'Label7
+        '
+        Me.Label7.AutoSize = True
+        Me.Label7.Location = New System.Drawing.Point(180, 25)
+        Me.Label7.Name = "Label7"
+        Me.Label7.Size = New System.Drawing.Size(42, 13)
+        Me.Label7.TabIndex = 1
+        Me.Label7.Text = "Output:"
+        '
+        'VulkanScale
+        '
+        Me.VulkanScale.DataBindings.Add(New System.Windows.Forms.Binding("Value", Global.AutoCrispy.My.MySettings.Default, "Scale", True, System.Windows.Forms.DataSourceUpdateMode.OnPropertyChanged))
+        Me.VulkanScale.DecimalPlaces = 1
+        Me.VulkanScale.Increment = New Decimal(New Integer() {1, 0, 0, 65536})
+        Me.VulkanScale.Location = New System.Drawing.Point(60, 49)
+        Me.VulkanScale.Maximum = New Decimal(New Integer() {2, 0, 0, 0})
+        Me.VulkanScale.Minimum = New Decimal(New Integer() {1, 0, 0, 0})
+        Me.VulkanScale.Name = "VulkanScale"
+        Me.VulkanScale.Size = New System.Drawing.Size(114, 20)
+        Me.VulkanScale.TabIndex = 2
+        Me.VulkanScale.Value = Global.AutoCrispy.My.MySettings.Default.Scale
+        '
+        'Label8
+        '
+        Me.Label8.AutoSize = True
+        Me.Label8.Location = New System.Drawing.Point(6, 25)
+        Me.Label8.Name = "Label8"
+        Me.Label8.Size = New System.Drawing.Size(37, 13)
+        Me.Label8.TabIndex = 1
+        Me.Label8.Text = "Noise:"
+        '
+        'VulkanNoise
+        '
+        Me.VulkanNoise.DataBindings.Add(New System.Windows.Forms.Binding("Value", Global.AutoCrispy.My.MySettings.Default, "Noise", True, System.Windows.Forms.DataSourceUpdateMode.OnPropertyChanged))
+        Me.VulkanNoise.Location = New System.Drawing.Point(60, 23)
+        Me.VulkanNoise.Maximum = New Decimal(New Integer() {3, 0, 0, 0})
+        Me.VulkanNoise.Minimum = New Decimal(New Integer() {1, 0, 0, -2147483648})
+        Me.VulkanNoise.Name = "VulkanNoise"
+        Me.VulkanNoise.Size = New System.Drawing.Size(114, 20)
+        Me.VulkanNoise.TabIndex = 2
+        Me.VulkanNoise.Value = Global.AutoCrispy.My.MySettings.Default.Noise
+        '
+        'Label9
+        '
+        Me.Label9.AutoSize = True
+        Me.Label9.Location = New System.Drawing.Point(6, 51)
+        Me.Label9.Name = "Label9"
+        Me.Label9.Size = New System.Drawing.Size(37, 13)
+        Me.Label9.TabIndex = 1
+        Me.Label9.Text = "Scale:"
+        '
+        'WaifuCPPGroup
+        '
+        Me.WaifuCPPGroup.Controls.Add(Me.WaifuCPPNoGPU)
+        Me.WaifuCPPGroup.Controls.Add(Me.WaifuCPPOpenCL)
+        Me.WaifuCPPGroup.Controls.Add(Me.WaifuCPPTTA)
+        Me.WaifuCPPGroup.Controls.Add(Me.WaifuCPPMode)
+        Me.WaifuCPPGroup.Controls.Add(Me.WaifuCPPFormat)
+        Me.WaifuCPPGroup.Controls.Add(Me.Label10)
+        Me.WaifuCPPGroup.Controls.Add(Me.Label14)
+        Me.WaifuCPPGroup.Controls.Add(Me.WaifuCPPScale)
+        Me.WaifuCPPGroup.Controls.Add(Me.Label11)
+        Me.WaifuCPPGroup.Controls.Add(Me.WaifuCPPNoise)
+        Me.WaifuCPPGroup.Controls.Add(Me.Label13)
+        Me.WaifuCPPGroup.Location = New System.Drawing.Point(643, 218)
+        Me.WaifuCPPGroup.Name = "WaifuCPPGroup"
+        Me.WaifuCPPGroup.Size = New System.Drawing.Size(396, 200)
+        Me.WaifuCPPGroup.TabIndex = 6
+        Me.WaifuCPPGroup.TabStop = False
+        Me.WaifuCPPGroup.Text = "Waifu2x CPP Settings"
+        '
+        'WaifuCPPNoGPU
+        '
+        Me.WaifuCPPNoGPU.AutoSize = True
+        Me.WaifuCPPNoGPU.Location = New System.Drawing.Point(183, 70)
+        Me.WaifuCPPNoGPU.Name = "WaifuCPPNoGPU"
+        Me.WaifuCPPNoGPU.Size = New System.Drawing.Size(87, 17)
+        Me.WaifuCPPNoGPU.TabIndex = 5
+        Me.WaifuCPPNoGPU.Text = "Disable GPU"
+        Me.WaifuCPPNoGPU.UseVisualStyleBackColor = True
+        '
+        'WaifuCPPOpenCL
+        '
+        Me.WaifuCPPOpenCL.AutoSize = True
+        Me.WaifuCPPOpenCL.Location = New System.Drawing.Point(183, 47)
+        Me.WaifuCPPOpenCL.Name = "WaifuCPPOpenCL"
+        Me.WaifuCPPOpenCL.Size = New System.Drawing.Size(95, 17)
+        Me.WaifuCPPOpenCL.TabIndex = 5
+        Me.WaifuCPPOpenCL.Text = "Force OpenCL"
+        Me.WaifuCPPOpenCL.UseVisualStyleBackColor = True
+        '
+        'WaifuCPPTTA
+        '
+        Me.WaifuCPPTTA.AutoSize = True
+        Me.WaifuCPPTTA.Location = New System.Drawing.Point(301, 47)
+        Me.WaifuCPPTTA.Name = "WaifuCPPTTA"
+        Me.WaifuCPPTTA.Size = New System.Drawing.Size(47, 17)
+        Me.WaifuCPPTTA.TabIndex = 4
+        Me.WaifuCPPTTA.Text = "TTA"
+        Me.WaifuCPPTTA.UseVisualStyleBackColor = True
+        '
+        'WaifuCPPMode
+        '
+        Me.WaifuCPPMode.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
+        Me.WaifuCPPMode.FormattingEnabled = True
+        Me.WaifuCPPMode.Items.AddRange(New Object() {"Noise", "Scale", "Noise-Scale"})
+        Me.WaifuCPPMode.Location = New System.Drawing.Point(60, 19)
+        Me.WaifuCPPMode.Name = "WaifuCPPMode"
+        Me.WaifuCPPMode.Size = New System.Drawing.Size(114, 21)
+        Me.WaifuCPPMode.TabIndex = 0
+        '
+        'WaifuCPPFormat
+        '
+        Me.WaifuCPPFormat.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
+        Me.WaifuCPPFormat.FormattingEnabled = True
+        Me.WaifuCPPFormat.Items.AddRange(New Object() {"PNG", "JPG", "WEBP"})
+        Me.WaifuCPPFormat.Location = New System.Drawing.Point(234, 19)
+        Me.WaifuCPPFormat.Name = "WaifuCPPFormat"
+        Me.WaifuCPPFormat.Size = New System.Drawing.Size(114, 21)
+        Me.WaifuCPPFormat.TabIndex = 0
+        '
+        'Label10
+        '
+        Me.Label10.AutoSize = True
+        Me.Label10.Location = New System.Drawing.Point(6, 22)
+        Me.Label10.Name = "Label10"
+        Me.Label10.Size = New System.Drawing.Size(37, 13)
+        Me.Label10.TabIndex = 1
+        Me.Label10.Text = "Mode:"
+        '
+        'Label14
+        '
+        Me.Label14.AutoSize = True
+        Me.Label14.Location = New System.Drawing.Point(180, 22)
+        Me.Label14.Name = "Label14"
+        Me.Label14.Size = New System.Drawing.Size(42, 13)
+        Me.Label14.TabIndex = 1
+        Me.Label14.Text = "Output:"
+        '
+        'WaifuCPPScale
+        '
+        Me.WaifuCPPScale.DataBindings.Add(New System.Windows.Forms.Binding("Value", Global.AutoCrispy.My.MySettings.Default, "Scale", True, System.Windows.Forms.DataSourceUpdateMode.OnPropertyChanged))
+        Me.WaifuCPPScale.DecimalPlaces = 1
+        Me.WaifuCPPScale.Increment = New Decimal(New Integer() {1, 0, 0, 65536})
+        Me.WaifuCPPScale.Location = New System.Drawing.Point(60, 72)
+        Me.WaifuCPPScale.Maximum = New Decimal(New Integer() {8, 0, 0, 0})
+        Me.WaifuCPPScale.Minimum = New Decimal(New Integer() {1, 0, 0, 0})
+        Me.WaifuCPPScale.Name = "WaifuCPPScale"
+        Me.WaifuCPPScale.Size = New System.Drawing.Size(114, 20)
+        Me.WaifuCPPScale.TabIndex = 2
+        Me.WaifuCPPScale.Value = Global.AutoCrispy.My.MySettings.Default.Scale
+        '
+        'Label11
+        '
+        Me.Label11.AutoSize = True
+        Me.Label11.Location = New System.Drawing.Point(6, 48)
+        Me.Label11.Name = "Label11"
+        Me.Label11.Size = New System.Drawing.Size(37, 13)
+        Me.Label11.TabIndex = 1
+        Me.Label11.Text = "Noise:"
+        '
+        'WaifuCPPNoise
+        '
+        Me.WaifuCPPNoise.DataBindings.Add(New System.Windows.Forms.Binding("Value", Global.AutoCrispy.My.MySettings.Default, "Noise", True, System.Windows.Forms.DataSourceUpdateMode.OnPropertyChanged))
+        Me.WaifuCPPNoise.Location = New System.Drawing.Point(60, 46)
+        Me.WaifuCPPNoise.Maximum = New Decimal(New Integer() {3, 0, 0, 0})
+        Me.WaifuCPPNoise.Name = "WaifuCPPNoise"
+        Me.WaifuCPPNoise.Size = New System.Drawing.Size(114, 20)
+        Me.WaifuCPPNoise.TabIndex = 2
+        Me.WaifuCPPNoise.Value = Global.AutoCrispy.My.MySettings.Default.Noise
+        '
+        'Label13
+        '
+        Me.Label13.AutoSize = True
+        Me.Label13.Location = New System.Drawing.Point(6, 74)
+        Me.Label13.Name = "Label13"
+        Me.Label13.Size = New System.Drawing.Size(37, 13)
+        Me.Label13.TabIndex = 1
+        Me.Label13.Text = "Scale:"
+        '
+        'AnimeCPPGroup
+        '
+        Me.AnimeCPPGroup.Controls.Add(Me.AnimeCPPHdn)
+        Me.AnimeCPPGroup.Controls.Add(Me.AnimeCPPCnn)
+        Me.AnimeCPPGroup.Controls.Add(Me.AnimeCPPGpu)
+        Me.AnimeCPPGroup.Controls.Add(Me.AnimeCPPPost)
+        Me.AnimeCPPGroup.Controls.Add(Me.AnimeCPPPre)
+        Me.AnimeCPPGroup.Controls.Add(Me.AnimeCPPScale)
+        Me.AnimeCPPGroup.Controls.Add(Me.AnimeCPPGradStrength)
+        Me.AnimeCPPGroup.Controls.Add(Me.AnimeCPPColorStrength)
+        Me.AnimeCPPGroup.Controls.Add(Me.AnimeCPPPushColors)
+        Me.AnimeCPPGroup.Controls.Add(Me.AnimeCPPPasses)
+        Me.AnimeCPPGroup.Controls.Add(Me.AnimeCPPFilterType)
+        Me.AnimeCPPGroup.Controls.Add(Me.AnimeCPPFilters)
+        Me.AnimeCPPGroup.Controls.Add(Me.Label20)
+        Me.AnimeCPPGroup.Controls.Add(Me.Label19)
+        Me.AnimeCPPGroup.Controls.Add(Me.Label18)
+        Me.AnimeCPPGroup.Controls.Add(Me.Label17)
+        Me.AnimeCPPGroup.Controls.Add(Me.Label16)
+        Me.AnimeCPPGroup.Controls.Add(Me.Label15)
+        Me.AnimeCPPGroup.Location = New System.Drawing.Point(1045, 218)
+        Me.AnimeCPPGroup.Name = "AnimeCPPGroup"
+        Me.AnimeCPPGroup.Size = New System.Drawing.Size(396, 200)
+        Me.AnimeCPPGroup.TabIndex = 7
+        Me.AnimeCPPGroup.TabStop = False
+        Me.AnimeCPPGroup.Text = "Anime4k CPP Settings"
+        '
+        'AnimeCPPHdn
+        '
+        Me.AnimeCPPHdn.AutoSize = True
+        Me.AnimeCPPHdn.Location = New System.Drawing.Point(119, 173)
+        Me.AnimeCPPHdn.Name = "AnimeCPPHdn"
+        Me.AnimeCPPHdn.Size = New System.Drawing.Size(50, 17)
+        Me.AnimeCPPHdn.TabIndex = 3
+        Me.AnimeCPPHdn.Text = "HDN"
+        Me.AnimeCPPHdn.UseVisualStyleBackColor = True
+        '
+        'AnimeCPPCnn
+        '
+        Me.AnimeCPPCnn.AutoSize = True
+        Me.AnimeCPPCnn.Location = New System.Drawing.Point(64, 173)
+        Me.AnimeCPPCnn.Name = "AnimeCPPCnn"
+        Me.AnimeCPPCnn.Size = New System.Drawing.Size(49, 17)
+        Me.AnimeCPPCnn.TabIndex = 3
+        Me.AnimeCPPCnn.Text = "CNN"
+        Me.AnimeCPPCnn.UseVisualStyleBackColor = True
+        '
+        'AnimeCPPGpu
+        '
+        Me.AnimeCPPGpu.AutoSize = True
+        Me.AnimeCPPGpu.Location = New System.Drawing.Point(9, 173)
+        Me.AnimeCPPGpu.Name = "AnimeCPPGpu"
+        Me.AnimeCPPGpu.Size = New System.Drawing.Size(49, 17)
+        Me.AnimeCPPGpu.TabIndex = 3
+        Me.AnimeCPPGpu.Text = "GPU"
+        Me.AnimeCPPGpu.UseVisualStyleBackColor = True
+        '
+        'AnimeCPPPost
+        '
+        Me.AnimeCPPPost.AutoSize = True
+        Me.AnimeCPPPost.Location = New System.Drawing.Point(98, 150)
+        Me.AnimeCPPPost.Name = "AnimeCPPPost"
+        Me.AnimeCPPPost.Size = New System.Drawing.Size(88, 17)
+        Me.AnimeCPPPost.TabIndex = 3
+        Me.AnimeCPPPost.Text = "Post-Process"
+        Me.AnimeCPPPost.UseVisualStyleBackColor = True
+        '
+        'AnimeCPPPre
+        '
+        Me.AnimeCPPPre.AutoSize = True
+        Me.AnimeCPPPre.Location = New System.Drawing.Point(9, 150)
+        Me.AnimeCPPPre.Name = "AnimeCPPPre"
+        Me.AnimeCPPPre.Size = New System.Drawing.Size(83, 17)
+        Me.AnimeCPPPre.TabIndex = 3
+        Me.AnimeCPPPre.Text = "Pre-Process"
+        Me.AnimeCPPPre.UseVisualStyleBackColor = True
+        '
+        'AnimeCPPScale
+        '
+        Me.AnimeCPPScale.DataBindings.Add(New System.Windows.Forms.Binding("Value", Global.AutoCrispy.My.MySettings.Default, "Scale", True, System.Windows.Forms.DataSourceUpdateMode.OnPropertyChanged))
+        Me.AnimeCPPScale.DecimalPlaces = 1
+        Me.AnimeCPPScale.Increment = New Decimal(New Integer() {1, 0, 0, 65536})
+        Me.AnimeCPPScale.Location = New System.Drawing.Point(116, 124)
+        Me.AnimeCPPScale.Maximum = New Decimal(New Integer() {8, 0, 0, 0})
+        Me.AnimeCPPScale.Minimum = New Decimal(New Integer() {1, 0, 0, 0})
+        Me.AnimeCPPScale.Name = "AnimeCPPScale"
+        Me.AnimeCPPScale.Size = New System.Drawing.Size(58, 20)
+        Me.AnimeCPPScale.TabIndex = 2
+        Me.AnimeCPPScale.Value = Global.AutoCrispy.My.MySettings.Default.Scale
+        '
+        'AnimeCPPGradStrength
+        '
+        Me.AnimeCPPGradStrength.DecimalPlaces = 1
+        Me.AnimeCPPGradStrength.Location = New System.Drawing.Point(116, 98)
+        Me.AnimeCPPGradStrength.Maximum = New Decimal(New Integer() {1, 0, 0, 0})
+        Me.AnimeCPPGradStrength.Name = "AnimeCPPGradStrength"
+        Me.AnimeCPPGradStrength.Size = New System.Drawing.Size(58, 20)
+        Me.AnimeCPPGradStrength.TabIndex = 2
+        Me.AnimeCPPGradStrength.Value = New Decimal(New Integer() {1, 0, 0, 0})
+        '
+        'AnimeCPPColorStrength
+        '
+        Me.AnimeCPPColorStrength.DecimalPlaces = 1
+        Me.AnimeCPPColorStrength.Location = New System.Drawing.Point(116, 72)
+        Me.AnimeCPPColorStrength.Maximum = New Decimal(New Integer() {1, 0, 0, 0})
+        Me.AnimeCPPColorStrength.Name = "AnimeCPPColorStrength"
+        Me.AnimeCPPColorStrength.Size = New System.Drawing.Size(58, 20)
+        Me.AnimeCPPColorStrength.TabIndex = 2
+        Me.AnimeCPPColorStrength.Value = New Decimal(New Integer() {3, 0, 0, 65536})
+        '
+        'AnimeCPPPushColors
+        '
+        Me.AnimeCPPPushColors.Location = New System.Drawing.Point(116, 46)
+        Me.AnimeCPPPushColors.Maximum = New Decimal(New Integer() {10, 0, 0, 0})
+        Me.AnimeCPPPushColors.Minimum = New Decimal(New Integer() {1, 0, 0, 0})
+        Me.AnimeCPPPushColors.Name = "AnimeCPPPushColors"
+        Me.AnimeCPPPushColors.Size = New System.Drawing.Size(58, 20)
+        Me.AnimeCPPPushColors.TabIndex = 2
+        Me.AnimeCPPPushColors.Value = New Decimal(New Integer() {2, 0, 0, 0})
+        '
+        'AnimeCPPPasses
+        '
+        Me.AnimeCPPPasses.Location = New System.Drawing.Point(116, 20)
+        Me.AnimeCPPPasses.Maximum = New Decimal(New Integer() {10, 0, 0, 0})
+        Me.AnimeCPPPasses.Minimum = New Decimal(New Integer() {1, 0, 0, 0})
+        Me.AnimeCPPPasses.Name = "AnimeCPPPasses"
+        Me.AnimeCPPPasses.Size = New System.Drawing.Size(58, 20)
+        Me.AnimeCPPPasses.TabIndex = 2
+        Me.AnimeCPPPasses.Value = New Decimal(New Integer() {2, 0, 0, 0})
+        '
+        'AnimeCPPFilterType
+        '
+        Me.AnimeCPPFilterType.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
+        Me.AnimeCPPFilterType.FormattingEnabled = True
+        Me.AnimeCPPFilterType.Items.AddRange(New Object() {"None", "Pre-Filter", "Post-Filter"})
+        Me.AnimeCPPFilterType.Location = New System.Drawing.Point(260, 19)
+        Me.AnimeCPPFilterType.Name = "AnimeCPPFilterType"
+        Me.AnimeCPPFilterType.Size = New System.Drawing.Size(130, 21)
+        Me.AnimeCPPFilterType.TabIndex = 1
+        '
+        'AnimeCPPFilters
+        '
+        Me.AnimeCPPFilters.FormattingEnabled = True
+        Me.AnimeCPPFilters.Items.AddRange(New Object() {"Median Blur", "Mean Blur", "CAS Sharpening", "Gaussian Blur (Weak)", "Gaussian Blur", "Bilateral Filter", "Bilateral Filter (Faster)"})
+        Me.AnimeCPPFilters.Location = New System.Drawing.Point(260, 46)
+        Me.AnimeCPPFilters.Name = "AnimeCPPFilters"
+        Me.AnimeCPPFilters.Size = New System.Drawing.Size(130, 109)
+        Me.AnimeCPPFilters.TabIndex = 0
+        '
+        'Label20
+        '
+        Me.Label20.AutoSize = True
+        Me.Label20.Location = New System.Drawing.Point(6, 126)
+        Me.Label20.Name = "Label20"
+        Me.Label20.Size = New System.Drawing.Size(37, 13)
+        Me.Label20.TabIndex = 1
+        Me.Label20.Text = "Scale:"
+        '
+        'Label19
+        '
+        Me.Label19.AutoSize = True
+        Me.Label19.Location = New System.Drawing.Point(6, 100)
+        Me.Label19.Name = "Label19"
+        Me.Label19.Size = New System.Drawing.Size(103, 13)
+        Me.Label19.TabIndex = 1
+        Me.Label19.Text = "Push Grad Strength:"
+        '
+        'Label18
+        '
+        Me.Label18.AutoSize = True
+        Me.Label18.Location = New System.Drawing.Point(6, 74)
+        Me.Label18.Name = "Label18"
+        Me.Label18.Size = New System.Drawing.Size(104, 13)
+        Me.Label18.TabIndex = 1
+        Me.Label18.Text = "Push Color Strength:"
+        '
+        'Label17
+        '
+        Me.Label17.AutoSize = True
+        Me.Label17.Location = New System.Drawing.Point(6, 48)
+        Me.Label17.Name = "Label17"
+        Me.Label17.Size = New System.Drawing.Size(66, 13)
+        Me.Label17.TabIndex = 1
+        Me.Label17.Text = "Push Colors:"
+        '
+        'Label16
+        '
+        Me.Label16.AutoSize = True
+        Me.Label16.Location = New System.Drawing.Point(6, 22)
+        Me.Label16.Name = "Label16"
+        Me.Label16.Size = New System.Drawing.Size(44, 13)
+        Me.Label16.TabIndex = 1
+        Me.Label16.Text = "Passes:"
+        '
+        'Label15
+        '
+        Me.Label15.AutoSize = True
+        Me.Label15.Location = New System.Drawing.Point(180, 22)
+        Me.Label15.Name = "Label15"
+        Me.Label15.Size = New System.Drawing.Size(62, 13)
+        Me.Label15.TabIndex = 1
+        Me.Label15.Text = "Filter Mode:"
         '
         'Form1
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
-        Me.ClientSize = New System.Drawing.Size(652, 292)
-        Me.Controls.Add(Me.GroupBox3)
-        Me.Controls.Add(Me.Button3)
-        Me.Controls.Add(Me.GroupBox2)
-        Me.Controls.Add(Me.GroupBox1)
+        Me.ClientSize = New System.Drawing.Size(1456, 718)
+        Me.Controls.Add(Me.AnimeCPPGroup)
+        Me.Controls.Add(Me.WaifuCPPGroup)
+        Me.Controls.Add(Me.VulkanGroup)
+        Me.Controls.Add(Me.SettingsGroup)
+        Me.Controls.Add(Me.WatchDogButton)
+        Me.Controls.Add(Me.CaffeGroup)
+        Me.Controls.Add(Me.PathGroup)
+        Me.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog
         Me.Name = "Form1"
         Me.Text = "AutoCrispy"
-        Me.GroupBox1.ResumeLayout(False)
-        Me.GroupBox1.PerformLayout()
-        Me.GroupBox2.ResumeLayout(False)
-        Me.GroupBox2.PerformLayout()
-        CType(Me.NumericNoise, System.ComponentModel.ISupportInitialize).EndInit()
-        CType(Me.NumericScale, System.ComponentModel.ISupportInitialize).EndInit()
-        CType(Me.NumericJPWP, System.ComponentModel.ISupportInitialize).EndInit()
-        CType(Me.NumericPNG, System.ComponentModel.ISupportInitialize).EndInit()
-        CType(Me.NumericGPU, System.ComponentModel.ISupportInitialize).EndInit()
-        Me.GroupBox3.ResumeLayout(False)
-        Me.GroupBox3.PerformLayout()
+        Me.PathGroup.ResumeLayout(False)
+        Me.PathGroup.PerformLayout()
+        Me.CaffeGroup.ResumeLayout(False)
+        Me.CaffeGroup.PerformLayout()
+        CType(Me.CaffeScale, System.ComponentModel.ISupportInitialize).EndInit()
+        CType(Me.CaffeNoise, System.ComponentModel.ISupportInitialize).EndInit()
+        Me.SettingsGroup.ResumeLayout(False)
+        Me.SettingsGroup.PerformLayout()
+        CType(Me.NumericThreads, System.ComponentModel.ISupportInitialize).EndInit()
+        Me.VulkanGroup.ResumeLayout(False)
+        Me.VulkanGroup.PerformLayout()
+        CType(Me.VulkanScale, System.ComponentModel.ISupportInitialize).EndInit()
+        CType(Me.VulkanNoise, System.ComponentModel.ISupportInitialize).EndInit()
+        Me.WaifuCPPGroup.ResumeLayout(False)
+        Me.WaifuCPPGroup.PerformLayout()
+        CType(Me.WaifuCPPScale, System.ComponentModel.ISupportInitialize).EndInit()
+        CType(Me.WaifuCPPNoise, System.ComponentModel.ISupportInitialize).EndInit()
+        Me.AnimeCPPGroup.ResumeLayout(False)
+        Me.AnimeCPPGroup.PerformLayout()
+        CType(Me.AnimeCPPScale, System.ComponentModel.ISupportInitialize).EndInit()
+        CType(Me.AnimeCPPGradStrength, System.ComponentModel.ISupportInitialize).EndInit()
+        CType(Me.AnimeCPPColorStrength, System.ComponentModel.ISupportInitialize).EndInit()
+        CType(Me.AnimeCPPPushColors, System.ComponentModel.ISupportInitialize).EndInit()
+        CType(Me.AnimeCPPPasses, System.ComponentModel.ISupportInitialize).EndInit()
         Me.ResumeLayout(False)
 
     End Sub
 
-    Friend WithEvents GroupBox1 As GroupBox
-    Friend WithEvents Button2 As Button
-    Friend WithEvents Button1 As Button
+    Friend WithEvents PathGroup As GroupBox
+    Friend WithEvents OutputBrowse As Button
+    Friend WithEvents InputBrowse As Button
     Friend WithEvents OutputTextBox As TextBox
     Friend WithEvents InputTextBox As TextBox
     Friend WithEvents Label2 As Label
     Friend WithEvents Label1 As Label
-    Friend WithEvents GroupBox2 As GroupBox
-    Friend WithEvents NumericScale As NumericUpDown
-    Friend WithEvents ModeComboBox As ComboBox
-    Friend WithEvents Label5 As Label
-    Friend WithEvents Label4 As Label
-    Friend WithEvents Label3 As Label
-    Friend WithEvents NumericNoise As NumericUpDown
-    Friend WithEvents ComputeComboBox As ComboBox
-    Friend WithEvents Label6 As Label
-    Friend WithEvents TAAComboBox As ComboBox
-    Friend WithEvents Label7 As Label
+    Friend WithEvents CaffeGroup As GroupBox
     Friend WithEvents WatchDog As Timer
-    Friend WithEvents Button3 As Button
-    Friend WithEvents GroupBox3 As GroupBox
-    Friend WithEvents CheckBox1 As CheckBox
-    Friend WithEvents Label8 As Label
-    Friend WithEvents NumericGPU As NumericUpDown
+    Friend WithEvents WatchDogButton As Button
+    Friend WithEvents SettingsGroup As GroupBox
+    Friend WithEvents CleanupCheckBox As CheckBox
     Friend WithEvents ExeComboBox As ComboBox
     Friend WithEvents DebugCheckBox As CheckBox
-    Friend WithEvents FormatComboBox As ComboBox
-    Friend WithEvents Label9 As Label
-    Friend WithEvents Label10 As Label
-    Friend WithEvents NumericPNG As NumericUpDown
-    Friend WithEvents Label11 As Label
-    Friend WithEvents NumericJPWP As NumericUpDown
-    Friend WithEvents CheckBox2 As CheckBox
     Friend WithEvents ThreadComboBox As ComboBox
+    Friend WithEvents NumericThreads As NumericUpDown
+    Friend WithEvents Label12 As Label
+    Friend WithEvents VulkanGroup As GroupBox
+    Friend WithEvents WaifuCPPGroup As GroupBox
+    Friend WithEvents AnimeCPPGroup As GroupBox
+    Friend WithEvents CaffeScale As NumericUpDown
+    Friend WithEvents CaffeNoise As NumericUpDown
+    Friend WithEvents Label3 As Label
+    Friend WithEvents CaffeMode As ComboBox
+    Friend WithEvents Label4 As Label
+    Friend WithEvents Label5 As Label
+    Friend WithEvents CaffeProcess As ComboBox
+    Friend WithEvents Label6 As Label
+    Friend WithEvents CaffeTAA As CheckBox
+    Friend WithEvents VulkanTAA As CheckBox
+    Friend WithEvents VulkanFormat As ComboBox
+    Friend WithEvents Label7 As Label
+    Friend WithEvents VulkanScale As NumericUpDown
+    Friend WithEvents Label8 As Label
+    Friend WithEvents VulkanNoise As NumericUpDown
+    Friend WithEvents Label9 As Label
+    Friend WithEvents WaifuCPPTTA As CheckBox
+    Friend WithEvents WaifuCPPMode As ComboBox
+    Friend WithEvents WaifuCPPFormat As ComboBox
+    Friend WithEvents Label10 As Label
+    Friend WithEvents Label14 As Label
+    Friend WithEvents WaifuCPPScale As NumericUpDown
+    Friend WithEvents Label11 As Label
+    Friend WithEvents WaifuCPPNoise As NumericUpDown
+    Friend WithEvents Label13 As Label
+    Friend WithEvents WaifuCPPNoGPU As CheckBox
+    Friend WithEvents WaifuCPPOpenCL As CheckBox
+    Friend WithEvents AnimeCPPFilters As CheckedListBox
+    Friend WithEvents AnimeCPPFilterType As ComboBox
+    Friend WithEvents Label15 As Label
+    Friend WithEvents AnimeCPPScale As NumericUpDown
+    Friend WithEvents AnimeCPPGradStrength As NumericUpDown
+    Friend WithEvents AnimeCPPColorStrength As NumericUpDown
+    Friend WithEvents AnimeCPPPushColors As NumericUpDown
+    Friend WithEvents AnimeCPPPasses As NumericUpDown
+    Friend WithEvents Label20 As Label
+    Friend WithEvents Label19 As Label
+    Friend WithEvents Label18 As Label
+    Friend WithEvents Label17 As Label
+    Friend WithEvents Label16 As Label
+    Friend WithEvents AnimeCPPHdn As CheckBox
+    Friend WithEvents AnimeCPPCnn As CheckBox
+    Friend WithEvents AnimeCPPGpu As CheckBox
+    Friend WithEvents AnimeCPPPost As CheckBox
+    Friend WithEvents AnimeCPPPre As CheckBox
 End Class
