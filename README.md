@@ -11,7 +11,7 @@ Requires at least one of the following:
 Latest AutoCrispy Release Here: https://github.com/WalkerMx/AutoCrispy/releases
 
 # How to use:
-    -Toss AutoCrispy into the Waifu2x folder, and run it.
+    -Toss AutoCrispy into the folder from the backend(s) you chose, and run it.
   
     -Pick the folder where the textures dump.
   
@@ -22,9 +22,9 @@ Latest AutoCrispy Release Here: https://github.com/WalkerMx/AutoCrispy/releases
     -Push the button.
   
   
-  As the textures dump, new Waifu2x'd textures are generated, and the originals are optionally deleted.
+  As the textures dump, new upscaled textures are generated, and the originals are optionally deleted.
   
-  Also, make sure you have enough VRAM if you use multithreading. More threads & higher upscales dramatically increase the memory requirements!
+  Also, make sure you have enough VRAM if you use multithreading, especially with Caffe. More threads & higher upscales dramatically increase the memory requirements!
   
 # About Backends:
    Each of the backends have their own characteristics and quirks when used with AutoCrispy:
