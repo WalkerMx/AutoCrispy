@@ -6,7 +6,7 @@ Requires at least one of the following:
 - Waifu2x-converter-cpp: https://github.com/DeadSix27/waifu2x-converter-cpp/releases
 - Waifu2x-Caffe: https://github.com/lltcggie/waifu2x-caffe/releases
 - Waifu2x-ncnn-vulkan: https://github.com/nihui/waifu2x-ncnn-vulkan/releases
-- Anime4KCPP: https://github.com/TianZerL/Anime4KCPP (Thanks [TianZerL](https://github.com/TianZerL)!)
+- Anime4KCPP: https://github.com/TianZerL/Anime4KCPP (Thanks TianZer!)
 
 Latest AutoCrispy Release Here: https://github.com/WalkerMx/AutoCrispy/releases
 
