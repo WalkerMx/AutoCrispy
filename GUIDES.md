@@ -7,6 +7,7 @@ This is just how I've found to set these up, and it may be helpful to those who 
   ## Quick Links:
   
   - [Dolphin](https://github.com/WalkerMx/AutoCrispy/blob/master/GUIDES.md#dolphin)
+  - [PPSSPP](https://github.com/WalkerMx/AutoCrispy/blob/master/GUIDES.md#ppsspp)
 
 
   ## Dolphin
