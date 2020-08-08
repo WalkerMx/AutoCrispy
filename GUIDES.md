@@ -26,7 +26,7 @@ This is just how I've found to set these up, and it may be helpful to those who 
   |<img src="https://github.com/WalkerMx/DemoImages/blob/master/Guide_Assets/Dolphin03.png">|
   |Add a Hotkey for Toggle Custom Textures. This can also be bound to a controller button.|
   <img src="https://github.com/WalkerMx/DemoImages/blob/master/Guide_Assets/Dolphin04.png">|
-  |AutoCrispy's Input should be set to "\Documents\Dolphin Emulator\Dump\Textures\<GameID>"<br />AutoCrispy's Output should be set to "\Documents\Dolphin Emulator\Load\Textures\<GameID>"<br /><br />**Delete Input should be left Off.**|
+  |AutoCrispy's Input should be set to "\Documents\Dolphin Emulator\Dump\Textures\\\<GameID>"<br />AutoCrispy's Output should be set to "\Documents\Dolphin Emulator\Load\Textures\\\<GameID>"<br /><br />**Delete Input should be left Off.**|
 
   <br />
   
