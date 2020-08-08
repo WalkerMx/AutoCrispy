@@ -26,6 +26,8 @@ Latest AutoCrispy Release Here: https://github.com/WalkerMx/AutoCrispy/releases
   
   Also, make sure you have enough VRAM if you use multithreading, especially with Caffe. More threads & higher upscales dramatically increase the memory requirements!
   
+  Guides for some common programs can be found [Here](https://github.com/WalkerMx/AutoCrispy/blob/master/GUIDES.md).
+  
 # About Backends:
    Each of the backends have their own characteristics and quirks when used with AutoCrispy:
    
