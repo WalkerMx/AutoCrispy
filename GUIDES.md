@@ -2,7 +2,7 @@
 
 This will serve as a guide for common programs that support custom textures, and how to configure AutoCrispy to work with them.  **The information is not a definitive guide by any means, and neither presents the only or best way to accomplish these tasks!**
 
-This is just how I've found to set these up, and it may be helpful to those who have never done somthing like this before.
+This is just how I've found to set these up, and it may be helpful to those who have never done something like this before.
 
 
   ## Dolphin
