@@ -16,7 +16,7 @@ This is just how I've found to set these up, and it may be helpful to those who 
   
   **TL;DR** Enable Texture Dumping. Set a hotkey for "Toggle Custom Textures". Setup and run AutoCrispy and the Game. Toggle every so often to update your textures.
   
-  |This|
+  |Dolphin Setup|
   |----|
   |Open Dolphin's Graphics Settings|
   |<img src="https://github.com/WalkerMx/DemoImages/blob/master/Guide_Assets/Dolphin01.png">|
