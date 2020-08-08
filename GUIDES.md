@@ -4,6 +4,10 @@ This will serve as a guide for common programs that support custom textures, and
 
 This is just how I've found to set these up, and it may be helpful to those who have never done something like this before.
 
+  ## Quick Links:
+  
+  - [Dolphin](https://github.com/WalkerMx/AutoCrispy/blob/master/GUIDES.md#dolphin)
+
 
   ## Dolphin
   
