@@ -11,9 +11,17 @@ This is just how I've found to set these up, and it may be helpful to those who 
   
   **TL;DR** Enable Texture Dumping. Set a hotkey for "Toggle Custom Textures". Setup and run AutoCrispy and the Game. Toggle every so often to update your textures.
   
-  This|Is|Where|The|Picture|Guide|Will|Go
-  ----|--|-----|---|-------|-----|----|--  
-  ----|--|-----|---|-------|-----|----|--
+  |This|
+  |----|
+  |Open Dolphin's Grpahics Settings|
+  |<img src="https://github.com/WalkerMx/DemoImages/blob/master/Guide_Assets/Dolphin01.png">|
+  |Enable Both Texture Dumping and Loading Custom Textures|
+  |<img src="https://github.com/WalkerMx/DemoImages/blob/master/Guide_Assets/Dolphin02.png">|
+  |Now go to Hotkey Settings|
+  |<img src="https://github.com/WalkerMx/DemoImages/blob/master/Guide_Assets/Dolphin03.png">|
+  |Add a Hothey for Toggle Custom Textures. This can also be bound to a controller button, like the unused left bumper on many modern controllers.|
+  <img src="https://github.com/WalkerMx/DemoImages/blob/master/Guide_Assets/Dolphin04.png">|
+  |AutoCrispy's Input should be set to "\Documents\Dolphin Emulator\Dump\Textures\<GameID>"<br />AutoCrispy's Output should be set to "\Documents\Dolphin Emulator\Load\Textures\<GameID>"<br /><br />**Delete Input should be left Off.**|
 
   <br />
   
