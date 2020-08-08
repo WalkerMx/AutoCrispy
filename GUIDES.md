@@ -25,4 +25,4 @@ This is just how I've found to set these up, and it may be helpful to those who 
   
   This|Is|Where|The|Picture|Guide|Will|Go
   ----|--|-----|---|-------|-----|----|--  
-  ----|--|-----|---|-------|-----|----|--
+  ----|--|-----|---|-------|-----|----|[options]<br/>version = 1<br/>hash = xxh64<br/>ignoreAddress = true
