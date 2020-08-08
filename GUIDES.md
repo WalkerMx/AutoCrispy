@@ -13,11 +13,11 @@ This is just how I've found to set these up, and it may be helpful to those who 
   
   |This|
   |----|
-  |Open Dolphin's Grpahics Settings|
+  |Open Dolphin's Graphics Settings|
   |<img src="https://github.com/WalkerMx/DemoImages/blob/master/Guide_Assets/Dolphin01.png">|
   |Enable Both Texture Dumping and Loading Custom Textures|
   |<img src="https://github.com/WalkerMx/DemoImages/blob/master/Guide_Assets/Dolphin02.png">|
-  |Now go to Hotkey Settings|
+  |Go to Hotkey Settings|
   |<img src="https://github.com/WalkerMx/DemoImages/blob/master/Guide_Assets/Dolphin03.png">|
   |Add a Hothey for Toggle Custom Textures. This can also be bound to a controller button, like the unused left bumper on many modern controllers.|
   <img src="https://github.com/WalkerMx/DemoImages/blob/master/Guide_Assets/Dolphin04.png">|
