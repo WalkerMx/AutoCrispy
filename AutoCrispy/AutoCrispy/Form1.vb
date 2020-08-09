@@ -12,7 +12,7 @@ Public Class Form1
     Dim CaffeExtensions As String() = {".png", ".jpg", ".jpeg", ".tif", ".tiff", ".bmp", ".tga"}
     Dim VulkanExtensions As String() = {".png", ".webp"}
     Dim CPPExtensions As String() = {".bmp", ".dib", ".exr", ".hdr", ".jpe", ".jpeg", ".jpg", ".pbm", ".pgm", ".pic", ".png", ".pnm", ".ppm", ".pxm", ".ras", ".sr", ".tif", ".tiff", ".webp"}
-    Dim A4KExtensions As String() = {".png"}
+    Dim A4KExtensions As String() = {".png", ".jpg"}
 
     Public Structure ArguementString
         Dim Arguements As String
@@ -28,7 +28,7 @@ Public Class Form1
     End Structure
 
     Private Sub Form1_Load(sender As Object, e As EventArgs) Handles MyBase.Load
-        Me.Size = New Size(660, 375)
+        Me.Size = New Size(660, 345)
         LoadBindingString()
         If File.Exists(CaffePath) Then ExeComboBox.Items.Add("Waifu2x Caffe")
         If File.Exists(VulkanPath) Then ExeComboBox.Items.Add("Waifu2x Vulkan")
@@ -38,6 +38,7 @@ Public Class Form1
             ExeComboBox.SelectedIndex = 0
             SetSettingsWindow()
         End If
+        WatchDogButton.Select()
     End Sub
 
     Private Sub Form1_Closing(sender As Object, e As EventArgs) Handles MyBase.Closing
@@ -48,12 +49,37 @@ Public Class Form1
         SetSettingsWindow()
     End Sub
 
-    Private Sub Button1_Click(sender As Object, e As EventArgs) Handles InputBrowse.Click
+    Private Sub InputBrowse_Click(sender As Object, e As EventArgs) Handles InputBrowse.Click
         InputTextBox.Text = GetFolder()
     End Sub
 
-    Private Sub Button2_Click(sender As Object, e As EventArgs) Handles OutputBrowse.Click
+    Private Sub OutputBrowse_Click(sender As Object, e As EventArgs) Handles OutputBrowse.Click
         OutputTextBox.Text = GetFolder()
+    End Sub
+
+    Private Sub RunOnceButton_Click(sender As Object, e As EventArgs) Handles RunOnceButton.Click
+        Using OFD As New OpenFileDialog With {.Filter = "Image Files|*.png;*.jpg;*.bmp"}
+            If OFD.ShowDialog = DialogResult.OK Then
+                Using FBD As New FolderBrowserDialog
+                    If FBD.ShowDialog = DialogResult.OK Then
+                        Dim SourceImage = {OFD.FileName}
+                        Dim TempOutput As String = OutputTextBox.Text
+                        OutputTextBox.Text = FBD.SelectedPath
+                        Select Case ThreadComboBox.SelectedIndex
+                            Case 0
+                                MakeWaifus(SourceImage.ToArray, 1, False)
+                            Case 1
+                                MakeWaifus(SourceImage.ToArray, NumericThreads.Value, False)
+                            Case 2
+                                MakeWaifus(SourceImage.ToArray, Environment.ProcessorCount, False)
+                            Case 3
+                                MakeWaifus(SourceImage.ToArray, 4096, False)
+                        End Select
+                        OutputTextBox.Text = TempOutput
+                    End If
+                End Using
+            End If
+        End Using
     End Sub
 
     Private Sub Button3_Click(sender As Object, e As EventArgs) Handles WatchDogButton.Click
@@ -121,7 +147,7 @@ Public Class Form1
         End If
     End Sub
 
-    Private Sub MakeWaifus(Source As String(), Limit As Integer)
+    Private Sub MakeWaifus(Source As String(), Limit As Integer, Optional ContinueRunning As Boolean = True)
         WatchDog.Enabled = False
         Dim BuildProcess As New ProcessStartInfo()
         For i = 0 To Source.Count - 1
@@ -163,7 +189,7 @@ Public Class Form1
                 File.Delete(SourceImage)
             Next
         End If
-        WatchDog.Enabled = True
+        WatchDog.Enabled = ContinueRunning
     End Sub
 
     Private Function MakeCaffeCommand(SourceImage As String, NewImage As String) As String
@@ -267,6 +293,9 @@ Public Class Form1
     End Sub
 
     Private Sub LoadBindingString()
+        If My.Settings.BindingString.Length <> 14 Then
+            My.Settings.BindingString = "02102010001010"
+        End If
         ThreadComboBox.SelectedIndex = Val(My.Settings.BindingString(0))
         CaffeMode.SelectedIndex = Val(My.Settings.BindingString(1))
         CaffeProcess.SelectedIndex = Val(My.Settings.BindingString(2))
