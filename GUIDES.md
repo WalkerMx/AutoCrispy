@@ -1,4 +1,4 @@
-# Baisc How-to's
+# Setup Guides:
 
 This will serve as a guide for common programs that support custom textures, and how to configure AutoCrispy to work with them.  **The information is not a definitive guide by any means, and neither presents the only or best way to accomplish these tasks!**
 
@@ -26,7 +26,7 @@ This is just how I've found to set these up, and it may be helpful to those who 
   |<img src="https://github.com/WalkerMx/DemoImages/blob/master/Guide_Assets/Dolphin03.png">|
   |Add a Hotkey for Toggle Custom Textures. This can also be bound to a controller button.|
   <img src="https://github.com/WalkerMx/DemoImages/blob/master/Guide_Assets/Dolphin04.png">|
-  |AutoCrispy's Input should be set to "\Documents\Dolphin Emulator\Dump\Textures\\\<GameID>"<br />AutoCrispy's Output should be set to "\Documents\Dolphin Emulator\Load\Textures\\\<GameID>"<br /><br />**Delete Input should be left Off.**|
+  |AutoCrispy's Input should be set to "\Documents\Dolphin Emulator\Dump\Textures\\\<GameID>"<br />AutoCrispy's Output should be set to "\Documents\Dolphin Emulator\Load\Textures\\\<GameID>"<br /><br />**Delete Input should be left Off!**|
 
   <br />
   
@@ -36,6 +36,25 @@ This is just how I've found to set these up, and it may be helpful to those who 
   
   **TL;DR** Turn on Dumping and Loading textures. Make an INI with the settings below. Setup and run AutoCrispy and the Game. 
   
-  This|Is|Where|The|Picture|Guide|Will|Go
-  ----|--|-----|---|-------|-----|----|--  
-  ----|--|-----|---|-------|-----|----|[options]<br/>version = 1<br/>hash = xxh64<br/>ignoreAddress = true
+  |PPSSPP Setup|
+  |----|
+  |Open PPSSPP, and go to Settings|
+  |<img src="https://github.com/WalkerMx/DemoImages/blob/master/Guide_Assets/PPSSPP01.png">|
+  |Under Tools, go to Developer Tools|
+  |<img src="https://github.com/WalkerMx/DemoImages/blob/master/Guide_Assets/PPSSPP02.png">|
+  |Check Both Save New Textures and Replace Textures|
+  |<img src="https://github.com/WalkerMx/DemoImages/blob/master/Guide_Assets/PPSSPP03.png">|
+  
+  Once you've started a game, you will be able to use the "Create/Open textures.ini file for current game" option. Alternatively, you can manually create a "textures.ini" file in the "\memstick\PSP\TEXTURES\\\<GameID>" folder.
+  
+  The contents of that file can be replaced with the following:
+  
+    [options]
+    version = 1
+    hash = xxh64
+    ignoreAddress = true
+    
+  AutoCrispy's Input should be set to "\memstick\PSP\TEXTURES\\\<GameID>\new"<br />
+  AutoCrispy's Output should be set to "\memstick\PSP\TEXTURES\\\<GameID>"
+
+  **Delete Input can be turned on to save space.**
