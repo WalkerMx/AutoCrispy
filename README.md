@@ -59,12 +59,3 @@ Caffe 4x | Vulkan 4x (Simulated)
 ---------|----------
 <img src="https://github.com/WalkerMx/DemoImages/blob/master/Reference_Assets/cpp4x.png">|<img src="https://github.com/WalkerMx/DemoImages/blob/master/Reference_Assets/xBRZ4x.png">
   CPP 4x | xBRZ 4x
-  
-# Notes:
-    -Works great for PPSSPP. Make a textures.ini with these options set:
-      hash = xxh64
-      ignoreAddress = true
-      
-    -There's no reason you can't use this with other programs, eg. Dolphin.
-      The programs need to support custom textures
-      The programs need to support hotloading textures (load custom textures without a restart)
