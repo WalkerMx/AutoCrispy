@@ -2,9 +2,11 @@
 
 Public Class Form1
 
-    Dim vbQuote As Char = """"c
+    Dim vbQuote As Char = ControlChars.Quote
     Dim WaitScale As Integer = 0
     Dim SettingsLoc As Point = New Point(240, 98)
+    Dim PyPaths As New List(Of String)
+    Dim PyModels As New List(Of String)
     Dim VulkanPath As String = Application.StartupPath() & "\waifu2x-ncnn-vulkan.exe"
     Dim CaffePath As String = Application.StartupPath() & "\waifu2x-caffe-cui.exe"
     Dim CPPPath As String = Application.StartupPath() & "\waifu2x-converter-cpp.exe"
@@ -13,6 +15,7 @@ Public Class Form1
     Dim VulkanExtensions As String() = {".png", ".webp"}
     Dim CPPExtensions As String() = {".bmp", ".dib", ".exr", ".hdr", ".jpe", ".jpeg", ".jpg", ".pbm", ".pgm", ".pic", ".png", ".pnm", ".ppm", ".pxm", ".ras", ".sr", ".tif", ".tiff", ".webp"}
     Dim A4KExtensions As String() = {".png", ".jpg"}
+    Dim PyExtensions As String() = {".png", ".jpg", ".bmp"}
 
     Public Structure ArguementString
         Dim Arguements As String
@@ -30,10 +33,22 @@ Public Class Form1
     Private Sub Form1_Load(sender As Object, e As EventArgs) Handles MyBase.Load
         Me.Size = New Size(660, 345)
         LoadBindingString()
+        StartUpCheckPy()
         If File.Exists(CaffePath) Then ExeComboBox.Items.Add("Waifu2x Caffe")
         If File.Exists(VulkanPath) Then ExeComboBox.Items.Add("Waifu2x Vulkan")
         If File.Exists(CPPPath) Then ExeComboBox.Items.Add("Waifu2x CPP")
         If File.Exists(A4KPath) Then ExeComboBox.Items.Add("Anime4k CPP")
+        If PyPaths.Count > 0 Then
+            ExeComboBox.Items.Add("Python")
+            For Each PyPath As String In PyPaths
+                PyScript.Items.Add(Path.GetFileName(PyPath))
+            Next
+            PyScript.SelectedIndex = 0
+            For Each Model As String In PyModels
+                PyModel.Items.Add(Path.GetFileName(Model))
+            Next
+            PyModel.SelectedIndex = 0
+        End If
         If ExeComboBox.Items.Count > 0 Then
             ExeComboBox.SelectedIndex = 0
             SetSettingsWindow()
@@ -67,13 +82,13 @@ Public Class Form1
                         OutputTextBox.Text = FBD.SelectedPath
                         Select Case ThreadComboBox.SelectedIndex
                             Case 0
-                                MakeWaifus(SourceImage.ToArray, 1, False)
+                                MakeUpscale(SourceImage.ToArray, 1, False)
                             Case 1
-                                MakeWaifus(SourceImage.ToArray, NumericThreads.Value, False)
+                                MakeUpscale(SourceImage.ToArray, NumericThreads.Value, False)
                             Case 2
-                                MakeWaifus(SourceImage.ToArray, Environment.ProcessorCount, False)
+                                MakeUpscale(SourceImage.ToArray, Environment.ProcessorCount, False)
                             Case 3
-                                MakeWaifus(SourceImage.ToArray, 4096, False)
+                                MakeUpscale(SourceImage.ToArray, 4096, False)
                         End Select
                         OutputTextBox.Text = TempOutput
                     End If
@@ -85,12 +100,20 @@ Public Class Form1
     Private Sub Button3_Click(sender As Object, e As EventArgs) Handles WatchDogButton.Click
         If (Not (Directory.Exists(InputTextBox.Text) = True)) OrElse (Not (Directory.Exists(OutputTextBox.Text) = True)) Then
             MsgBox("No path specified, or path invalid!", MsgBoxStyle.Critical, "Error")
-        ElseIf (Not File.Exists(CaffePath)) AndAlso (Not File.Exists(VulkanPath)) AndAlso (Not File.Exists(CPPPath)) AndAlso (Not File.Exists(A4KPath)) Then
+        ElseIf (Not File.Exists(PyPaths(PyScript.SelectedIndex))) AndAlso (Not File.Exists(CaffePath)) AndAlso (Not File.Exists(VulkanPath)) AndAlso (Not File.Exists(CPPPath)) AndAlso (Not File.Exists(A4KPath)) Then
             MsgBox("No compatible executable found!", MsgBoxStyle.Critical, "Error")
         Else
             WatchDog.Enabled = Not WatchDog.Enabled
             WatchDogButton.Text = "Running: " & WatchDog.Enabled
             SwitchGroups()
+        End If
+    End Sub
+
+    Private Sub DebugCheckBox_CheckedChanged(sender As Object, e As EventArgs) Handles DebugCheckBox.CheckedChanged
+        If DebugCheckBox.Checked = True Then
+            ExeComboBox.Items.Add("Backend Testing")
+        Else
+            ExeComboBox.Items.Remove("Backend Testing")
         End If
     End Sub
 
@@ -127,6 +150,10 @@ Public Class Form1
                         AcceptExt = CPPExtensions.Contains(Path.GetExtension(NewImage).ToLower)
                     Case "Anime4k CPP"
                         AcceptExt = A4KExtensions.Contains(Path.GetExtension(NewImage).ToLower)
+                    Case "Python"
+                        AcceptExt = PyExtensions.Contains(Path.GetExtension(NewImage).ToLower)
+                    Case "Backend Testing"
+                        AcceptExt = True
                 End Select
                 If File.Exists(InputTextBox.Text & "\" & NewImage) AndAlso AcceptExt = True Then
                     NewImages.Add(InputTextBox.Text & "\" & NewImage)
@@ -135,21 +162,31 @@ Public Class Form1
             If NewImages.Count > 0 Then
                 Select Case ThreadComboBox.SelectedIndex
                     Case 0
-                        MakeWaifus(NewImages.ToArray, 1)
+                        MakeUpscale(NewImages.ToArray, 1)
                     Case 1
-                        MakeWaifus(NewImages.ToArray, NumericThreads.Value)
+                        MakeUpscale(NewImages.ToArray, NumericThreads.Value)
                     Case 2
-                        MakeWaifus(NewImages.ToArray, Environment.ProcessorCount)
+                        MakeUpscale(NewImages.ToArray, Environment.ProcessorCount)
                     Case 3
-                        MakeWaifus(NewImages.ToArray, 4096)
+                        MakeUpscale(NewImages.ToArray, 4096)
                 End Select
             End If
         End If
     End Sub
 
-    Private Sub MakeWaifus(Source As String(), Limit As Integer, Optional ContinueRunning As Boolean = True)
+    Private Sub MakeUpscale(Source As String(), Limit As Integer, Optional ContinueRunning As Boolean = True)
+        If ExeComboBox.SelectedItem = "Python" Then
+            MakePyUpscale(Source, Limit, ContinueRunning)
+        Else
+            MakeExeUpscale(Source, Limit, ContinueRunning)
+        End If
+    End Sub
+
+    Private Sub MakeExeUpscale(Source As String(), Limit As Integer, Optional ContinueRunning As Boolean = True)
         WatchDog.Enabled = False
         Dim BuildProcess As New ProcessStartInfo()
+        UpscaleProgress.Maximum = Source.Count - 1
+        UpscaleProgress.Step = 1
         For i = 0 To Source.Count - 1
             Dim NewImage As String = OutputTextBox.Text & "\" & Path.GetFileName(Source(i))
             Select Case ExeComboBox.SelectedItem
@@ -161,12 +198,15 @@ Public Class Form1
                     BuildProcess = New ProcessStartInfo(CPPPath, MakeCPPCommand(Source(i), NewImage).Trim)
                 Case "Anime4k CPP"
                     BuildProcess = New ProcessStartInfo(A4KPath, MakeA4KCommand(Source(i), NewImage).Trim)
+                Case "Backend Testing"
+                    BuildProcess = New ProcessStartInfo(Application.StartupPath() & "\" & DebugEXEBox.Text, MakeDebugCommand(Source(i), NewImage).Trim)
             End Select
             If DebugCheckBox.Checked = True Then
                 BuildProcess.UseShellExecute = False
                 BuildProcess.RedirectStandardInput = True
                 BuildProcess.RedirectStandardOutput = True
                 BuildProcess.RedirectStandardError = True
+                BuildProcess.WindowStyle = ProcessWindowStyle.Normal
             Else
                 BuildProcess.WindowStyle = ProcessWindowStyle.Hidden
             End If
@@ -176,6 +216,7 @@ Public Class Form1
                 If DebugOutput <> "" Then
                     MsgBox(DebugOutput, MsgBoxStyle.Critical, "Error")
                     WatchDogButton.Text = "Running: False"
+                    UpscaleProgress.Value = 0
                     SwitchGroups()
                     Exit Sub
                 End If
@@ -183,12 +224,49 @@ Public Class Form1
             If (i + 1) Mod Limit = 0 OrElse (i = Source.Count - 1) Then
                 BatchProcess.WaitForExit()
             End If
+            UpscaleProgress.Value = i
+            UpscaleProgress.PerformStep()
         Next
         If CleanupCheckBox.Checked = True Then
             For Each SourceImage As String In Source
                 File.Delete(SourceImage)
             Next
         End If
+        UpscaleProgress.Value = 0
+        WatchDog.Enabled = ContinueRunning
+    End Sub
+
+    Private Sub MakePyUpscale(Source As String(), Limit As Integer, Optional ContinueRunning As Boolean = True)
+        WatchDog.Enabled = False
+        Dim TempLoc As String = Path.GetTempPath & "aaa" & Path.GetRandomFileName
+        Directory.CreateDirectory(TempLoc)
+        UpscaleProgress.Maximum = Source.Count - 1
+        UpscaleProgress.Step = Limit
+        For i = 0 To Source.Count - 1 Step Limit
+            For j = i To i + Limit - 1
+                If j <= Source.Count - 1 Then
+                    File.Copy(Source(j), TempLoc & "\" & Path.GetFileName(Source(j)))
+                End If
+            Next
+            Dim WatDis As String = PyPaths(PyScript.SelectedIndex) & " " & MakePyCommand(TempLoc, OutputTextBox.Text).Trim
+            Dim BuildProcess As ProcessStartInfo = New ProcessStartInfo(PyPaths(PyScript.SelectedIndex), MakePyCommand(TempLoc, OutputTextBox.Text).Trim)
+            BuildProcess.UseShellExecute = True
+            BuildProcess.WindowStyle = ProcessWindowStyle.Minimized
+            Dim BatchProcess As Process = Process.Start(BuildProcess)
+            BatchProcess.WaitForExit()
+            For Each TempImage As String In Directory.GetFiles(TempLoc)
+                File.Delete(TempImage)
+            Next
+            UpscaleProgress.Value = i
+            UpscaleProgress.PerformStep()
+        Next
+        Directory.Delete(TempLoc)
+        If CleanupCheckBox.Checked = True Then
+            For Each SourceImage As String In Source
+                File.Delete(SourceImage)
+            Next
+        End If
+        UpscaleProgress.Value = 0
         WatchDog.Enabled = ContinueRunning
     End Sub
 
@@ -252,11 +330,42 @@ Public Class Form1
         Return Result.GetArguements
     End Function
 
+    Private Function MakePyCommand(SourceFolder As String, DestFolder As String) As String
+        Dim Result As New ArguementString
+        Result.AddArguement(PyModel.SelectedItem)
+        Result.AddArguement(PyInputFlag.Text, Quote(SourceFolder))
+        Result.AddArguement(PyOutputFlag.Text, Quote(DestFolder))
+        For i = 0 To PyArguements.Rows.Count - 2
+            If PyArguements.Rows(i).Cells(1).Value = Nothing Then
+                Result.AddArguement(PyArguements.Rows(i).Cells(0).Value.ToString)
+            Else
+                Result.AddArguement(PyArguements.Rows(i).Cells(0).Value.ToString, PyArguements.Rows(i).Cells(1).Value.ToString)
+            End If
+        Next
+        Return Result.GetArguements
+    End Function
+
+    Private Function MakeDebugCommand(SourceImage As String, NewImage As String) As String
+        Dim Result As New ArguementString
+        Result.AddArguement(DebugInArg.Text, Quote(Path.GetDirectoryName(SourceImage)))
+        Result.AddArguement(DebugOutArg.Text, Quote(Path.GetDirectoryName(NewImage)))
+        For i = 0 To DebugArgGrid.Rows.Count - 2
+            If DebugArgGrid.Rows(i).Cells(1).Value = Nothing Then
+                Result.AddArguement(DebugArgGrid.Rows(i).Cells(0).Value.ToString)
+            Else
+                Result.AddArguement(DebugArgGrid.Rows(i).Cells(0).Value.ToString, DebugArgGrid.Rows(i).Cells(1).Value.ToString)
+            End If
+        Next
+        Return Result.GetArguements
+    End Function
+
     Private Sub SetSettingsWindow()
         CaffeGroup.Visible = False
         VulkanGroup.Visible = False
         WaifuCPPGroup.Visible = False
         AnimeCPPGroup.Visible = False
+        TestGroup.Visible = False
+        PyGroup.Visible = False
         Select Case ExeComboBox.SelectedItem
             Case "Waifu2x Caffe"
                 CaffeGroup.Location = SettingsLoc
@@ -270,6 +379,12 @@ Public Class Form1
             Case "Anime4k CPP"
                 AnimeCPPGroup.Location = SettingsLoc
                 AnimeCPPGroup.Visible = True
+            Case "Python"
+                PyGroup.Location = SettingsLoc
+                PyGroup.Visible = True
+            Case "Backend Testing"
+                TestGroup.Location = SettingsLoc
+                TestGroup.Visible = True
         End Select
     End Sub
 
@@ -317,6 +432,23 @@ Public Class Form1
         VulkanGroup.Enabled = Not WatchDog.Enabled
         WaifuCPPGroup.Enabled = Not WatchDog.Enabled
         AnimeCPPGroup.Enabled = Not WatchDog.Enabled
+    End Sub
+
+    Private Sub StartUpCheckPy()
+        For Each sFile As String In Directory.GetFiles(Application.StartupPath)
+            If Path.GetExtension(sFile) = ".pth" Then
+                PyModels.Add(sFile)
+            ElseIf Path.GetExtension(sFile) = ".py" Then
+                PyPaths.Add(sFile)
+            End If
+        Next
+        If Directory.Exists(Application.StartupPath & "\models") Then
+            For Each sFile As String In Directory.GetFiles(Application.StartupPath & "\models")
+                If Path.GetExtension(sFile) = ".pth" Then
+                    PyModels.Add(sFile)
+                End If
+            Next
+        End If
     End Sub
 
     Private Function Quote(Source As String) As String
