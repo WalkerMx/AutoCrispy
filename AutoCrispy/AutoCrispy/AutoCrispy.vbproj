@@ -142,7 +142,6 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="crisp.ico" />
     <Content Include="crisp2.ico" />
   </ItemGroup>
   <ItemGroup>

@@ -40,13 +40,9 @@ Public Class Form1
         If File.Exists(A4KPath) Then ExeComboBox.Items.Add("Anime4k CPP")
         If PyPaths.Count > 0 Then
             ExeComboBox.Items.Add("Python")
-            For Each PyPath As String In PyPaths
-                PyScript.Items.Add(Path.GetFileName(PyPath))
-            Next
             PyScript.SelectedIndex = 0
-            For Each Model As String In PyModels
-                PyModel.Items.Add(Path.GetFileName(Model))
-            Next
+        End If
+        If PyModels.Count > 0 Then
             PyModel.SelectedIndex = 0
         End If
         If ExeComboBox.Items.Count > 0 Then
@@ -100,7 +96,7 @@ Public Class Form1
     Private Sub Button3_Click(sender As Object, e As EventArgs) Handles WatchDogButton.Click
         If (Not (Directory.Exists(InputTextBox.Text) = True)) OrElse (Not (Directory.Exists(OutputTextBox.Text) = True)) Then
             MsgBox("No path specified, or path invalid!", MsgBoxStyle.Critical, "Error")
-        ElseIf (Not File.Exists(PyPaths(PyScript.SelectedIndex))) AndAlso (Not File.Exists(CaffePath)) AndAlso (Not File.Exists(VulkanPath)) AndAlso (Not File.Exists(CPPPath)) AndAlso (Not File.Exists(A4KPath)) Then
+        ElseIf DoubleCheckPy AndAlso (Not File.Exists(CaffePath)) AndAlso (Not File.Exists(VulkanPath)) AndAlso (Not File.Exists(CPPPath)) AndAlso (Not File.Exists(A4KPath)) Then
             MsgBox("No compatible executable found!", MsgBoxStyle.Critical, "Error")
         Else
             WatchDog.Enabled = Not WatchDog.Enabled
@@ -114,6 +110,12 @@ Public Class Form1
             ExeComboBox.Items.Add("Backend Testing")
         Else
             ExeComboBox.Items.Remove("Backend Testing")
+        End If
+    End Sub
+
+    Private Sub PyScript_SelectedIndexChanged(sender As Object, e As EventArgs) Handles PyScript.SelectedIndexChanged
+        If PyScript.Items.Count > 0 Then
+            CheckPyArgs(File.ReadAllText(PyPaths(PyScript.SelectedIndex)).Replace(vbCrLf, " "))
         End If
     End Sub
 
@@ -332,14 +334,16 @@ Public Class Form1
 
     Private Function MakePyCommand(SourceFolder As String, DestFolder As String) As String
         Dim Result As New ArguementString
-        Result.AddArguement(PyModel.SelectedItem)
+        Result.AddArguement(Quote(PyModels(PyModel.SelectedIndex)))
         Result.AddArguement(PyInputFlag.Text, Quote(SourceFolder))
         Result.AddArguement(PyOutputFlag.Text, Quote(DestFolder))
         For i = 0 To PyArguements.Rows.Count - 2
-            If PyArguements.Rows(i).Cells(1).Value = Nothing Then
-                Result.AddArguement(PyArguements.Rows(i).Cells(0).Value.ToString)
-            Else
-                Result.AddArguement(PyArguements.Rows(i).Cells(0).Value.ToString, PyArguements.Rows(i).Cells(1).Value.ToString)
+            If Not PyArguements.Rows(i).Cells(0).Value = Nothing Then
+                If PyArguements.Rows(i).Cells(1).Value = Nothing Then
+                    Result.AddArguement(PyArguements.Rows(i).Cells(0).Value.ToString)
+                Else
+                    Result.AddArguement(PyArguements.Rows(i).Cells(0).Value.ToString, PyArguements.Rows(i).Cells(1).Value.ToString)
+                End If
             End If
         Next
         Return Result.GetArguements
@@ -350,10 +354,12 @@ Public Class Form1
         Result.AddArguement(DebugInArg.Text, Quote(Path.GetDirectoryName(SourceImage)))
         Result.AddArguement(DebugOutArg.Text, Quote(Path.GetDirectoryName(NewImage)))
         For i = 0 To DebugArgGrid.Rows.Count - 2
-            If DebugArgGrid.Rows(i).Cells(1).Value = Nothing Then
-                Result.AddArguement(DebugArgGrid.Rows(i).Cells(0).Value.ToString)
-            Else
-                Result.AddArguement(DebugArgGrid.Rows(i).Cells(0).Value.ToString, DebugArgGrid.Rows(i).Cells(1).Value.ToString)
+            If Not DebugArgGrid.Rows(i).Cells(0).Value = Nothing Then
+                If DebugArgGrid.Rows(i).Cells(1).Value = Nothing Then
+                    Result.AddArguement(DebugArgGrid.Rows(i).Cells(0).Value.ToString)
+                Else
+                    Result.AddArguement(DebugArgGrid.Rows(i).Cells(0).Value.ToString, DebugArgGrid.Rows(i).Cells(1).Value.ToString)
+                End If
             End If
         Next
         Return Result.GetArguements
@@ -368,24 +374,23 @@ Public Class Form1
         PyGroup.Visible = False
         Select Case ExeComboBox.SelectedItem
             Case "Waifu2x Caffe"
-                CaffeGroup.Location = SettingsLoc
-                CaffeGroup.Visible = True
+                MoveShowGroup(CaffeGroup)
             Case "Waifu2x Vulkan"
-                VulkanGroup.Location = SettingsLoc
-                VulkanGroup.Visible = True
+                MoveShowGroup(VulkanGroup)
             Case "Waifu2x CPP"
-                WaifuCPPGroup.Location = SettingsLoc
-                WaifuCPPGroup.Visible = True
+                MoveShowGroup(WaifuCPPGroup)
             Case "Anime4k CPP"
-                AnimeCPPGroup.Location = SettingsLoc
-                AnimeCPPGroup.Visible = True
+                MoveShowGroup(AnimeCPPGroup)
             Case "Python"
-                PyGroup.Location = SettingsLoc
-                PyGroup.Visible = True
+                MoveShowGroup(PyGroup)
             Case "Backend Testing"
-                TestGroup.Location = SettingsLoc
-                TestGroup.Visible = True
+                MoveShowGroup(TestGroup)
         End Select
+    End Sub
+
+    Sub MoveShowGroup(ByRef Source As GroupBox)
+        Source.Location = SettingsLoc
+        Source.Visible = True
     End Sub
 
     Private Sub SaveBindingString()
@@ -438,14 +443,50 @@ Public Class Form1
         For Each sFile As String In Directory.GetFiles(Application.StartupPath)
             If Path.GetExtension(sFile) = ".pth" Then
                 PyModels.Add(sFile)
+                PyModel.Items.Add(Path.GetFileName(sFile))
             ElseIf Path.GetExtension(sFile) = ".py" Then
                 PyPaths.Add(sFile)
+                PyScript.Items.Add(Path.GetFileName(sFile))
             End If
         Next
         If Directory.Exists(Application.StartupPath & "\models") Then
             For Each sFile As String In Directory.GetFiles(Application.StartupPath & "\models")
                 If Path.GetExtension(sFile) = ".pth" Then
                     PyModels.Add(sFile)
+                    PyModel.Items.Add(Path.GetFileName(sFile))
+                End If
+            Next
+        End If
+    End Sub
+
+    Function DoubleCheckPy() As Boolean
+        Dim Result = True
+        If PyPaths.Count > 0 Then
+            Result = File.Exists(PyPaths(PyScript.SelectedIndex))
+        End If
+        Return Result
+    End Function
+
+    Private Sub CheckPyArgs(Source As String)
+        PyArguements.Rows.Clear()
+        Dim Result As New List(Of String)
+        Dim matches As Text.RegularExpressions.MatchCollection = System.Text.RegularExpressions.Regex.Matches(Source, "parser\.add_argument\((.*?)\)")
+        For Each m As Text.RegularExpressions.Match In matches
+            For Each c As Text.RegularExpressions.Capture In m.Captures
+                Result.Add(c.Value.Remove(0, 20).Replace(")", ""))
+            Next
+        Next
+        If Result.Count > 0 Then
+            Dim CurrentRow As Integer = 0
+            For i = 0 To Result.Count - 1
+                Dim ArgCheck = Split(Result(i), ",")
+                If Not ArgCheck(0).Contains("model") AndAlso Not ArgCheck(0).Contains("-i") AndAlso Not ArgCheck(0).Contains("-o") Then
+                    PyArguements.Rows.Add()
+                    PyArguements.Rows(CurrentRow).Cells(0).Value = ArgCheck(0).Replace("'", "")
+                    If ArgCheck(1).Split("=")(0).Trim = "default" Then
+                        PyArguements.Rows(CurrentRow).Cells(1).Value = ArgCheck(1).Split("=")(1)
+                    End If
+                    CurrentRow += 1
                 End If
             Next
         End If
