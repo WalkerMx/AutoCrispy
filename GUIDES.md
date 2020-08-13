@@ -6,10 +6,10 @@ This is just how I've found to set these up, and it may be helpful to those who 
 
   ## Quick Links:
   
-  - [Dolphin](https://github.com/WalkerMx/AutoCrispy/blob/master/GUIDES.md#dolphin)
-  - [PPSSPP](https://github.com/WalkerMx/AutoCrispy/blob/master/GUIDES.md#ppsspp)
-  - [PJ64 - Under Construction](https://github.com/WalkerMx/AutoCrispy/blob/master/GUIDES.md#pj64)
-  - [SpecialK - Under Construction](https://github.com/WalkerMx/AutoCrispy/blob/master/GUIDES.md#specialk)
+  - [Dolphin](https://github.com/WalkerMx/AutoCrispy/blob/master/GUIDES.md#dolphin-top)
+  - [PPSSPP](https://github.com/WalkerMx/AutoCrispy/blob/master/GUIDES.md#ppsspp-top)
+  - [PJ64 - Under Construction](https://github.com/WalkerMx/AutoCrispy/blob/master/GUIDES.md#pj64-top)
+  - [SpecialK - Under Construction](https://github.com/WalkerMx/AutoCrispy/blob/master/GUIDES.md#specialk-top)
 
 
   ## Dolphin [Top](https://github.com/WalkerMx/AutoCrispy/blob/master/GUIDES.md#quick-links)
