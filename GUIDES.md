@@ -58,3 +58,33 @@ This is just how I've found to set these up, and it may be helpful to those who 
   AutoCrispy's Output should be set to "\memstick\PSP\TEXTURES\\\<GameID>"
 
   **Delete Input can be turned on to save space.**
+  
+   <br />
+  
+  ## PJ64
+  
+  This is a Stub. I'm still Writing this.
+  
+  **TL;DR** Nothing here yet.
+  
+  |PJ64 Setup|
+  |----|
+  |This|
+  |is|
+  |under|
+  |construction|
+  
+   <br />
+  
+  ## SpecialK
+  
+  This is a Stub. I'm still Writing this.
+  
+  **TL;DR** Nothing here yet.
+  
+  |PJ64 Setup|
+  |----|
+  |This|
+  |is|
+  |under|
+  |construction|
