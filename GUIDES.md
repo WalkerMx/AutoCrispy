@@ -84,7 +84,7 @@ This is just how I've found to set these up, and it may be helpful to those who 
   
   **TL;DR** Nothing here yet.
   
-  |PJ64 Setup|
+  |SpecialK Setup|
   |----|
   |This|
   |is|
