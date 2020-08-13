@@ -12,7 +12,7 @@ It is also possible to use ESRGAN. This requires the setup of several applicatio
 
  - Python: https://www.python.org/downloads/
  - PyTorch (pip): https://pytorch.org/get-started/locally/
- - PyOpenCL: https://pypi.org/project/pyopencl/
+ - PyOpenCL (pip): https://pypi.org/project/pyopencl/
  - A fork of ESRGAN: https://github.com/xinntao/ESRGAN/network/members
  - An ESRGAN Model: https://upscale.wiki/wiki/Model_Database
 
