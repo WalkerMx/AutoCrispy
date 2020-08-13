@@ -8,9 +8,11 @@ This is just how I've found to set these up, and it may be helpful to those who 
   
   - [Dolphin](https://github.com/WalkerMx/AutoCrispy/blob/master/GUIDES.md#dolphin)
   - [PPSSPP](https://github.com/WalkerMx/AutoCrispy/blob/master/GUIDES.md#ppsspp)
+  - [PJ64 - Under Construction](https://github.com/WalkerMx/AutoCrispy/blob/master/GUIDES.md#pj64)
+  - [SpecialK - Under Construction](https://github.com/WalkerMx/AutoCrispy/blob/master/GUIDES.md#specialk)
 
 
-  ## Dolphin
+  ## Dolphin [Top](https://github.com/WalkerMx/AutoCrispy/blob/master/GUIDES.md#quick-links)
   
   Dolphin does support both Dumping and Loading custom textures, but does not seem to check for *changes* in the custom textures whilst running. There is a workaround with Hotkeys.
   
@@ -30,7 +32,7 @@ This is just how I've found to set these up, and it may be helpful to those who 
 
   <br />
   
-  ## PPSSPP
+  ## PPSSPP [Top](https://github.com/WalkerMx/AutoCrispy/blob/master/GUIDES.md#quick-links)
   
   PPSSPP is great. It supports Dumping *and* Hotloading textures. All you need is some INI tweaks and you're golden.
   
@@ -61,7 +63,7 @@ This is just how I've found to set these up, and it may be helpful to those who 
   
    <br />
   
-  ## PJ64
+  ## PJ64 [Top](https://github.com/WalkerMx/AutoCrispy/blob/master/GUIDES.md#quick-links)
   
   This is a Stub. I'm still Writing this.
   
@@ -76,7 +78,7 @@ This is just how I've found to set these up, and it may be helpful to those who 
   
    <br />
   
-  ## SpecialK
+  ## SpecialK [Top](https://github.com/WalkerMx/AutoCrispy/blob/master/GUIDES.md#quick-links)
   
   This is a Stub. I'm still Writing this.
   
