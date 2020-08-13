@@ -34,7 +34,7 @@ Latest AutoCrispy Release Here: https://github.com/WalkerMx/AutoCrispy/releases
   
   As the textures dump, new upscaled textures are generated, and the originals are optionally deleted.
   
-  Also, make sure you have enough VRAM if you use multithreading, especially with Caffe. More threads & higher upscales dramatically increase the memory requirements!
+  Also, make sure you have enough VRAM if you use multithreading, especially with Caffe and ESRGAN. More threads & higher upscales dramatically increase the memory requirements!
   
   Guides for some common programs can be found [Here](https://github.com/WalkerMx/AutoCrispy/blob/master/GUIDES.md).
   
@@ -56,23 +56,3 @@ Latest AutoCrispy Release Here: https://github.com/WalkerMx/AutoCrispy/releases
     AutoCrispy will attempt to locate any available Arguments in the scripts, and make them available in the GUI.
     Debug mode is not available for Python Scripts!
    
-
-# Reference Images:
-Images for comparison. The source is not mine, and these images exist purely for edification.
-   
-Caffe 2x | Vulkan 2x 
----------|----------
----------|----------
-<img class="header" src="https://github.com/WalkerMx/DemoImages/blob/master/Reference_Assets/caffe2x.png">|<img src="https://github.com/WalkerMx/DemoImages/blob/master/Reference_Assets/vulkan2x.png">
----------|----------
-<img src="https://github.com/WalkerMx/DemoImages/blob/master/Reference_Assets/cpp2x.png">|<img src="https://github.com/WalkerMx/DemoImages/blob/master/Reference_Assets/xBRX2x.png">
-  CPP 2x | xBRZ 2x
-  
-
-Caffe 4x | Vulkan 4x (Simulated)
----------|----------
----------|----------
-<img src="https://github.com/WalkerMx/DemoImages/blob/master/Reference_Assets/caffe4x.png">|<img src="https://github.com/WalkerMx/DemoImages/blob/master/Reference_Assets/vulkan4x sim.png">
----------|----------
-<img src="https://github.com/WalkerMx/DemoImages/blob/master/Reference_Assets/cpp4x.png">|<img src="https://github.com/WalkerMx/DemoImages/blob/master/Reference_Assets/xBRZ4x.png">
-  CPP 4x | xBRZ 4x
