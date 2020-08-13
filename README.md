@@ -51,8 +51,9 @@ Latest AutoCrispy Release Here: https://github.com/WalkerMx/AutoCrispy/releases
    
    - **ESRGAN** is currently the most complicated to set up. The most widely available implementations are scripts written in Python. Performance and features vary widely between the scripts, however there are many models available that offer quality for a multitude of tasks.
    
-    **Notes on ESRGAN**:
-    AutoCrispy will detect all python scripts with it in the folder. You may select the appropriate script in the GUI.
-    AutoCrispy will attempt to locate any available Arguments in the scripts, and make them available in the GUI.
-    Debug mode is not available for Python Scripts!
-   
+```
+**Notes on ESRGAN**:
+AutoCrispy will detect all python scripts with it in the folder. You may select the appropriate script in the GUI.
+AutoCrispy will attempt to locate any available Arguments in the scripts, and make them available in the GUI.
+Debug mode is not available for Python Scripts!
+```
