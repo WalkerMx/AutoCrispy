@@ -57,7 +57,8 @@ This is just how I've found to set these up, and it may be helpful to those who 
     ignoreAddress = true
     
   AutoCrispy's Input should be set to "\memstick\PSP\TEXTURES\\\<GameID>\new"<br />
-  AutoCrispy's Output should be set to "\memstick\PSP\TEXTURES\\\<GameID>"
+  AutoCrispy's Output should be set to "\memstick\PSP\TEXTURES\\\<GameID>"<br />
+  **PPSSPP's Texture Scaling Should be turned off.**
 
   **Delete Input can be turned on to save space.**
   
