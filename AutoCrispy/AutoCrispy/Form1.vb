@@ -72,6 +72,8 @@ Public Class Form1
     Private Sub Button3_Click(sender As Object, e As EventArgs) Handles WatchDogButton.Click
         If (Not (Directory.Exists(InputTextBox.Text) = True)) OrElse (Not (Directory.Exists(OutputTextBox.Text) = True)) Then
             MsgBox("No path specified, or path invalid!", MsgBoxStyle.Critical, "Error")
+        ElseIf WorkHorse.IsBusy = True Then
+            MsgBox("The current operation cannot be canceled.", MsgBoxStyle.Information, "Error")
         Else
             WatchDog.Enabled = Not WatchDog.Enabled
             WatchDogButton.Text = "Running: " & WatchDog.Enabled
