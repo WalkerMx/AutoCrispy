@@ -47,7 +47,6 @@ Partial Class Form1
         Me.UpscaleProgress = New System.Windows.Forms.ProgressBar()
         Me.NumericThreads = New System.Windows.Forms.NumericUpDown()
         Me.ThreadComboBox = New System.Windows.Forms.ComboBox()
-        Me.DebugCheckBox = New System.Windows.Forms.CheckBox()
         Me.ExeComboBox = New System.Windows.Forms.ComboBox()
         Me.CleanupCheckBox = New System.Windows.Forms.CheckBox()
         Me.Label21 = New System.Windows.Forms.Label()
@@ -91,16 +90,6 @@ Partial Class Form1
         Me.Label17 = New System.Windows.Forms.Label()
         Me.Label16 = New System.Windows.Forms.Label()
         Me.Label15 = New System.Windows.Forms.Label()
-        Me.TestGroup = New System.Windows.Forms.GroupBox()
-        Me.DebugArgGrid = New System.Windows.Forms.DataGridView()
-        Me.DebugArguements = New System.Windows.Forms.DataGridViewTextBoxColumn()
-        Me.DebugArgVaules = New System.Windows.Forms.DataGridViewTextBoxColumn()
-        Me.DebugInArg = New System.Windows.Forms.TextBox()
-        Me.DebugOutArg = New System.Windows.Forms.TextBox()
-        Me.DebugEXEBox = New System.Windows.Forms.TextBox()
-        Me.Label24 = New System.Windows.Forms.Label()
-        Me.Label23 = New System.Windows.Forms.Label()
-        Me.Label22 = New System.Windows.Forms.Label()
         Me.PyGroup = New System.Windows.Forms.GroupBox()
         Me.PyArguements = New System.Windows.Forms.DataGridView()
         Me.PyFlag = New System.Windows.Forms.DataGridViewTextBoxColumn()
@@ -113,6 +102,7 @@ Partial Class Form1
         Me.Label28 = New System.Windows.Forms.Label()
         Me.Label25 = New System.Windows.Forms.Label()
         Me.Label27 = New System.Windows.Forms.Label()
+        Me.WorkHorse = New System.ComponentModel.BackgroundWorker()
         Me.PathGroup.SuspendLayout()
         Me.CaffeGroup.SuspendLayout()
         CType(Me.CaffeScale, System.ComponentModel.ISupportInitialize).BeginInit()
@@ -131,8 +121,6 @@ Partial Class Form1
         CType(Me.AnimeCPPColorStrength, System.ComponentModel.ISupportInitialize).BeginInit()
         CType(Me.AnimeCPPPushColors, System.ComponentModel.ISupportInitialize).BeginInit()
         CType(Me.AnimeCPPPasses, System.ComponentModel.ISupportInitialize).BeginInit()
-        Me.TestGroup.SuspendLayout()
-        CType(Me.DebugArgGrid, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.PyGroup.SuspendLayout()
         CType(Me.PyArguements, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.SuspendLayout()
@@ -333,7 +321,6 @@ Partial Class Form1
         Me.SettingsGroup.Controls.Add(Me.UpscaleProgress)
         Me.SettingsGroup.Controls.Add(Me.NumericThreads)
         Me.SettingsGroup.Controls.Add(Me.ThreadComboBox)
-        Me.SettingsGroup.Controls.Add(Me.DebugCheckBox)
         Me.SettingsGroup.Controls.Add(Me.ExeComboBox)
         Me.SettingsGroup.Controls.Add(Me.CleanupCheckBox)
         Me.SettingsGroup.Controls.Add(Me.Label21)
@@ -372,16 +359,6 @@ Partial Class Form1
         Me.ThreadComboBox.Name = "ThreadComboBox"
         Me.ThreadComboBox.Size = New System.Drawing.Size(99, 21)
         Me.ThreadComboBox.TabIndex = 5
-        '
-        'DebugCheckBox
-        '
-        Me.DebugCheckBox.AutoSize = True
-        Me.DebugCheckBox.Location = New System.Drawing.Point(9, 96)
-        Me.DebugCheckBox.Name = "DebugCheckBox"
-        Me.DebugCheckBox.Size = New System.Drawing.Size(88, 17)
-        Me.DebugCheckBox.TabIndex = 8
-        Me.DebugCheckBox.Text = "Debug Mode"
-        Me.DebugCheckBox.UseVisualStyleBackColor = True
         '
         'ExeComboBox
         '
@@ -799,7 +776,7 @@ Partial Class Form1
         'AnimeCPPFilters
         '
         Me.AnimeCPPFilters.FormattingEnabled = True
-        Me.AnimeCPPFilters.Items.AddRange(New Object() {"Median Blur", "Mean Blur", "CAS Sharpening", "Gaussian Blur (Weak)", "Gaussian Blur", "Bilateral Filter", "Bilateral Filter (Faster)"})
+        Me.AnimeCPPFilters.Items.AddRange(New Object() {"Median Blur", "Mean Blur", "CAS Sharpening", "Weak Gaussian Blur", "Gaussian Blur", "Bilateral Filter", "Fast Bilateral Filter"})
         Me.AnimeCPPFilters.Location = New System.Drawing.Point(260, 46)
         Me.AnimeCPPFilters.Name = "AnimeCPPFilters"
         Me.AnimeCPPFilters.Size = New System.Drawing.Size(130, 109)
@@ -858,92 +835,6 @@ Partial Class Form1
         Me.Label15.Size = New System.Drawing.Size(62, 13)
         Me.Label15.TabIndex = 1
         Me.Label15.Text = "Filter Mode:"
-        '
-        'TestGroup
-        '
-        Me.TestGroup.Controls.Add(Me.DebugArgGrid)
-        Me.TestGroup.Controls.Add(Me.DebugInArg)
-        Me.TestGroup.Controls.Add(Me.DebugOutArg)
-        Me.TestGroup.Controls.Add(Me.DebugEXEBox)
-        Me.TestGroup.Controls.Add(Me.Label24)
-        Me.TestGroup.Controls.Add(Me.Label23)
-        Me.TestGroup.Controls.Add(Me.Label22)
-        Me.TestGroup.Location = New System.Drawing.Point(1045, 424)
-        Me.TestGroup.Name = "TestGroup"
-        Me.TestGroup.Size = New System.Drawing.Size(396, 200)
-        Me.TestGroup.TabIndex = 11
-        Me.TestGroup.TabStop = False
-        Me.TestGroup.Text = "Backend Testing"
-        '
-        'DebugArgGrid
-        '
-        Me.DebugArgGrid.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize
-        Me.DebugArgGrid.Columns.AddRange(New System.Windows.Forms.DataGridViewColumn() {Me.DebugArguements, Me.DebugArgVaules})
-        Me.DebugArgGrid.Location = New System.Drawing.Point(9, 71)
-        Me.DebugArgGrid.Name = "DebugArgGrid"
-        Me.DebugArgGrid.Size = New System.Drawing.Size(339, 123)
-        Me.DebugArgGrid.TabIndex = 2
-        '
-        'DebugArguements
-        '
-        Me.DebugArguements.HeaderText = "Flag"
-        Me.DebugArguements.Name = "DebugArguements"
-        '
-        'DebugArgVaules
-        '
-        Me.DebugArgVaules.HeaderText = "Vaule"
-        Me.DebugArgVaules.Name = "DebugArgVaules"
-        '
-        'DebugInArg
-        '
-        Me.DebugInArg.Location = New System.Drawing.Point(75, 45)
-        Me.DebugInArg.Name = "DebugInArg"
-        Me.DebugInArg.Size = New System.Drawing.Size(99, 20)
-        Me.DebugInArg.TabIndex = 1
-        Me.DebugInArg.Text = "-i"
-        '
-        'DebugOutArg
-        '
-        Me.DebugOutArg.Location = New System.Drawing.Point(251, 45)
-        Me.DebugOutArg.Name = "DebugOutArg"
-        Me.DebugOutArg.Size = New System.Drawing.Size(97, 20)
-        Me.DebugOutArg.TabIndex = 1
-        Me.DebugOutArg.Text = "-o"
-        '
-        'DebugEXEBox
-        '
-        Me.DebugEXEBox.Location = New System.Drawing.Point(75, 19)
-        Me.DebugEXEBox.Name = "DebugEXEBox"
-        Me.DebugEXEBox.Size = New System.Drawing.Size(273, 20)
-        Me.DebugEXEBox.TabIndex = 1
-        Me.DebugEXEBox.Text = "apptotest.exe"
-        '
-        'Label24
-        '
-        Me.Label24.AutoSize = True
-        Me.Label24.Location = New System.Drawing.Point(6, 48)
-        Me.Label24.Name = "Label24"
-        Me.Label24.Size = New System.Drawing.Size(60, 13)
-        Me.Label24.TabIndex = 0
-        Me.Label24.Text = "Intput Flag:"
-        '
-        'Label23
-        '
-        Me.Label23.AutoSize = True
-        Me.Label23.Location = New System.Drawing.Point(180, 48)
-        Me.Label23.Name = "Label23"
-        Me.Label23.Size = New System.Drawing.Size(65, 13)
-        Me.Label23.TabIndex = 0
-        Me.Label23.Text = "Output Flag:"
-        '
-        'Label22
-        '
-        Me.Label22.AutoSize = True
-        Me.Label22.Location = New System.Drawing.Point(6, 22)
-        Me.Label22.Name = "Label22"
-        Me.Label22.Size = New System.Drawing.Size(63, 13)
-        Me.Label22.TabIndex = 0
-        Me.Label22.Text = "Executable:"
         '
         'PyGroup
         '
@@ -1056,13 +947,16 @@ Partial Class Form1
         Me.Label27.TabIndex = 0
         Me.Label27.Text = "Output Flag:"
         '
+        'WorkHorse
+        '
+        Me.WorkHorse.WorkerReportsProgress = True
+        '
         'Form1
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
         Me.ClientSize = New System.Drawing.Size(1456, 718)
         Me.Controls.Add(Me.PyGroup)
-        Me.Controls.Add(Me.TestGroup)
         Me.Controls.Add(Me.RunOnceButton)
         Me.Controls.Add(Me.AnimeCPPGroup)
         Me.Controls.Add(Me.WaifuCPPGroup)
@@ -1099,9 +993,6 @@ Partial Class Form1
         CType(Me.AnimeCPPColorStrength, System.ComponentModel.ISupportInitialize).EndInit()
         CType(Me.AnimeCPPPushColors, System.ComponentModel.ISupportInitialize).EndInit()
         CType(Me.AnimeCPPPasses, System.ComponentModel.ISupportInitialize).EndInit()
-        Me.TestGroup.ResumeLayout(False)
-        Me.TestGroup.PerformLayout()
-        CType(Me.DebugArgGrid, System.ComponentModel.ISupportInitialize).EndInit()
         Me.PyGroup.ResumeLayout(False)
         Me.PyGroup.PerformLayout()
         CType(Me.PyArguements, System.ComponentModel.ISupportInitialize).EndInit()
@@ -1122,7 +1013,6 @@ Partial Class Form1
     Friend WithEvents SettingsGroup As GroupBox
     Friend WithEvents CleanupCheckBox As CheckBox
     Friend WithEvents ExeComboBox As ComboBox
-    Friend WithEvents DebugCheckBox As CheckBox
     Friend WithEvents ThreadComboBox As ComboBox
     Friend WithEvents NumericThreads As NumericUpDown
     Friend WithEvents Label12 As Label
@@ -1175,16 +1065,6 @@ Partial Class Form1
     Friend WithEvents AnimeCPPPre As CheckBox
     Friend WithEvents RunOnceButton As Button
     Friend WithEvents Label21 As Label
-    Friend WithEvents TestGroup As GroupBox
-    Friend WithEvents DebugEXEBox As TextBox
-    Friend WithEvents Label22 As Label
-    Friend WithEvents DebugInArg As TextBox
-    Friend WithEvents DebugOutArg As TextBox
-    Friend WithEvents Label24 As Label
-    Friend WithEvents Label23 As Label
-    Friend WithEvents DebugArgGrid As DataGridView
-    Friend WithEvents DebugArguements As DataGridViewTextBoxColumn
-    Friend WithEvents DebugArgVaules As DataGridViewTextBoxColumn
     Friend WithEvents PyGroup As GroupBox
     Friend WithEvents PyScript As ComboBox
     Friend WithEvents Label25 As Label
@@ -1198,4 +1078,5 @@ Partial Class Form1
     Friend WithEvents PyFlag As DataGridViewTextBoxColumn
     Friend WithEvents PyValue As DataGridViewTextBoxColumn
     Friend WithEvents UpscaleProgress As ProgressBar
+    Friend WithEvents WorkHorse As System.ComponentModel.BackgroundWorker
 End Class

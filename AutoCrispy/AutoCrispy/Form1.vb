@@ -1,43 +1,26 @@
 ﻿Imports System.IO
+Imports AutoCrispy.ConfigPackages
 
 Public Class Form1
 
-    Dim vbQuote As Char = ControlChars.Quote
     Dim WaitScale As Integer = 0
     Dim SettingsLoc As Point = New Point(240, 98)
     Dim PyPaths As New List(Of String)
     Dim PyModels As New List(Of String)
-    Dim VulkanPath As String = Application.StartupPath() & "\waifu2x-ncnn-vulkan.exe"
-    Dim CaffePath As String = Application.StartupPath() & "\waifu2x-caffe-cui.exe"
-    Dim CPPPath As String = Application.StartupPath() & "\waifu2x-converter-cpp.exe"
-    Dim A4KPath As String = Application.StartupPath() & "\Anime4KCPP_CLI.exe"
-    Dim CaffeExtensions As String() = {".png", ".jpg", ".jpeg", ".tif", ".tiff", ".bmp", ".tga"}
-    Dim VulkanExtensions As String() = {".png", ".webp"}
-    Dim CPPExtensions As String() = {".bmp", ".dib", ".exr", ".hdr", ".jpe", ".jpeg", ".jpg", ".pbm", ".pgm", ".pic", ".png", ".pnm", ".ppm", ".pxm", ".ras", ".sr", ".tif", ".tiff", ".webp"}
-    Dim A4KExtensions As String() = {".png", ".jpg"}
-    Dim PyExtensions As String() = {".png", ".jpg", ".bmp"}
-
-    Public Structure ArguementString
-        Dim Arguements As String
-        Public Function GetArguements()
-            Return Arguements
-        End Function
-        Public Sub AddArguement(Flag As String)
-            Arguements += " " & Flag
-        End Sub
-        Public Sub AddArguement(Flag As String, Value As String)
-            Arguements += " " & Flag & " " & Value
-        End Sub
-    End Structure
+    Dim LoadedPackage As Object
+    Dim LoadedPath As String
+    Dim LoadedExtensions As String()
+    Dim LoadedMode As String
+    Dim HandOff As Object
 
     Private Sub Form1_Load(sender As Object, e As EventArgs) Handles MyBase.Load
         Me.Size = New Size(660, 345)
         LoadBindingString()
         StartUpCheckPy()
-        If File.Exists(CaffePath) Then ExeComboBox.Items.Add("Waifu2x Caffe")
-        If File.Exists(VulkanPath) Then ExeComboBox.Items.Add("Waifu2x Vulkan")
-        If File.Exists(CPPPath) Then ExeComboBox.Items.Add("Waifu2x CPP")
-        If File.Exists(A4KPath) Then ExeComboBox.Items.Add("Anime4k CPP")
+        If File.Exists(Application.StartupPath() & "\waifu2x-caffe-cui.exe") Then ExeComboBox.Items.Add("Waifu2x Caffe")
+        If File.Exists(Application.StartupPath() & "\waifu2x-ncnn-vulkan.exe") Then ExeComboBox.Items.Add("Waifu2x Vulkan")
+        If File.Exists(Application.StartupPath() & "\waifu2x-converter-cpp.exe") Then ExeComboBox.Items.Add("Waifu2x CPP")
+        If File.Exists(Application.StartupPath() & "\Anime4KCPP_CLI.exe") Then ExeComboBox.Items.Add("Anime4k CPP")
         If PyPaths.Count > 0 Then
             ExeComboBox.Items.Add("Python")
             PyScript.SelectedIndex = 0
@@ -76,16 +59,9 @@ Public Class Form1
                         Dim SourceImage = {OFD.FileName}
                         Dim TempOutput As String = OutputTextBox.Text
                         OutputTextBox.Text = FBD.SelectedPath
-                        Select Case ThreadComboBox.SelectedIndex
-                            Case 0
-                                MakeUpscale(SourceImage.ToArray, 1, False)
-                            Case 1
-                                MakeUpscale(SourceImage.ToArray, NumericThreads.Value, False)
-                            Case 2
-                                MakeUpscale(SourceImage.ToArray, Environment.ProcessorCount, False)
-                            Case 3
-                                MakeUpscale(SourceImage.ToArray, 4096, False)
-                        End Select
+                        PreloadSettings()
+                        HandOff = {SourceImage.ToArray, OutputTextBox.Text, GetThreads(), False}
+                        WorkHorse.RunWorkerAsync()
                         OutputTextBox.Text = TempOutput
                     End If
                 End Using
@@ -96,20 +72,10 @@ Public Class Form1
     Private Sub Button3_Click(sender As Object, e As EventArgs) Handles WatchDogButton.Click
         If (Not (Directory.Exists(InputTextBox.Text) = True)) OrElse (Not (Directory.Exists(OutputTextBox.Text) = True)) Then
             MsgBox("No path specified, or path invalid!", MsgBoxStyle.Critical, "Error")
-        ElseIf DoubleCheckPy AndAlso (Not File.Exists(CaffePath)) AndAlso (Not File.Exists(VulkanPath)) AndAlso (Not File.Exists(CPPPath)) AndAlso (Not File.Exists(A4KPath)) Then
-            MsgBox("No compatible executable found!", MsgBoxStyle.Critical, "Error")
         Else
             WatchDog.Enabled = Not WatchDog.Enabled
             WatchDogButton.Text = "Running: " & WatchDog.Enabled
             SwitchGroups()
-        End If
-    End Sub
-
-    Private Sub DebugCheckBox_CheckedChanged(sender As Object, e As EventArgs) Handles DebugCheckBox.CheckedChanged
-        If DebugCheckBox.Checked = True Then
-            ExeComboBox.Items.Add("Backend Testing")
-        Else
-            ExeComboBox.Items.Remove("Backend Testing")
         End If
     End Sub
 
@@ -137,121 +103,70 @@ Public Class Form1
         Else
             WaitScale = 0
             WatchDog.Interval = 1000
+            PreloadSettings()
             Source = GetFileNameList(InputTextBox.Text)
             Dest = GetFileNameList(OutputTextBox.Text)
             Dim NewImages As New List(Of String)
             Dim DiffImages = Source.Except(Dest)
             For Each NewImage As String In DiffImages
-                Dim AcceptExt As Boolean = False
-                Select Case ExeComboBox.SelectedItem
-                    Case "Waifu2x Caffe"
-                        AcceptExt = CaffeExtensions.Contains(Path.GetExtension(NewImage).ToLower)
-                    Case "Waifu2x Vulkan"
-                        AcceptExt = VulkanExtensions.Contains(Path.GetExtension(NewImage).ToLower)
-                    Case "Waifu2x CPP"
-                        AcceptExt = CPPExtensions.Contains(Path.GetExtension(NewImage).ToLower)
-                    Case "Anime4k CPP"
-                        AcceptExt = A4KExtensions.Contains(Path.GetExtension(NewImage).ToLower)
-                    Case "Python"
-                        AcceptExt = PyExtensions.Contains(Path.GetExtension(NewImage).ToLower)
-                    Case "Backend Testing"
-                        AcceptExt = True
-                End Select
+                Dim AcceptExt As Boolean = LoadedExtensions.Contains(Path.GetExtension(NewImage).ToLower)
                 If File.Exists(InputTextBox.Text & "\" & NewImage) AndAlso AcceptExt = True Then
                     NewImages.Add(InputTextBox.Text & "\" & NewImage)
                 End If
             Next
             If NewImages.Count > 0 Then
-                Select Case ThreadComboBox.SelectedIndex
-                    Case 0
-                        MakeUpscale(NewImages.ToArray, 1)
-                    Case 1
-                        MakeUpscale(NewImages.ToArray, NumericThreads.Value)
-                    Case 2
-                        MakeUpscale(NewImages.ToArray, Environment.ProcessorCount)
-                    Case 3
-                        MakeUpscale(NewImages.ToArray, 4096)
-                End Select
+                HandOff = {NewImages.ToArray, OutputTextBox.Text, GetThreads(), True}
+                WorkHorse.RunWorkerAsync()
             End If
         End If
     End Sub
 
-    Private Sub MakeUpscale(Source As String(), Limit As Integer, Optional ContinueRunning As Boolean = True)
-        If ExeComboBox.SelectedItem = "Python" Then
-            MakePyUpscale(Source, Limit, ContinueRunning)
+    Private Sub WorkHorse_DoWork(sender As Object, e As System.ComponentModel.DoWorkEventArgs) Handles WorkHorse.DoWork
+        WatchDog.Stop()
+        If LoadedMode = "Python" Then
+            MakePyUpscale(HandOff(0), HandOff(1), HandOff(2))
         Else
-            MakeExeUpscale(Source, Limit, ContinueRunning)
+            MakeExeUpscale(HandOff(0), HandOff(1), HandOff(2))
+        End If
+    End Sub
+    Private Sub WorkHorse_ProgressChanged(sender As Object, e As System.ComponentModel.ProgressChangedEventArgs) Handles WorkHorse.ProgressChanged
+        UpscaleProgress.Value = e.ProgressPercentage
+    End Sub
+    Private Sub WorkHorse_RunWorkerCompleted(sender As Object, e As System.ComponentModel.RunWorkerCompletedEventArgs) Handles WorkHorse.RunWorkerCompleted
+        UpscaleProgress.Value = 0
+        If HandOff(3) = True Then
+            WatchDog.Start()
         End If
     End Sub
 
-    Private Sub MakeExeUpscale(Source As String(), Limit As Integer, Optional ContinueRunning As Boolean = True)
-        WatchDog.Enabled = False
-        Dim BuildProcess As New ProcessStartInfo()
-        UpscaleProgress.Maximum = Source.Count - 1
-        UpscaleProgress.Step = 1
+    Private Sub MakeExeUpscale(Source As String(), Dest As String, Limit As Integer)
         For i = 0 To Source.Count - 1
-            Dim NewImage As String = OutputTextBox.Text & "\" & Path.GetFileName(Source(i))
-            Select Case ExeComboBox.SelectedItem
-                Case "Waifu2x Caffe"
-                    BuildProcess = New ProcessStartInfo(CaffePath, MakeCaffeCommand(Source(i), NewImage).Trim)
-                Case "Waifu2x Vulkan"
-                    BuildProcess = New ProcessStartInfo(VulkanPath, MakeVulkanCommand(Source(i), NewImage).Trim)
-                Case "Waifu2x CPP"
-                    BuildProcess = New ProcessStartInfo(CPPPath, MakeCPPCommand(Source(i), NewImage).Trim)
-                Case "Anime4k CPP"
-                    BuildProcess = New ProcessStartInfo(A4KPath, MakeA4KCommand(Source(i), NewImage).Trim)
-                Case "Backend Testing"
-                    BuildProcess = New ProcessStartInfo(Application.StartupPath() & "\" & DebugEXEBox.Text, MakeDebugCommand(Source(i), NewImage).Trim)
-            End Select
-            If DebugCheckBox.Checked = True Then
-                BuildProcess.UseShellExecute = False
-                BuildProcess.RedirectStandardInput = True
-                BuildProcess.RedirectStandardOutput = True
-                BuildProcess.RedirectStandardError = True
-                BuildProcess.WindowStyle = ProcessWindowStyle.Normal
-            Else
-                BuildProcess.WindowStyle = ProcessWindowStyle.Hidden
-            End If
+            Dim NewImage As String = Dest & "\" & Path.GetFileName(Source(i))
+            Dim BuildProcess As ProcessStartInfo = New ProcessStartInfo(LoadedPath, MakeCommand(Source(i), NewImage))
+            BuildProcess.WindowStyle = ProcessWindowStyle.Hidden
             Dim BatchProcess As Process = Process.Start(BuildProcess)
-            If DebugCheckBox.Checked = True Then
-                Dim DebugOutput As String = BatchProcess.StandardError.ReadToEnd
-                If DebugOutput <> "" Then
-                    MsgBox(DebugOutput, MsgBoxStyle.Critical, "Error")
-                    WatchDogButton.Text = "Running: False"
-                    UpscaleProgress.Value = 0
-                    SwitchGroups()
-                    Exit Sub
-                End If
-            End If
             If (i + 1) Mod Limit = 0 OrElse (i = Source.Count - 1) Then
                 BatchProcess.WaitForExit()
             End If
-            UpscaleProgress.Value = i
-            UpscaleProgress.PerformStep()
+            WorkHorse.ReportProgress(Math.Round(((i * 100) + 1) / Source.Count, 0))
         Next
         If CleanupCheckBox.Checked = True Then
             For Each SourceImage As String In Source
                 File.Delete(SourceImage)
             Next
         End If
-        UpscaleProgress.Value = 0
-        WatchDog.Enabled = ContinueRunning
     End Sub
 
-    Private Sub MakePyUpscale(Source As String(), Limit As Integer, Optional ContinueRunning As Boolean = True)
-        WatchDog.Enabled = False
+    Private Sub MakePyUpscale(Source As String(), Dest As String, Limit As Integer)
         Dim TempLoc As String = Path.GetTempPath & "aaa" & Path.GetRandomFileName
         Directory.CreateDirectory(TempLoc)
-        UpscaleProgress.Maximum = Source.Count - 1
-        UpscaleProgress.Step = Limit
         For i = 0 To Source.Count - 1 Step Limit
             For j = i To i + Limit - 1
                 If j <= Source.Count - 1 Then
                     File.Copy(Source(j), TempLoc & "\" & Path.GetFileName(Source(j)))
                 End If
             Next
-            Dim WatDis As String = PyPaths(PyScript.SelectedIndex) & " " & MakePyCommand(TempLoc, OutputTextBox.Text).Trim
-            Dim BuildProcess As ProcessStartInfo = New ProcessStartInfo(PyPaths(PyScript.SelectedIndex), MakePyCommand(TempLoc, OutputTextBox.Text).Trim)
+            Dim BuildProcess As ProcessStartInfo = New ProcessStartInfo(LoadedPath, MakeCommand(TempLoc, Dest))
             BuildProcess.UseShellExecute = True
             BuildProcess.WindowStyle = ProcessWindowStyle.Minimized
             Dim BatchProcess As Process = Process.Start(BuildProcess)
@@ -259,8 +174,7 @@ Public Class Form1
             For Each TempImage As String In Directory.GetFiles(TempLoc)
                 File.Delete(TempImage)
             Next
-            UpscaleProgress.Value = i
-            UpscaleProgress.PerformStep()
+            WorkHorse.ReportProgress(Math.Round(((i * 100) + 1) / Source.Count, 0))
         Next
         Directory.Delete(TempLoc)
         If CleanupCheckBox.Checked = True Then
@@ -268,109 +182,13 @@ Public Class Form1
                 File.Delete(SourceImage)
             Next
         End If
-        UpscaleProgress.Value = 0
-        WatchDog.Enabled = ContinueRunning
     End Sub
-
-    Private Function MakeCaffeCommand(SourceImage As String, NewImage As String) As String
-        Dim Result As New ArguementString
-        Result.AddArguement("-i", Quote(SourceImage))
-        Result.AddArguement("-o", Quote(NewImage))
-        Result.AddArguement("-m", CaffeMode.Text.ToLower)
-        Result.AddArguement("-s", CaffeScale.Value)
-        Result.AddArguement("-n", CaffeNoise.Value)
-        Result.AddArguement("-p", CaffeProcess.Text.ToLower)
-        Result.AddArguement("-t", IIf(CaffeTAA.Checked = True, 1, 0))
-        Return Result.GetArguements
-    End Function
-
-    Private Function MakeVulkanCommand(SourceImage As String, NewImage As String) As String
-        Dim Result As New ArguementString
-        Result.AddArguement("-i", Quote(SourceImage))
-        Result.AddArguement("-o", Quote(NewImage))
-        Result.AddArguement("-s", VulkanScale.Value)
-        Result.AddArguement("-n", VulkanNoise.Value)
-        Result.AddArguement("-f", VulkanFormat.Text.ToLower)
-        Result.AddArguement(IIf(VulkanTAA.Checked = True, "-x", ""))
-        Return Result.GetArguements
-    End Function
-
-    Private Function MakeCPPCommand(SourceImage As String, NewImage As String) As String
-        Dim Result As New ArguementString
-        Result.AddArguement("-i", Quote(SourceImage))
-        Result.AddArguement("-o", Quote(NewImage))
-        Result.AddArguement("-m", WaifuCPPMode.Text.ToLower)
-        Result.AddArguement("--scale-ratio", WaifuCPPScale.Value)
-        Result.AddArguement("--noise-level", WaifuCPPNoise.Value)
-        Result.AddArguement("-f", WaifuCPPFormat.Text.ToLower)
-        Result.AddArguement(IIf(WaifuCPPNoGPU.Checked = True, "--disable-gpu", ""))
-        Result.AddArguement(IIf(WaifuCPPOpenCL.Checked = True, "--force-OpenCL", ""))
-        Result.AddArguement(IIf(WaifuCPPTTA.Checked = True, "-t", ""))
-        Return Result.GetArguements
-    End Function
-
-    Private Function MakeA4KCommand(SourceImage As String, NewImage As String) As String
-        Dim Result As New ArguementString
-        Result.AddArguement("-i", Quote(SourceImage))
-        Result.AddArguement("-o", Quote(NewImage))
-        Result.AddArguement("-p", AnimeCPPPasses.Value)
-        Result.AddArguement("-n", AnimeCPPPushColors.Value)
-        Result.AddArguement("-c", AnimeCPPColorStrength.Value)
-        Result.AddArguement("-g", AnimeCPPGradStrength.Value)
-        Result.AddArguement("-z", AnimeCPPScale.Value)
-        Result.AddArguement(IIf(AnimeCPPPre.Checked = True, "-b", ""))
-        Result.AddArguement(IIf(AnimeCPPPost.Checked = True, "-a", ""))
-        Select Case AnimeCPPFilterType.SelectedIndex
-            Case 1
-                Result.AddArguement("-r", GetFilters)
-            Case 2
-                Result.AddArguement("-e", GetFilters)
-        End Select
-        Result.AddArguement(IIf(AnimeCPPGpu.Checked = True, "-q", ""))
-        Result.AddArguement(IIf(AnimeCPPCnn.Checked = True, "-w", ""))
-        Result.AddArguement("-A")
-        Return Result.GetArguements
-    End Function
-
-    Private Function MakePyCommand(SourceFolder As String, DestFolder As String) As String
-        Dim Result As New ArguementString
-        Result.AddArguement(Quote(PyModels(PyModel.SelectedIndex)))
-        Result.AddArguement(PyInputFlag.Text, Quote(SourceFolder))
-        Result.AddArguement(PyOutputFlag.Text, Quote(DestFolder))
-        For i = 0 To PyArguements.Rows.Count - 2
-            If Not PyArguements.Rows(i).Cells(0).Value = Nothing Then
-                If PyArguements.Rows(i).Cells(1).Value = Nothing Then
-                    Result.AddArguement(PyArguements.Rows(i).Cells(0).Value.ToString)
-                Else
-                    Result.AddArguement(PyArguements.Rows(i).Cells(0).Value.ToString, PyArguements.Rows(i).Cells(1).Value.ToString)
-                End If
-            End If
-        Next
-        Return Result.GetArguements
-    End Function
-
-    Private Function MakeDebugCommand(SourceImage As String, NewImage As String) As String
-        Dim Result As New ArguementString
-        Result.AddArguement(DebugInArg.Text, Quote(Path.GetDirectoryName(SourceImage)))
-        Result.AddArguement(DebugOutArg.Text, Quote(Path.GetDirectoryName(NewImage)))
-        For i = 0 To DebugArgGrid.Rows.Count - 2
-            If Not DebugArgGrid.Rows(i).Cells(0).Value = Nothing Then
-                If DebugArgGrid.Rows(i).Cells(1).Value = Nothing Then
-                    Result.AddArguement(DebugArgGrid.Rows(i).Cells(0).Value.ToString)
-                Else
-                    Result.AddArguement(DebugArgGrid.Rows(i).Cells(0).Value.ToString, DebugArgGrid.Rows(i).Cells(1).Value.ToString)
-                End If
-            End If
-        Next
-        Return Result.GetArguements
-    End Function
 
     Private Sub SetSettingsWindow()
         CaffeGroup.Visible = False
         VulkanGroup.Visible = False
         WaifuCPPGroup.Visible = False
         AnimeCPPGroup.Visible = False
-        TestGroup.Visible = False
         PyGroup.Visible = False
         Select Case ExeComboBox.SelectedItem
             Case "Waifu2x Caffe"
@@ -383,8 +201,6 @@ Public Class Form1
                 MoveShowGroup(AnimeCPPGroup)
             Case "Python"
                 MoveShowGroup(PyGroup)
-            Case "Backend Testing"
-                MoveShowGroup(TestGroup)
         End Select
     End Sub
 
@@ -430,6 +246,71 @@ Public Class Form1
         Next
     End Sub
 
+    Private Function MakeCommand(Source As String, Dest As String) As String
+        Select Case LoadedMode
+            Case "Waifu2x Caffe"
+                Return MakeCaffeCommand(Source, Dest, LoadedPackage)
+            Case "Waifu2x Vulkan"
+                Return MakeVulkanCommand(Source, Dest, LoadedPackage)
+            Case "Waifu2x CPP"
+                Return MakeCPPCommand(Source, Dest, LoadedPackage)
+            Case "Anime4k CPP"
+                Return MakeA4KCommand(Source, Dest, LoadedPackage)
+            Case "Python"
+                Return MakePyCommand(Source, Dest, LoadedPackage)
+        End Select
+        Return ""
+    End Function
+
+    Private Sub PreloadSettings()
+        LoadedMode = ExeComboBox.SelectedItem
+        Select Case ExeComboBox.SelectedItem
+            Case "Waifu2x Caffe"
+                LoadedPath = Application.StartupPath() & "\waifu2x-caffe-cui.exe"
+                LoadedExtensions = {".png", ".jpg", ".jpeg", ".tif", ".tiff", ".bmp", ".tga"}
+                LoadedPackage = MakeCaffePackage()
+            Case "Waifu2x Vulkan"
+                LoadedPath = Application.StartupPath() & "\waifu2x-ncnn-vulkan.exe"
+                LoadedExtensions = {".png", ".webp"}
+                LoadedPackage = MakeVulkanPackage()
+            Case "Waifu2x CPP"
+                LoadedPath = Application.StartupPath() & "\waifu2x-converter-cpp.exe"
+                LoadedExtensions = {".bmp", ".dib", ".exr", ".hdr", ".jpe", ".jpeg", ".jpg", ".pbm", ".pgm", ".pic", ".png", ".pnm", ".ppm", ".pxm", ".ras", ".sr", ".tif", ".tiff", ".webp"}
+                LoadedPackage = MakeCPPPackage()
+            Case "Anime4k CPP"
+                LoadedPath = Application.StartupPath() & "\Anime4KCPP_CLI.exe"
+                LoadedExtensions = {".png", ".jpg"}
+                LoadedPackage = MakeA4KPackage()
+            Case "Python"
+                LoadedPath = PyPaths(PyScript.SelectedIndex)
+                LoadedExtensions = {".png", ".jpg", ".bmp"}
+                LoadedPackage = MakePyPackage()
+        End Select
+    End Sub
+
+    Private Function MakeCaffePackage() As Object
+        Return New CaffePackage(CaffeMode.Text.ToLower, CaffeScale.Value, CaffeNoise.Value, CaffeProcess.Text.ToLower, CaffeTAA.Checked)
+    End Function
+
+    Private Function MakeVulkanPackage() As Object
+        Return New VulkanPackage(VulkanScale.Value, VulkanNoise.Value, VulkanFormat.Text.ToLower, VulkanTAA.Checked)
+    End Function
+
+    Private Function MakeCPPPackage() As Object
+        Return New CPPPackage(WaifuCPPMode.Text.ToLower, WaifuCPPScale.Value, WaifuCPPNoise.Value, WaifuCPPFormat.Text.ToLower,
+                              WaifuCPPNoGPU.Checked, WaifuCPPOpenCL.Checked, WaifuCPPTTA.Checked)
+    End Function
+
+    Private Function MakeA4KPackage() As Object
+        Return New A4KPackage(AnimeCPPPasses.Value, AnimeCPPPushColors.Value, AnimeCPPColorStrength.Value,
+                              AnimeCPPGradStrength.Value, AnimeCPPScale.Value, AnimeCPPPre.Checked, AnimeCPPPost.Checked,
+                              GetFilters, AnimeCPPFilterType.SelectedIndex, AnimeCPPGpu.Checked, AnimeCPPCnn.Checked)
+    End Function
+
+    Private Function MakePyPackage() As Object
+        Return New PyPackage(PyModels(PyModel.SelectedIndex), PyInputFlag.Text.Trim, PyOutputFlag.Text.Trim, PyArguements)
+    End Function
+
     Private Sub SwitchGroups()
         PathGroup.Enabled = Not WatchDog.Enabled
         SettingsGroup.Enabled = Not WatchDog.Enabled
@@ -437,7 +318,21 @@ Public Class Form1
         VulkanGroup.Enabled = Not WatchDog.Enabled
         WaifuCPPGroup.Enabled = Not WatchDog.Enabled
         AnimeCPPGroup.Enabled = Not WatchDog.Enabled
+        PyGroup.Enabled = Not WatchDog.Enabled
     End Sub
+
+    Private Function GetThreads()
+        Select Case ThreadComboBox.SelectedIndex
+            Case 0
+                Return 1
+            Case 1
+                Return NumericThreads.Value
+            Case 2
+                Return Environment.ProcessorCount
+            Case Else
+                Return 4096
+        End Select
+    End Function
 
     Private Sub StartUpCheckPy()
         For Each sFile As String In Directory.GetFiles(Application.StartupPath)
@@ -458,14 +353,6 @@ Public Class Form1
             Next
         End If
     End Sub
-
-    Function DoubleCheckPy() As Boolean
-        Dim Result = True
-        If PyPaths.Count > 0 Then
-            Result = File.Exists(PyPaths(PyScript.SelectedIndex))
-        End If
-        Return Result
-    End Function
 
     Private Sub CheckPyArgs(Source As String)
         PyArguements.Rows.Clear()
@@ -491,10 +378,6 @@ Public Class Form1
             Next
         End If
     End Sub
-
-    Private Function Quote(Source As String) As String
-        Return vbQuote & Source & vbQuote
-    End Function
 
     Private Function GetFilters() As Integer
         Dim StringResult As String = ""

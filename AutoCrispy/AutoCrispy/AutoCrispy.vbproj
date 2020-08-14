@@ -94,6 +94,7 @@
     <Import Include="System.Threading.Tasks" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ConfigPackages.vb" />
     <Compile Include="Form1.vb">
       <SubType>Form</SubType>
     </Compile>
