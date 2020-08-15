@@ -1,12 +1,20 @@
 # AutoCrispy
-Automatically Run Waifu2x on Dumped Textures
+Automatically AI upscaling on Dumped Textures
 
-Requires at least one of the following binaries:
+## Backend Features
 
-- Anime4KCPP: https://github.com/TianZerL/Anime4KCPP (Thanks TianZer!)
-- Waifu2x-converter-cpp: https://github.com/DeadSix27/waifu2x-converter-cpp/releases
-- Waifu2x-Caffe: https://github.com/lltcggie/waifu2x-caffe/releases
-- Waifu2x-ncnn-vulkan: https://github.com/nihui/waifu2x-ncnn-vulkan/releases
+The following is the features supported in AutoCrispy. And feature listed is not necessarily the same as the features or requirements of the program. To work, AutoCrispy requires one of the following (or ESRGAN, requires setup).
+
+Backend|Scale Range|Denoising Support|Alpha Support|TAA|Custom Filters|Speed|Download
+-------|-----------|-----------------|-------------|---|--------------|-----|--------
+Waifu2x Caffe|1-4|✔|✔|✔|❌|Slow|[Link](https://github.com/lltcggie/waifu2x-caffe/releases)
+Waifu2x Vulkan|1-2|✔|✔|✔|❌|Average|[Link](https://github.com/nihui/waifu2x-ncnn-vulkan/releases)
+RealSR Vulkan|4-4|❌|✔|✔|❌|Slow|[Link](https://github.com/nihui/realsr-ncnn-vulkan/releases)
+SRMD Vulkan|2-4|✔|✔|✔|❌|Average|[Link](https://github.com/nihui/srmd-ncnn-vulkan/releases)
+Waifu2x CPP|1-8|✔|✔|❌|❌|Quick|[Link](https://github.com/DeadSix27/waifu2x-converter-cpp/releases)
+Anime4K CPP|1-8|❌|✔|❌|✔|Quick|[Link](https://github.com/TianZerL/Anime4KCPP)
+
+## ESRGAN
 
 It is also possible to use ESRGAN. This requires the setup of several applications:
 
