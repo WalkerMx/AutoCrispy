@@ -1,5 +1,5 @@
 # AutoCrispy
-Automatically AI upscaling on Dumped Textures
+Automatically AI upscaling on Dumped Textures. Comparison shots are [here](https://github.com/WalkerMx/AutoCrispy/blob/master/GUIDES.md).
 
 ## Backend Features
 
@@ -25,8 +25,6 @@ It is also possible to use ESRGAN. This requires the setup of several applicatio
  - An ESRGAN Model: https://upscale.wiki/wiki/Model_Database
 
 A setup guide for ESRGAN can be found here: https://upscale.wiki/wiki/ESRGAN_Installation_Guide_for_Windows
-
-Latest AutoCrispy Release Here: https://github.com/WalkerMx/AutoCrispy/releases
 
 # How to use:
     -Toss AutoCrispy into the folder from the backend(s) you chose, and run it.
