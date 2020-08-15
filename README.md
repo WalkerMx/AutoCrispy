@@ -1,5 +1,5 @@
 # AutoCrispy
-Automatically AI upscaling on Dumped Textures. Comparison shots are [here](https://github.com/WalkerMx/AutoCrispy/blob/master/GUIDES.md).
+Automatically AI upscaling on Dumped Textures. Comparison shots are [here](https://github.com/WalkerMx/AutoCrispy/blob/master/Compare.md).
 
 ## Backend Features
 
