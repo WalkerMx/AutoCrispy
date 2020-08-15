@@ -1,19 +1,15 @@
 # Reference Images:
 Images for comparison. The source is not mine, and these images exist purely for edification.
    
-Caffe 2x | Vulkan 2x 
+Caffe 4x | Waifu2x Vulkan 4x
 ---------|----------
----------|----------
-<img class="header" src="https://github.com/WalkerMx/DemoImages/blob/master/Reference_Assets/caffe2x.png">|<img src="https://github.com/WalkerMx/DemoImages/blob/master/Reference_Assets/vulkan2x.png">
----------|----------
-<img src="https://github.com/WalkerMx/DemoImages/blob/master/Reference_Assets/cpp2x.png">|<img src="https://github.com/WalkerMx/DemoImages/blob/master/Reference_Assets/xBRX2x.png">
-  CPP 2x | xBRZ 2x
+<img class="header" src="https://github.com/WalkerMx/DemoImages/blob/master/References/Caffe4x.png">|<img src="https://github.com/WalkerMx/DemoImages/blob/master/References/WaifuVulkan4x.png">
+<img src="https://github.com/WalkerMx/DemoImages/blob/master/References/WaifuCPP4x.png">|<img src="https://github.com/WalkerMx/DemoImages/blob/master/References/Anime4K4x.png">
+Waifu2x CPP 4x| Anime4K 4x
   
 
-Caffe 4x | Vulkan 4x (Simulated)
+RealSR 4x | SRMD
 ---------|----------
----------|----------
-<img src="https://github.com/WalkerMx/DemoImages/blob/master/Reference_Assets/caffe4x.png">|<img src="https://github.com/WalkerMx/DemoImages/blob/master/Reference_Assets/vulkan4x sim.png">
----------|----------
-<img src="https://github.com/WalkerMx/DemoImages/blob/master/Reference_Assets/cpp4x.png">|<img src="https://github.com/WalkerMx/DemoImages/blob/master/Reference_Assets/xBRZ4x.png">
-  CPP 4x | xBRZ 4x
+<img src="https://github.com/WalkerMx/DemoImages/blob/master/References/RealSR4x.png">|<img src="https://github.com/WalkerMx/DemoImages/blob/master/References/SRMD4x.png">
+<img src="https://github.com/WalkerMx/DemoImages/blob/master/References/ESRGAN4xBox.png">|<img src="https://github.com/WalkerMx/DemoImages/blob/master/References/ESRGAN4xFireAlpha.png">
+  ESRGAN (4xBox) | ESRGAN (4x_FireAlpha)
