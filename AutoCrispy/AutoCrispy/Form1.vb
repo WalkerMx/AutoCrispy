@@ -19,6 +19,8 @@ Public Class Form1
         StartUpCheckPy()
         If File.Exists(Application.StartupPath() & "\waifu2x-caffe-cui.exe") Then ExeComboBox.Items.Add("Waifu2x Caffe")
         If File.Exists(Application.StartupPath() & "\waifu2x-ncnn-vulkan.exe") Then ExeComboBox.Items.Add("Waifu2x Vulkan")
+        If File.Exists(Application.StartupPath() & "\realsr-ncnn-vulkan.exe") Then ExeComboBox.Items.Add("RealSR Vulkan")
+        If File.Exists(Application.StartupPath() & "\srmd-ncnn-vulkan.exe") Then ExeComboBox.Items.Add("SRMD Vulkan")
         If File.Exists(Application.StartupPath() & "\waifu2x-converter-cpp.exe") Then ExeComboBox.Items.Add("Waifu2x CPP")
         If File.Exists(Application.StartupPath() & "\Anime4KCPP_CLI.exe") Then ExeComboBox.Items.Add("Anime4k CPP")
         If PyPaths.Count > 0 Then
@@ -73,7 +75,8 @@ Public Class Form1
         If (Not (Directory.Exists(InputTextBox.Text) = True)) OrElse (Not (Directory.Exists(OutputTextBox.Text) = True)) Then
             MsgBox("No path specified, or path invalid!", MsgBoxStyle.Critical, "Error")
         ElseIf WorkHorse.IsBusy = True Then
-            MsgBox("The current operation cannot be canceled.", MsgBoxStyle.Information, "Error")
+            WatchDogButton.Enabled = False
+            WorkHorse.CancelAsync()
         Else
             WatchDog.Enabled = Not WatchDog.Enabled
             WatchDogButton.Text = "Running: " & WatchDog.Enabled
@@ -130,12 +133,24 @@ Public Class Form1
         Else
             MakeExeUpscale(HandOff(0), HandOff(1), HandOff(2))
         End If
+        If WorkHorse.CancellationPending = True Then
+            e.Cancel = True
+        End If
     End Sub
+
     Private Sub WorkHorse_ProgressChanged(sender As Object, e As System.ComponentModel.ProgressChangedEventArgs) Handles WorkHorse.ProgressChanged
         UpscaleProgress.Value = e.ProgressPercentage
     End Sub
+
     Private Sub WorkHorse_RunWorkerCompleted(sender As Object, e As System.ComponentModel.RunWorkerCompletedEventArgs) Handles WorkHorse.RunWorkerCompleted
         UpscaleProgress.Value = 0
+        If e.Cancelled = True Then
+            WatchDog.Enabled = False
+            WatchDogButton.Text = "Running: " & False
+            SwitchGroups()
+            WatchDogButton.Enabled = True
+            Exit Sub
+        End If
         If HandOff(3) = True Then
             WatchDog.Start()
         End If
@@ -151,6 +166,9 @@ Public Class Form1
                 BatchProcess.WaitForExit()
             End If
             WorkHorse.ReportProgress(Math.Round(((i * 100) + 1) / Source.Count, 0))
+            If WorkHorse.CancellationPending = True Then
+                Exit Sub
+            End If
         Next
         If CleanupCheckBox.Checked = True Then
             For Each SourceImage As String In Source
@@ -177,6 +195,9 @@ Public Class Form1
                 File.Delete(TempImage)
             Next
             WorkHorse.ReportProgress(Math.Round(((i * 100) + 1) / Source.Count, 0))
+            If WorkHorse.CancellationPending = True Then
+                Exit Sub
+            End If
         Next
         Directory.Delete(TempLoc)
         If CleanupCheckBox.Checked = True Then
@@ -197,6 +218,16 @@ Public Class Form1
                 MoveShowGroup(CaffeGroup)
             Case "Waifu2x Vulkan"
                 MoveShowGroup(VulkanGroup)
+                VulkanScale.Minimum = 1
+                VulkanScale.Maximum = 2
+            Case "RealSR Vulkan"
+                MoveShowGroup(VulkanGroup)
+                VulkanScale.Minimum = 4
+                VulkanScale.Maximum = 4
+            Case "SRMD Vulkan"
+                MoveShowGroup(VulkanGroup)
+                VulkanScale.Minimum = 2
+                VulkanScale.Maximum = 4
             Case "Waifu2x CPP"
                 MoveShowGroup(WaifuCPPGroup)
             Case "Anime4k CPP"
@@ -254,6 +285,10 @@ Public Class Form1
                 Return MakeCaffeCommand(Source, Dest, LoadedPackage)
             Case "Waifu2x Vulkan"
                 Return MakeVulkanCommand(Source, Dest, LoadedPackage)
+            Case "RealSR Vulkan"
+                Return MakeVulkanCommand(Source, Dest, LoadedPackage)
+            Case "SRMD Vulkan"
+                Return MakeVulkanCommand(Source, Dest, LoadedPackage)
             Case "Waifu2x CPP"
                 Return MakeCPPCommand(Source, Dest, LoadedPackage)
             Case "Anime4k CPP"
@@ -275,6 +310,14 @@ Public Class Form1
                 LoadedPath = Application.StartupPath() & "\waifu2x-ncnn-vulkan.exe"
                 LoadedExtensions = {".png", ".webp"}
                 LoadedPackage = MakeVulkanPackage()
+            Case "RealSR Vulkan"
+                LoadedPath = Application.StartupPath() & "\realsr-ncnn-vulkan.exe"
+                LoadedExtensions = {".png", ".webp"}
+                LoadedPackage = MakeVulkanPackage(True)
+            Case "SRMD Vulkan"
+                LoadedPath = Application.StartupPath() & "\srmd-ncnn-vulkan.exe"
+                LoadedExtensions = {".png", ".webp"}
+                LoadedPackage = MakeVulkanPackage()
             Case "Waifu2x CPP"
                 LoadedPath = Application.StartupPath() & "\waifu2x-converter-cpp.exe"
                 LoadedExtensions = {".bmp", ".dib", ".exr", ".hdr", ".jpe", ".jpeg", ".jpg", ".pbm", ".pgm", ".pic", ".png", ".pnm", ".ppm", ".pxm", ".ras", ".sr", ".tif", ".tiff", ".webp"}
@@ -294,8 +337,8 @@ Public Class Form1
         Return New CaffePackage(CaffeMode.Text.ToLower, CaffeScale.Value, CaffeNoise.Value, CaffeProcess.Text.ToLower, CaffeTAA.Checked)
     End Function
 
-    Private Function MakeVulkanPackage() As Object
-        Return New VulkanPackage(VulkanScale.Value, VulkanNoise.Value, VulkanFormat.Text.ToLower, VulkanTAA.Checked)
+    Private Function MakeVulkanPackage(Optional NoNoise As Boolean = False) As Object
+        Return New VulkanPackage(VulkanScale.Value, VulkanNoise.Value, VulkanFormat.Text.ToLower, VulkanTAA.Checked, NoNoise)
     End Function
 
     Private Function MakeCPPPackage() As Object
@@ -385,9 +428,9 @@ Public Class Form1
         Dim StringResult As String = ""
         For i = 0 To 6
             If AnimeCPPFilters.GetItemChecked(i) = True Then
-                StringResult += "1"c
+                StringResult = "1"c & StringResult
             Else
-                StringResult += "0"c
+                StringResult = "0"c & StringResult
             End If
         Next
         Return Convert.ToInt32(StringResult, 2)

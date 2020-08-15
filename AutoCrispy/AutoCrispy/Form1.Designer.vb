@@ -427,7 +427,7 @@ Partial Class Form1
         Me.VulkanTAA.AutoSize = True
         Me.VulkanTAA.Checked = Global.AutoCrispy.My.MySettings.Default.TAA
         Me.VulkanTAA.DataBindings.Add(New System.Windows.Forms.Binding("Checked", Global.AutoCrispy.My.MySettings.Default, "TAA", True, System.Windows.Forms.DataSourceUpdateMode.OnPropertyChanged))
-        Me.VulkanTAA.Location = New System.Drawing.Point(301, 52)
+        Me.VulkanTAA.Location = New System.Drawing.Point(301, 46)
         Me.VulkanTAA.Name = "VulkanTAA"
         Me.VulkanTAA.Size = New System.Drawing.Size(47, 17)
         Me.VulkanTAA.TabIndex = 14
@@ -439,7 +439,7 @@ Partial Class Form1
         Me.VulkanFormat.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
         Me.VulkanFormat.FormattingEnabled = True
         Me.VulkanFormat.Items.AddRange(New Object() {"PNG", "WEBP"})
-        Me.VulkanFormat.Location = New System.Drawing.Point(234, 22)
+        Me.VulkanFormat.Location = New System.Drawing.Point(234, 19)
         Me.VulkanFormat.Name = "VulkanFormat"
         Me.VulkanFormat.Size = New System.Drawing.Size(114, 21)
         Me.VulkanFormat.TabIndex = 13
@@ -447,7 +447,7 @@ Partial Class Form1
         'Label7
         '
         Me.Label7.AutoSize = True
-        Me.Label7.Location = New System.Drawing.Point(180, 25)
+        Me.Label7.Location = New System.Drawing.Point(180, 21)
         Me.Label7.Name = "Label7"
         Me.Label7.Size = New System.Drawing.Size(42, 13)
         Me.Label7.TabIndex = 1
@@ -458,7 +458,7 @@ Partial Class Form1
         Me.VulkanScale.DataBindings.Add(New System.Windows.Forms.Binding("Value", Global.AutoCrispy.My.MySettings.Default, "Scale", True, System.Windows.Forms.DataSourceUpdateMode.OnPropertyChanged))
         Me.VulkanScale.DecimalPlaces = 1
         Me.VulkanScale.Increment = New Decimal(New Integer() {1, 0, 0, 65536})
-        Me.VulkanScale.Location = New System.Drawing.Point(60, 49)
+        Me.VulkanScale.Location = New System.Drawing.Point(60, 45)
         Me.VulkanScale.Maximum = New Decimal(New Integer() {2, 0, 0, 0})
         Me.VulkanScale.Minimum = New Decimal(New Integer() {1, 0, 0, 0})
         Me.VulkanScale.Name = "VulkanScale"
@@ -469,7 +469,7 @@ Partial Class Form1
         'Label8
         '
         Me.Label8.AutoSize = True
-        Me.Label8.Location = New System.Drawing.Point(6, 25)
+        Me.Label8.Location = New System.Drawing.Point(6, 21)
         Me.Label8.Name = "Label8"
         Me.Label8.Size = New System.Drawing.Size(37, 13)
         Me.Label8.TabIndex = 1
@@ -478,7 +478,7 @@ Partial Class Form1
         'VulkanNoise
         '
         Me.VulkanNoise.DataBindings.Add(New System.Windows.Forms.Binding("Value", Global.AutoCrispy.My.MySettings.Default, "Noise", True, System.Windows.Forms.DataSourceUpdateMode.OnPropertyChanged))
-        Me.VulkanNoise.Location = New System.Drawing.Point(60, 23)
+        Me.VulkanNoise.Location = New System.Drawing.Point(60, 19)
         Me.VulkanNoise.Maximum = New Decimal(New Integer() {3, 0, 0, 0})
         Me.VulkanNoise.Minimum = New Decimal(New Integer() {1, 0, 0, -2147483648})
         Me.VulkanNoise.Name = "VulkanNoise"
@@ -489,7 +489,7 @@ Partial Class Form1
         'Label9
         '
         Me.Label9.AutoSize = True
-        Me.Label9.Location = New System.Drawing.Point(6, 51)
+        Me.Label9.Location = New System.Drawing.Point(6, 47)
         Me.Label9.Name = "Label9"
         Me.Label9.Size = New System.Drawing.Size(37, 13)
         Me.Label9.TabIndex = 1
@@ -859,10 +859,11 @@ Partial Class Form1
         Me.PyArguements.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.AllCells
         Me.PyArguements.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize
         Me.PyArguements.Columns.AddRange(New System.Windows.Forms.DataGridViewColumn() {Me.PyFlag, Me.PyValue})
-        Me.PyArguements.Location = New System.Drawing.Point(9, 72)
+        Me.PyArguements.Location = New System.Drawing.Point(183, 19)
         Me.PyArguements.Name = "PyArguements"
+        Me.PyArguements.RowHeadersWidth = 5
         Me.PyArguements.ScrollBars = System.Windows.Forms.ScrollBars.Vertical
-        Me.PyArguements.Size = New System.Drawing.Size(339, 122)
+        Me.PyArguements.Size = New System.Drawing.Size(207, 175)
         Me.PyArguements.TabIndex = 3
         '
         'PyFlag
@@ -881,14 +882,14 @@ Partial Class Form1
         '
         Me.PyModel.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
         Me.PyModel.FormattingEnabled = True
-        Me.PyModel.Location = New System.Drawing.Point(234, 19)
+        Me.PyModel.Location = New System.Drawing.Point(60, 46)
         Me.PyModel.Name = "PyModel"
         Me.PyModel.Size = New System.Drawing.Size(114, 21)
         Me.PyModel.TabIndex = 2
         '
         'PyInputFlag
         '
-        Me.PyInputFlag.Location = New System.Drawing.Point(72, 46)
+        Me.PyInputFlag.Location = New System.Drawing.Point(72, 72)
         Me.PyInputFlag.Name = "PyInputFlag"
         Me.PyInputFlag.Size = New System.Drawing.Size(102, 20)
         Me.PyInputFlag.TabIndex = 1
@@ -905,7 +906,7 @@ Partial Class Form1
         '
         'PyOutputFlag
         '
-        Me.PyOutputFlag.Location = New System.Drawing.Point(251, 46)
+        Me.PyOutputFlag.Location = New System.Drawing.Point(77, 98)
         Me.PyOutputFlag.Name = "PyOutputFlag"
         Me.PyOutputFlag.Size = New System.Drawing.Size(97, 20)
         Me.PyOutputFlag.TabIndex = 1
@@ -914,7 +915,7 @@ Partial Class Form1
         'Label26
         '
         Me.Label26.AutoSize = True
-        Me.Label26.Location = New System.Drawing.Point(180, 22)
+        Me.Label26.Location = New System.Drawing.Point(6, 49)
         Me.Label26.Name = "Label26"
         Me.Label26.Size = New System.Drawing.Size(39, 13)
         Me.Label26.TabIndex = 1
@@ -923,7 +924,7 @@ Partial Class Form1
         'Label28
         '
         Me.Label28.AutoSize = True
-        Me.Label28.Location = New System.Drawing.Point(6, 49)
+        Me.Label28.Location = New System.Drawing.Point(6, 75)
         Me.Label28.Name = "Label28"
         Me.Label28.Size = New System.Drawing.Size(60, 13)
         Me.Label28.TabIndex = 0
@@ -941,7 +942,7 @@ Partial Class Form1
         'Label27
         '
         Me.Label27.AutoSize = True
-        Me.Label27.Location = New System.Drawing.Point(180, 49)
+        Me.Label27.Location = New System.Drawing.Point(6, 101)
         Me.Label27.Name = "Label27"
         Me.Label27.Size = New System.Drawing.Size(65, 13)
         Me.Label27.TabIndex = 0
@@ -950,6 +951,7 @@ Partial Class Form1
         'WorkHorse
         '
         Me.WorkHorse.WorkerReportsProgress = True
+        Me.WorkHorse.WorkerSupportsCancellation = True
         '
         'Form1
         '

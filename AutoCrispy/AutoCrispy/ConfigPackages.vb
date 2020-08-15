@@ -35,11 +35,13 @@
         Public Property Noise As Decimal
         Public Property Format As String
         Public Property TAA As Boolean
-        Public Sub New(_Scale As Decimal, _Noise As Decimal, _Format As String, _TAA As Boolean)
+        Public Property NoNoise As Boolean
+        Public Sub New(_Scale As Decimal, _Noise As Decimal, _Format As String, _TAA As Boolean, Optional _NoNoise As Boolean = False)
             Scale = _Scale
             Noise = _Noise
             Format = _Format
             TAA = _TAA
+            NoNoise = _NoNoise
         End Sub
     End Structure
 
@@ -130,7 +132,7 @@
         Result.AddArguement("-i", Quote(SourceImage))
         Result.AddArguement("-o", Quote(NewImage))
         Result.AddArguement("-s", Package.Scale)
-        Result.AddArguement("-n", Package.Noise)
+        If Package.NoNoise = False Then Result.AddArguement("-n", Package.Noise)
         Result.AddArguement("-f", Package.Format)
         Result.AddArguement(IIf(Package.TAA = True, "-x", ""))
         Return Result.GetArguements
