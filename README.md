@@ -6,7 +6,7 @@ Automatically AI upscaling on Dumped Textures. Comparison shots are [here](https
 The following is the features supported in AutoCrispy. And feature listed is not necessarily the same as the features or requirements of the program. To work, AutoCrispy requires one of the following (or ESRGAN, requires setup).
 
 Backend|Scale Range|Denoising Support|Alpha Support|TAA|Custom Filters|Speed|Quality|Download
--------|-----------|-----------------|-------------|---|--------------|-----|-------|--------
+:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:
 Waifu2x Caffe|1-4|✔️|✔️|✔️|❌|Slow|Great|[Link](https://github.com/lltcggie/waifu2x-caffe/releases)
 Waifu2x Vulkan|1-2|✔️|✔️|✔️|❌|Average|Good|[Link](https://github.com/nihui/waifu2x-ncnn-vulkan/releases)
 RealSR Vulkan|4-4|❌|✔️|✔️|❌|Slow|Good|[Link](https://github.com/nihui/realsr-ncnn-vulkan/releases)
