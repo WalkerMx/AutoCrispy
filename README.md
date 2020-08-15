@@ -7,12 +7,12 @@ The following is the features supported in AutoCrispy. And feature listed is not
 
 Backend|Scale Range|Denoising Support|Alpha Support|TAA|Custom Filters|Speed|Quality|Download
 -------|-----------|-----------------|-------------|---|--------------|-----|-------|--------
-Waifu2x Caffe|1-4|✔|✔|✔|❌|Slow|Great|[Link](https://github.com/lltcggie/waifu2x-caffe/releases)
-Waifu2x Vulkan|1-2|✔|✔|✔|❌|Average|Good|[Link](https://github.com/nihui/waifu2x-ncnn-vulkan/releases)
-RealSR Vulkan|4-4|❌|✔|✔|❌|Slow|Good|[Link](https://github.com/nihui/realsr-ncnn-vulkan/releases)
-SRMD Vulkan|2-4|✔|✔|✔|❌|Average|Good|[Link](https://github.com/nihui/srmd-ncnn-vulkan/releases)
-Waifu2x CPP|1-8|✔|✔|❌|❌|Quick|OK|[Link](https://github.com/DeadSix27/waifu2x-converter-cpp/releases)
-Anime4K CPP|1-8|❌|✔|❌|✔|Quick|Good|[Link](https://github.com/TianZerL/Anime4KCPP)
+Waifu2x Caffe|1-4|✔️|✔️|✔️|❌|Slow|Great|[Link](https://github.com/lltcggie/waifu2x-caffe/releases)
+Waifu2x Vulkan|1-2|✔️|✔️|✔️|❌|Average|Good|[Link](https://github.com/nihui/waifu2x-ncnn-vulkan/releases)
+RealSR Vulkan|4-4|❌|✔️|✔️|❌|Slow|Good|[Link](https://github.com/nihui/realsr-ncnn-vulkan/releases)
+SRMD Vulkan|2-4|✔️|✔️|✔️|❌|Average|Good|[Link](https://github.com/nihui/srmd-ncnn-vulkan/releases)
+Waifu2x CPP|1-8|✔️|✔️|❌|❌|Quick|OK|[Link](https://github.com/DeadSix27/waifu2x-converter-cpp/releases)
+Anime4K CPP|1-8|❗|✔️|❌|✔️|Quick|Good|[Link](https://github.com/TianZerL/Anime4KCPP)
 
 ## ESRGAN
 
