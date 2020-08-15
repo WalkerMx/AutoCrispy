@@ -5,14 +5,14 @@ Automatically AI upscaling on Dumped Textures
 
 The following is the features supported in AutoCrispy. And feature listed is not necessarily the same as the features or requirements of the program. To work, AutoCrispy requires one of the following (or ESRGAN, requires setup).
 
-Backend|Scale Range|Denoising Support|Alpha Support|TAA|Custom Filters|Speed|Download
--------|-----------|-----------------|-------------|---|--------------|-----|--------
-Waifu2x Caffe|1-4|✔|✔|✔|❌|Slow|[Link](https://github.com/lltcggie/waifu2x-caffe/releases)
-Waifu2x Vulkan|1-2|✔|✔|✔|❌|Average|[Link](https://github.com/nihui/waifu2x-ncnn-vulkan/releases)
-RealSR Vulkan|4-4|❌|✔|✔|❌|Slow|[Link](https://github.com/nihui/realsr-ncnn-vulkan/releases)
-SRMD Vulkan|2-4|✔|✔|✔|❌|Average|[Link](https://github.com/nihui/srmd-ncnn-vulkan/releases)
-Waifu2x CPP|1-8|✔|✔|❌|❌|Quick|[Link](https://github.com/DeadSix27/waifu2x-converter-cpp/releases)
-Anime4K CPP|1-8|❌|✔|❌|✔|Quick|[Link](https://github.com/TianZerL/Anime4KCPP)
+Backend|Scale Range|Denoising Support|Alpha Support|TAA|Custom Filters|Speed|Quality|Download
+-------|-----------|-----------------|-------------|---|--------------|-----|-------|--------
+Waifu2x Caffe|1-4|✔|✔|✔|❌|Slow|Great|[Link](https://github.com/lltcggie/waifu2x-caffe/releases)
+Waifu2x Vulkan|1-2|✔|✔|✔|❌|Average|Good|[Link](https://github.com/nihui/waifu2x-ncnn-vulkan/releases)
+RealSR Vulkan|4-4|❌|✔|✔|❌|Slow|Good|[Link](https://github.com/nihui/realsr-ncnn-vulkan/releases)
+SRMD Vulkan|2-4|✔|✔|✔|❌|Average|Good|[Link](https://github.com/nihui/srmd-ncnn-vulkan/releases)
+Waifu2x CPP|1-8|✔|✔|❌|❌|Quick|OK|[Link](https://github.com/DeadSix27/waifu2x-converter-cpp/releases)
+Anime4K CPP|1-8|❌|✔|❌|✔|Quick|Good|[Link](https://github.com/TianZerL/Anime4KCPP)
 
 ## ESRGAN
 
@@ -45,22 +45,3 @@ Latest AutoCrispy Release Here: https://github.com/WalkerMx/AutoCrispy/releases
   Also, make sure you have enough VRAM if you use multithreading, especially with Caffe and ESRGAN. More threads & higher upscales dramatically increase the memory requirements!
   
   Guides for some common programs can be found [Here](https://github.com/WalkerMx/AutoCrispy/blob/master/GUIDES.md).
-  
-# About Backends:
-   Each of the backends have their own characteristics and quirks when used with AutoCrispy:
-   
-   - **Waifu2x-converter-cpp** is built using OpenCV. When doing actual upscaling, it uses little CPU and GPU resources. It allows for variable amounts of compression to be applied to the output. It has many options available for output, and can be used even on lower-end mid-tier machines. This works best with Half or All Threads. This is the fastest of the Waifu2x options, but tends to have pretty bad fringes on images with transparency.
-   
-   - **Waifu2x-Caffe** is intended for nVidia GPUs with CUDA, and has the highest VRAM memory requirements of the three. It has a decent amount of options. This runs the slowest, and has high requirements. It's output tends to looks the nicest.
-    
-   - **Waifu2x-ncnn-vulkan** is designed to run on (what else?) Vulkan. It can run on AMD and nVidia GPUs that support Vulkan. It has few options, and can be picky about your Vulkan interface, but once working, you can get very good speed coupled with a much lower VRAM overhead. This tends to be the middle ground. Faster than Caffe, but limited to 2x resolution. Simulating higher resolutions (by running the textures through again) results in minor fringing.
-   
-   - **Anime4KCPP** is the C++ implementation of the Anime4K algorithm. The algorithm is intended for real-time anime video upscaling, but also works for still images. Excellent speed even on weaker systems, many options, and good output mean that this has tons of potential. Because of the many settings, sometimes it takes a little tweaking to get the output *just* right. The default settings will have the faintest hint of fringes on the edges, but tweaking the settigns and filters can more than compensate for this.
-   
-   - **ESRGAN** is currently the most complicated to set up. The most widely available implementations are scripts written in Python. Performance and features vary widely between the scripts, however there are many models available that offer quality for a multitude of tasks.
-   
-   - **Notes on ESRGAN**:
-       - AutoCrispy will detect all python scripts with it in the folder. You may select the appropriate script in the GUI.
-       - AutoCrispy will attempt to locate any available Arguments in the scripts, and make them available in the GUI.
-       - Debug mode is not available for Python Scripts!
-
