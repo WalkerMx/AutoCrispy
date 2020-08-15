@@ -1,5 +1,9 @@
 # Reference Images:
 Images for comparison. The source is not mine, and these images exist purely for edification.
+
+|Source|
+|---|
+|<img src="https://github.com/WalkerMx/DemoImages/blob/master/References/Sample.png">|
    
 Caffe 4x|Waifu2x Vulkan 4x
 ---|---
@@ -16,4 +20,3 @@ RealSR 4x|SRMD 4x
 ESRGAN (4xBox)|ESRGAN (4x_FireAlpha)
 ---|---
 <img src="https://github.com/WalkerMx/DemoImages/blob/master/References/ESRGAN4xBox.png">|<img src="https://github.com/WalkerMx/DemoImages/blob/master/References/ESRGAN4xFireAlpha.png">
-
