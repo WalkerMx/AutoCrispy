@@ -12,7 +12,7 @@ Waifu2x Vulkan|1-2|✔️|✔️|✔️|❌|Average|Good|[Link](https://github.c
 RealSR Vulkan|4-4|❌|✔️|✔️|❌|Slow|Good|[Link](https://github.com/nihui/realsr-ncnn-vulkan/releases)
 SRMD Vulkan|2-4|✔️|✔️|✔️|❌|Average|Good|[Link](https://github.com/nihui/srmd-ncnn-vulkan/releases)
 Waifu2x CPP|1-8|✔️|✔️|❌|❌|Quick|OK|[Link](https://github.com/DeadSix27/waifu2x-converter-cpp/releases)
-Anime4K CPP|1-8|❗|✔️|❌|✔️|Quick|Good|[Link](https://github.com/TianZerL/Anime4KCPP)
+Anime4K CPP|1-8|❌|✔️|❌|✔️|Quick|Good|[Link](https://github.com/TianZerL/Anime4KCPP)
 
 ## ESRGAN
 
