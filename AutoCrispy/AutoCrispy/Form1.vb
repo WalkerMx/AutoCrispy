@@ -7,11 +7,11 @@ Public Class Form1
     Dim SettingsLoc As Point = New Point(240, 98)
     Dim PyPaths As New List(Of String)
     Dim PyModels As New List(Of String)
+    Dim PyEmbedded As Boolean
     Dim LoadedPackage As Object
     Dim LoadedPath As String
     Dim LoadedExtensions As String()
     Dim LoadedMode As String
-    Dim PyEmbedded As Boolean
     Dim HandOff As Object
 
     Private Sub Form1_Load(sender As Object, e As EventArgs) Handles MyBase.Load
@@ -190,7 +190,7 @@ Public Class Form1
             Next
             Dim BuildProcess As ProcessStartInfo
             If PyEmbedded = True Then
-                BuildProcess = New ProcessStartInfo(Application.StartupPath & "\python\python.exe", LoadedPath & " " & MakeCommand(TempLoc, Dest))
+                BuildProcess = New ProcessStartInfo(Application.StartupPath & "\python\python.exe", Quote(LoadedPath) & " " & MakeCommand(TempLoc, Dest))
             Else
                 BuildProcess = New ProcessStartInfo(LoadedPath, MakeCommand(TempLoc, Dest))
             End If
