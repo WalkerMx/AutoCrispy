@@ -172,6 +172,9 @@
         Result.AddArguement(IIf(Package.GPU = True, "-q", ""))
         Result.AddArguement(IIf(Package.CNN = True, "-w", ""))
         Result.AddArguement("-A")
+        Result.AddArguement("-H")
+        Result.AddArguement("-h", "0")
+        Result.AddArguement("-d", "0")
         Return Result.GetArguements
     End Function
 

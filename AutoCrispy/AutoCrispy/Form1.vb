@@ -11,12 +11,14 @@ Public Class Form1
     Dim LoadedPath As String
     Dim LoadedExtensions As String()
     Dim LoadedMode As String
+    Dim PyEmbedded As Boolean
     Dim HandOff As Object
 
     Private Sub Form1_Load(sender As Object, e As EventArgs) Handles MyBase.Load
         Me.Size = New Size(660, 345)
         LoadBindingString()
         StartUpCheckPy()
+        If File.Exists(Application.StartupPath & "\python\python.exe") Then PyEmbedded = True
         If File.Exists(Application.StartupPath() & "\waifu2x-caffe-cui.exe") Then ExeComboBox.Items.Add("Waifu2x Caffe")
         If File.Exists(Application.StartupPath() & "\waifu2x-ncnn-vulkan.exe") Then ExeComboBox.Items.Add("Waifu2x Vulkan")
         If File.Exists(Application.StartupPath() & "\realsr-ncnn-vulkan.exe") Then ExeComboBox.Items.Add("RealSR Vulkan")
@@ -186,7 +188,12 @@ Public Class Form1
                     File.Copy(Source(j), TempLoc & "\" & Path.GetFileName(Source(j)))
                 End If
             Next
-            Dim BuildProcess As ProcessStartInfo = New ProcessStartInfo(LoadedPath, MakeCommand(TempLoc, Dest))
+            Dim BuildProcess As ProcessStartInfo
+            If PyEmbedded = True Then
+                BuildProcess = New ProcessStartInfo(Application.StartupPath & "\python\python.exe", LoadedPath & " " & MakeCommand(TempLoc, Dest))
+            Else
+                BuildProcess = New ProcessStartInfo(LoadedPath, MakeCommand(TempLoc, Dest))
+            End If
             BuildProcess.UseShellExecute = True
             BuildProcess.WindowStyle = ProcessWindowStyle.Minimized
             Dim BatchProcess As Process = Process.Start(BuildProcess)
