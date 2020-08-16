@@ -16,15 +16,13 @@ Anime4K CPP|1-8|❌|✔️|❌|✔️|Quick|Good|[Link](https://github.com/TianZ
 
 ## ESRGAN
 
-It is also possible to use ESRGAN. This requires the setup of several applications:
+It is also possible to use ESRGAN. For convenience, a prebuilt, portable installation can be found here:<br />
+https://github.com/WalkerMx/ESRGAN_Python_Embedded/releases
 
- - Python: https://www.python.org/downloads/
- - PyTorch (pip): https://pytorch.org/get-started/locally/
- - PyOpenCL (pip): https://pypi.org/project/pyopencl/
- - A fork of ESRGAN: https://github.com/xinntao/ESRGAN/network/members
- - An ESRGAN Model: https://upscale.wiki/wiki/Model_Database
+This does not include any models. [They can be found here.](https://upscale.wiki/wiki/Model_Database)
 
-A setup guide for ESRGAN can be found here: https://upscale.wiki/wiki/ESRGAN_Installation_Guide_for_Windows
+Alternatively, the setup guide can be found here:<br />
+https://upscale.wiki/wiki/ESRGAN_Installation_Guide_for_Windows
 
 # How to use:
     -Toss AutoCrispy into the folder from the backend(s) you chose, and run it.
