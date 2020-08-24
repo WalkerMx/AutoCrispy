@@ -24,7 +24,7 @@ This does not include any models. [They can be found here.](https://upscale.wiki
 Alternatively, the setup guide can be found here:<br />
 https://upscale.wiki/wiki/ESRGAN_Installation_Guide_for_Windows
 
-# How to use:
+## How to use:
     -Toss AutoCrispy into the folder from the backend(s) you chose, and run it.
   
     -Pick the folder where the textures dump.
@@ -41,3 +41,10 @@ https://upscale.wiki/wiki/ESRGAN_Installation_Guide_for_Windows
   Also, make sure you have enough VRAM if you use multithreading, especially with Caffe and ESRGAN. More threads & higher upscales dramatically increase the memory requirements!
   
   Guides for some common programs can be found [Here](https://github.com/WalkerMx/AutoCrispy/blob/master/GUIDES.md).
+
+
+# Special Thanks
+
+Some people have been unusually helpful, or have gone above and beyond to show support for this project.  With their permission, they are listed below.
+
+### u/devilskin
