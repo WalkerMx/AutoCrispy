@@ -3,6 +3,7 @@ Imports AutoCrispy.ConfigPackages
 
 Public Class Form1
 
+    Dim Root As String = Application.StartupPath
     Dim WaitScale As Integer = 0
     Dim SettingsLoc As Point = New Point(240, 98)
     Dim PyPaths As New List(Of String)
@@ -17,20 +18,22 @@ Public Class Form1
     Private Sub Form1_Load(sender As Object, e As EventArgs) Handles MyBase.Load
         Me.Size = New Size(660, 345)
         LoadBindingString()
+        If File.Exists(Root & "\waifu2x-caffe-cui.exe") Then ExeComboBox.Items.Add("Waifu2x Caffe")
+        If File.Exists(Root & "\waifu2x-ncnn-vulkan.exe") Then ExeComboBox.Items.Add("Waifu2x Vulkan")
+        If File.Exists(Root & "\realsr-ncnn-vulkan.exe") Then ExeComboBox.Items.Add("RealSR Vulkan")
+        If File.Exists(Root & "\srmd-ncnn-vulkan.exe") Then ExeComboBox.Items.Add("SRMD Vulkan")
+        If File.Exists(Root & "\waifu2x-converter-cpp.exe") Then ExeComboBox.Items.Add("Waifu2x CPP")
+        If File.Exists(Root & "\Anime4KCPP_CLI.exe") Then ExeComboBox.Items.Add("Anime4k CPP")
+        If File.Exists(Root & "\python\python.exe") Then PyEmbedded = True
         StartUpCheckPy()
-        If File.Exists(Application.StartupPath & "\python\python.exe") Then PyEmbedded = True
-        If File.Exists(Application.StartupPath() & "\waifu2x-caffe-cui.exe") Then ExeComboBox.Items.Add("Waifu2x Caffe")
-        If File.Exists(Application.StartupPath() & "\waifu2x-ncnn-vulkan.exe") Then ExeComboBox.Items.Add("Waifu2x Vulkan")
-        If File.Exists(Application.StartupPath() & "\realsr-ncnn-vulkan.exe") Then ExeComboBox.Items.Add("RealSR Vulkan")
-        If File.Exists(Application.StartupPath() & "\srmd-ncnn-vulkan.exe") Then ExeComboBox.Items.Add("SRMD Vulkan")
-        If File.Exists(Application.StartupPath() & "\waifu2x-converter-cpp.exe") Then ExeComboBox.Items.Add("Waifu2x CPP")
-        If File.Exists(Application.StartupPath() & "\Anime4KCPP_CLI.exe") Then ExeComboBox.Items.Add("Anime4k CPP")
         If PyPaths.Count > 0 Then
             ExeComboBox.Items.Add("Python")
             PyScript.SelectedIndex = 0
-        End If
-        If PyModels.Count > 0 Then
-            PyModel.SelectedIndex = 0
+            If PyModels.Count > 0 Then
+                PyModel.SelectedIndex = 0
+            Else
+                MsgBox("No ESRGAN Models Found!", MsgBoxStyle.Critical)
+            End If
         End If
         If ExeComboBox.Items.Count > 0 Then
             ExeComboBox.SelectedIndex = 0
@@ -58,15 +61,12 @@ Public Class Form1
     Private Sub RunOnceButton_Click(sender As Object, e As EventArgs) Handles RunOnceButton.Click
         Using OFD As New OpenFileDialog With {.Filter = "Image Files|*.png;*.jpg;*.bmp"}
             If OFD.ShowDialog = DialogResult.OK Then
-                Using FBD As New FolderBrowserDialog
-                    If FBD.ShowDialog = DialogResult.OK Then
-                        Dim SourceImage = {OFD.FileName}
-                        Dim TempOutput As String = OutputTextBox.Text
-                        OutputTextBox.Text = FBD.SelectedPath
+                Using SFD As New SaveFileDialog With {.Filter = "PNG Images|*.png"}
+                    If SFD.ShowDialog = DialogResult.OK Then
                         PreloadSettings()
-                        HandOff = {SourceImage.ToArray, OutputTextBox.Text, GetThreads(), False}
+                        HandOff = {OFD.FileName, SFD.FileName, GetThreads(), False, DefringeCheck.Checked, DefringeThresh.Value}
+                        SwitchGroups(False)
                         WorkHorse.RunWorkerAsync()
-                        OutputTextBox.Text = TempOutput
                     End If
                 End Using
             End If
@@ -82,7 +82,7 @@ Public Class Form1
         Else
             WatchDog.Enabled = Not WatchDog.Enabled
             WatchDogButton.Text = "Running: " & WatchDog.Enabled
-            SwitchGroups()
+            SwitchGroups(Not WatchDog.Enabled)
         End If
     End Sub
 
@@ -122,7 +122,7 @@ Public Class Form1
                 End If
             Next
             If NewImages.Count > 0 Then
-                HandOff = {NewImages.ToArray, OutputTextBox.Text, GetThreads(), True}
+                HandOff = {NewImages.ToArray, OutputTextBox.Text, GetThreads(), True, DefringeCheck.Checked, DefringeThresh.Value}
                 WorkHorse.RunWorkerAsync()
             End If
         End If
@@ -131,9 +131,17 @@ Public Class Form1
     Private Sub WorkHorse_DoWork(sender As Object, e As System.ComponentModel.DoWorkEventArgs) Handles WorkHorse.DoWork
         WatchDog.Stop()
         If LoadedMode = "Python" Then
-            MakePyUpscale(HandOff(0), HandOff(1), HandOff(2))
+            If HandOff(0).GetType Is GetType(String) Then
+                MakePyUpscale(HandOff(0), HandOff(1))
+            Else
+                MakePyUpscale(HandOff(0), HandOff(1), HandOff(2))
+            End If
         Else
-            MakeExeUpscale(HandOff(0), HandOff(1), HandOff(2))
+            If HandOff(0).GetType Is GetType(String) Then
+                MakeExeUpscale(HandOff(0), HandOff(1))
+            Else
+                MakeExeUpscale(HandOff(0), HandOff(1), HandOff(2))
+            End If
         End If
         If WorkHorse.CancellationPending = True Then
             e.Cancel = True
@@ -149,12 +157,14 @@ Public Class Form1
         If e.Cancelled = True Then
             WatchDog.Enabled = False
             WatchDogButton.Text = "Running: " & False
-            SwitchGroups()
+            SwitchGroups(Not WatchDog.Enabled)
             WatchDogButton.Enabled = True
             Exit Sub
         End If
         If HandOff(3) = True Then
             WatchDog.Start()
+        Else
+            SwitchGroups(True)
         End If
     End Sub
 
@@ -172,6 +182,11 @@ Public Class Form1
                 Exit Sub
             End If
         Next
+        If HandOff(4) = True Then
+            For Each SourceImage As String In Source
+                Defringe(Dest & "\" & Path.GetFileName(SourceImage))
+            Next
+        End If
         If CleanupCheckBox.Checked = True Then
             For Each SourceImage As String In Source
                 File.Delete(SourceImage)
@@ -207,11 +222,49 @@ Public Class Form1
             End If
         Next
         Directory.Delete(TempLoc)
+        If HandOff(4) = True Then
+            For Each SourceImage As String In Source
+                Defringe(Dest & "\" & Path.GetFileName(SourceImage))
+            Next
+        End If
         If CleanupCheckBox.Checked = True Then
             For Each SourceImage As String In Source
                 File.Delete(SourceImage)
             Next
         End If
+    End Sub
+
+    Private Sub MakeExeUpscale(Source As String, Dest As String)
+        Dim BuildProcess As ProcessStartInfo = New ProcessStartInfo(LoadedPath, MakeCommand(Source, Dest))
+        BuildProcess.WindowStyle = ProcessWindowStyle.Hidden
+        Dim BatchProcess As Process = Process.Start(BuildProcess)
+        BatchProcess.WaitForExit()
+        If HandOff(4) = True Then
+            Defringe(Dest)
+        End If
+    End Sub
+
+    Private Sub MakePyUpscale(Source As String, Dest As String)
+        Dim TempLoc As String = Path.GetTempPath & "aaa" & Path.GetRandomFileName
+        Directory.CreateDirectory(TempLoc)
+        File.Copy(Source, TempLoc & "\" & Path.GetFileName(Dest))
+        Dim BuildProcess As ProcessStartInfo
+        If PyEmbedded = True Then
+            BuildProcess = New ProcessStartInfo(Root & "\python\python.exe", Quote(LoadedPath) & " " & MakeCommand(TempLoc, Directory.GetParent(Dest).FullName))
+        Else
+            BuildProcess = New ProcessStartInfo(LoadedPath, MakeCommand(TempLoc, Directory.GetParent(Dest).FullName))
+        End If
+        BuildProcess.UseShellExecute = True
+        BuildProcess.WindowStyle = ProcessWindowStyle.Minimized
+        Dim BatchProcess As Process = Process.Start(BuildProcess)
+        BatchProcess.WaitForExit()
+        If HandOff(4) = True Then
+            Defringe(Dest)
+        End If
+        For Each TempImage As String In Directory.GetFiles(TempLoc)
+            File.Delete(TempImage)
+        Next
+        Directory.Delete(TempLoc)
     End Sub
 
     Private Sub SetSettingsWindow()
@@ -220,6 +273,7 @@ Public Class Form1
         WaifuCPPGroup.Visible = False
         AnimeCPPGroup.Visible = False
         PyGroup.Visible = False
+        VulkanNoise.Enabled = True
         Select Case ExeComboBox.SelectedItem
             Case "Waifu2x Caffe"
                 MoveShowGroup(CaffeGroup)
@@ -231,6 +285,7 @@ Public Class Form1
                 MoveShowGroup(VulkanGroup)
                 VulkanScale.Minimum = 4
                 VulkanScale.Maximum = 4
+                VulkanNoise.Enabled = False
             Case "SRMD Vulkan"
                 MoveShowGroup(VulkanGroup)
                 VulkanScale.Minimum = 2
@@ -310,27 +365,27 @@ Public Class Form1
         LoadedMode = ExeComboBox.SelectedItem
         Select Case ExeComboBox.SelectedItem
             Case "Waifu2x Caffe"
-                LoadedPath = Application.StartupPath() & "\waifu2x-caffe-cui.exe"
+                LoadedPath = Root & "\waifu2x-caffe-cui.exe"
                 LoadedExtensions = {".png", ".jpg", ".jpeg", ".tif", ".tiff", ".bmp", ".tga"}
                 LoadedPackage = MakeCaffePackage()
             Case "Waifu2x Vulkan"
-                LoadedPath = Application.StartupPath() & "\waifu2x-ncnn-vulkan.exe"
-                LoadedExtensions = {".png", ".webp"}
+                LoadedPath = Root & "\waifu2x-ncnn-vulkan.exe"
+                LoadedExtensions = {".png", ".webp", ".jpg"}
                 LoadedPackage = MakeVulkanPackage()
             Case "RealSR Vulkan"
-                LoadedPath = Application.StartupPath() & "\realsr-ncnn-vulkan.exe"
-                LoadedExtensions = {".png", ".webp"}
+                LoadedPath = Root & "\realsr-ncnn-vulkan.exe"
+                LoadedExtensions = {".png", ".webp", ".jpg"}
                 LoadedPackage = MakeVulkanPackage(True)
             Case "SRMD Vulkan"
-                LoadedPath = Application.StartupPath() & "\srmd-ncnn-vulkan.exe"
-                LoadedExtensions = {".png", ".webp"}
+                LoadedPath = Root & "\srmd-ncnn-vulkan.exe"
+                LoadedExtensions = {".png", ".webp", ".jpg"}
                 LoadedPackage = MakeVulkanPackage()
             Case "Waifu2x CPP"
-                LoadedPath = Application.StartupPath() & "\waifu2x-converter-cpp.exe"
+                LoadedPath = Root & "\waifu2x-converter-cpp.exe"
                 LoadedExtensions = {".bmp", ".dib", ".exr", ".hdr", ".jpe", ".jpeg", ".jpg", ".pbm", ".pgm", ".pic", ".png", ".pnm", ".ppm", ".pxm", ".ras", ".sr", ".tif", ".tiff", ".webp"}
                 LoadedPackage = MakeCPPPackage()
             Case "Anime4k CPP"
-                LoadedPath = Application.StartupPath() & "\Anime4KCPP_CLI.exe"
+                LoadedPath = Root & "\Anime4KCPP_CLI.exe"
                 LoadedExtensions = {".png", ".jpg"}
                 LoadedPackage = MakeA4KPackage()
             Case "Python"
@@ -363,14 +418,14 @@ Public Class Form1
         Return New PyPackage(PyModels(PyModel.SelectedIndex), PyInputFlag.Text.Trim, PyOutputFlag.Text.Trim, PyArguements)
     End Function
 
-    Private Sub SwitchGroups()
-        PathGroup.Enabled = Not WatchDog.Enabled
-        SettingsGroup.Enabled = Not WatchDog.Enabled
-        CaffeGroup.Enabled = Not WatchDog.Enabled
-        VulkanGroup.Enabled = Not WatchDog.Enabled
-        WaifuCPPGroup.Enabled = Not WatchDog.Enabled
-        AnimeCPPGroup.Enabled = Not WatchDog.Enabled
-        PyGroup.Enabled = Not WatchDog.Enabled
+    Private Sub SwitchGroups(Enabled As Boolean)
+        PathGroup.Enabled = Enabled
+        SettingsGroup.Enabled = Enabled
+        CaffeGroup.Enabled = Enabled
+        VulkanGroup.Enabled = Enabled
+        WaifuCPPGroup.Enabled = Enabled
+        AnimeCPPGroup.Enabled = Enabled
+        PyGroup.Enabled = Enabled
     End Sub
 
     Private Function GetThreads()
@@ -429,6 +484,32 @@ Public Class Form1
                 End If
             Next
         End If
+    End Sub
+
+    Private Sub Defringe(Source As String)
+        Dim SourceImage As Bitmap = Image.FromFile(Source)
+        Dim NewImage As New Bitmap(SourceImage)
+        SourceImage.Dispose()
+        LockbitsDefringe(NewImage, HandOff(5))
+        NewImage.Save(Source)
+    End Sub
+
+    Private Sub LockbitsDefringe(ByRef Source As Bitmap, Threshold As Integer)
+        Dim rect As Rectangle = New Rectangle(0, 0, Source.Width, Source.Height)
+        Dim bmpData As Imaging.BitmapData = Source.LockBits(rect, Imaging.ImageLockMode.ReadWrite, Imaging.PixelFormat.Format32bppArgb)
+        Dim ptr As IntPtr = bmpData.Scan0
+        Dim bytes As Integer = Math.Abs(bmpData.Stride) * Source.Height
+        Dim rgbValues As Byte() = New Byte(bytes - 1) {}
+        Runtime.InteropServices.Marshal.Copy(ptr, rgbValues, 0, bytes)
+        For i = 3 To rgbValues.Length - 1 Step 4
+            If rgbValues(i) < Threshold Then
+                rgbValues(i) = 0
+            ElseIf rgbValues(i) < 255 Then
+                rgbValues(i) = 255
+            End If
+        Next
+        Runtime.InteropServices.Marshal.Copy(rgbValues, 0, ptr, bytes)
+        Source.UnlockBits(bmpData)
     End Sub
 
     Private Function GetFilters() As Integer

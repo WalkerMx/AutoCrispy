@@ -44,12 +44,15 @@ Partial Class Form1
         Me.WatchDog = New System.Windows.Forms.Timer(Me.components)
         Me.WatchDogButton = New System.Windows.Forms.Button()
         Me.SettingsGroup = New System.Windows.Forms.GroupBox()
+        Me.DefringeThresh = New System.Windows.Forms.NumericUpDown()
+        Me.DefringeCheck = New System.Windows.Forms.CheckBox()
         Me.UpscaleProgress = New System.Windows.Forms.ProgressBar()
         Me.NumericThreads = New System.Windows.Forms.NumericUpDown()
         Me.ThreadComboBox = New System.Windows.Forms.ComboBox()
         Me.ExeComboBox = New System.Windows.Forms.ComboBox()
         Me.CleanupCheckBox = New System.Windows.Forms.CheckBox()
         Me.Label21 = New System.Windows.Forms.Label()
+        Me.Label22 = New System.Windows.Forms.Label()
         Me.Label12 = New System.Windows.Forms.Label()
         Me.RunOnceButton = New System.Windows.Forms.Button()
         Me.VulkanGroup = New System.Windows.Forms.GroupBox()
@@ -108,6 +111,7 @@ Partial Class Form1
         CType(Me.CaffeScale, System.ComponentModel.ISupportInitialize).BeginInit()
         CType(Me.CaffeNoise, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.SettingsGroup.SuspendLayout()
+        CType(Me.DefringeThresh, System.ComponentModel.ISupportInitialize).BeginInit()
         CType(Me.NumericThreads, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.VulkanGroup.SuspendLayout()
         CType(Me.VulkanScale, System.ComponentModel.ISupportInitialize).BeginInit()
@@ -318,12 +322,15 @@ Partial Class Form1
         '
         'SettingsGroup
         '
+        Me.SettingsGroup.Controls.Add(Me.DefringeThresh)
+        Me.SettingsGroup.Controls.Add(Me.DefringeCheck)
         Me.SettingsGroup.Controls.Add(Me.UpscaleProgress)
         Me.SettingsGroup.Controls.Add(Me.NumericThreads)
         Me.SettingsGroup.Controls.Add(Me.ThreadComboBox)
         Me.SettingsGroup.Controls.Add(Me.ExeComboBox)
         Me.SettingsGroup.Controls.Add(Me.CleanupCheckBox)
         Me.SettingsGroup.Controls.Add(Me.Label21)
+        Me.SettingsGroup.Controls.Add(Me.Label22)
         Me.SettingsGroup.Controls.Add(Me.Label12)
         Me.SettingsGroup.Location = New System.Drawing.Point(12, 98)
         Me.SettingsGroup.Name = "SettingsGroup"
@@ -331,6 +338,30 @@ Partial Class Form1
         Me.SettingsGroup.TabIndex = 4
         Me.SettingsGroup.TabStop = False
         Me.SettingsGroup.Text = "Program Settings"
+        '
+        'DefringeThresh
+        '
+        Me.DefringeThresh.Enabled = False
+        Me.DefringeThresh.Location = New System.Drawing.Point(112, 72)
+        Me.DefringeThresh.Maximum = New Decimal(New Integer() {255, 0, 0, 0})
+        Me.DefringeThresh.Name = "DefringeThresh"
+        Me.DefringeThresh.Size = New System.Drawing.Size(98, 20)
+        Me.DefringeThresh.TabIndex = 11
+        Me.DefringeThresh.Value = New Decimal(New Integer() {215, 0, 0, 0})
+        Me.DefringeThresh.Visible = False
+        '
+        'DefringeCheck
+        '
+        Me.DefringeCheck.AutoSize = True
+        Me.DefringeCheck.Checked = Global.AutoCrispy.My.MySettings.Default.Defringe
+        Me.DefringeCheck.DataBindings.Add(New System.Windows.Forms.Binding("Checked", Global.AutoCrispy.My.MySettings.Default, "Defringe", True, System.Windows.Forms.DataSourceUpdateMode.OnPropertyChanged))
+        Me.DefringeCheck.Location = New System.Drawing.Point(9, 98)
+        Me.DefringeCheck.Name = "DefringeCheck"
+        Me.DefringeCheck.Size = New System.Drawing.Size(66, 17)
+        Me.DefringeCheck.TabIndex = 10
+        Me.DefringeCheck.Text = "Defringe"
+        Me.DefringeCheck.UseVisualStyleBackColor = True
+        Me.DefringeCheck.Visible = False
         '
         'UpscaleProgress
         '
@@ -372,7 +403,7 @@ Partial Class Form1
         'CleanupCheckBox
         '
         Me.CleanupCheckBox.AutoSize = True
-        Me.CleanupCheckBox.Location = New System.Drawing.Point(9, 73)
+        Me.CleanupCheckBox.Location = New System.Drawing.Point(102, 98)
         Me.CleanupCheckBox.Name = "CleanupCheckBox"
         Me.CleanupCheckBox.Size = New System.Drawing.Size(108, 17)
         Me.CleanupCheckBox.TabIndex = 7
@@ -387,6 +418,16 @@ Partial Class Form1
         Me.Label21.Size = New System.Drawing.Size(53, 13)
         Me.Label21.TabIndex = 0
         Me.Label21.Text = "Backend:"
+        '
+        'Label22
+        '
+        Me.Label22.AutoSize = True
+        Me.Label22.Location = New System.Drawing.Point(6, 74)
+        Me.Label22.Name = "Label22"
+        Me.Label22.Size = New System.Drawing.Size(100, 13)
+        Me.Label22.TabIndex = 0
+        Me.Label22.Text = "Defringe Threshold:"
+        Me.Label22.Visible = False
         '
         'Label12
         '
@@ -979,6 +1020,7 @@ Partial Class Form1
         CType(Me.CaffeNoise, System.ComponentModel.ISupportInitialize).EndInit()
         Me.SettingsGroup.ResumeLayout(False)
         Me.SettingsGroup.PerformLayout()
+        CType(Me.DefringeThresh, System.ComponentModel.ISupportInitialize).EndInit()
         CType(Me.NumericThreads, System.ComponentModel.ISupportInitialize).EndInit()
         Me.VulkanGroup.ResumeLayout(False)
         Me.VulkanGroup.PerformLayout()
@@ -1081,4 +1123,7 @@ Partial Class Form1
     Friend WithEvents PyValue As DataGridViewTextBoxColumn
     Friend WithEvents UpscaleProgress As ProgressBar
     Friend WithEvents WorkHorse As System.ComponentModel.BackgroundWorker
+    Friend WithEvents DefringeThresh As NumericUpDown
+    Friend WithEvents DefringeCheck As CheckBox
+    Friend WithEvents Label22 As Label
 End Class
