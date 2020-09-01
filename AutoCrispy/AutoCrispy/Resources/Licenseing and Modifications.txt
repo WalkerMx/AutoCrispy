@@ -1,0 +1,18 @@
+These files were modified and used under the terms of their respective licenses, which are made openly available through their pages.
+Also included are the modifications, as per the license agreements.
+
+
+https://en.wikipedia.org/wiki/File:Anime_Kitty_-_laughing.svg
+This file was modified to fit a 256x256 space.
+
+https://commons.wikimedia.org/wiki/File:Anime_Girl.svg
+This file was modified to fit a 256x256 space.  Un-lewded (made clothes opaque).  Removed background.
+
+https://commons.wikimedia.org/wiki/File:Wikipe-tan_full_length.svg
+This file was modified to fit a 256x256 space.  Branding was removed.  Hair color was changed in two cases.
+
+https://commons.wikimedia.org/wiki/File:Purple_Haired_Anime_Girl_With_Star_Background.svg
+This file was modified to fit a 256x256 space.  Removed background.
+
+https://commons.wikimedia.org/wiki/File:Kemonomimi_girl_in_chibi_style.svg
+This file was modified to fit a 256x256 space.  Background was removed.  Simplified art.
