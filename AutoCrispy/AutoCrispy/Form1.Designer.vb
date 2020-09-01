@@ -1107,7 +1107,7 @@ Partial Class Form1
         Me.Label23.Name = "Label23"
         Me.Label23.Size = New System.Drawing.Size(274, 13)
         Me.Label23.TabIndex = 0
-        Me.Label23.Text = "Wake the fuck up samurai, we have textures to upscale."
+        Me.Label23.Text = "Wake the f*** up samurai, we have textures to upscale."
         '
         'Form1
         '
