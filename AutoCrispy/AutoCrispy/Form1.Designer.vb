@@ -24,12 +24,6 @@ Partial Class Form1
     Private Sub InitializeComponent()
         Me.components = New System.ComponentModel.Container()
         Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(Form1))
-        Me.OutputBrowse = New System.Windows.Forms.Button()
-        Me.InputBrowse = New System.Windows.Forms.Button()
-        Me.OutputTextBox = New System.Windows.Forms.TextBox()
-        Me.InputTextBox = New System.Windows.Forms.TextBox()
-        Me.Label2 = New System.Windows.Forms.Label()
-        Me.Label1 = New System.Windows.Forms.Label()
         Me.CaffeGroup = New System.Windows.Forms.GroupBox()
         Me.CaffeTAA = New System.Windows.Forms.CheckBox()
         Me.CaffeProcess = New System.Windows.Forms.ComboBox()
@@ -53,7 +47,6 @@ Partial Class Form1
         Me.Label21 = New System.Windows.Forms.Label()
         Me.Label22 = New System.Windows.Forms.Label()
         Me.Label12 = New System.Windows.Forms.Label()
-        Me.ChainAdd = New System.Windows.Forms.Button()
         Me.RunOnceButton = New System.Windows.Forms.Button()
         Me.VulkanGroup = New System.Windows.Forms.GroupBox()
         Me.VulkanTAA = New System.Windows.Forms.CheckBox()
@@ -107,15 +100,20 @@ Partial Class Form1
         Me.Label27 = New System.Windows.Forms.Label()
         Me.WorkHorse = New System.ComponentModel.BackgroundWorker()
         Me.ChainThumbs = New System.Windows.Forms.ImageList(Me.components)
-        Me.ChainPreview = New System.Windows.Forms.ListView()
-        Me.TabGroup = New System.Windows.Forms.TabControl()
-        Me.PathGroup = New System.Windows.Forms.TabPage()
         Me.ChainGroup = New System.Windows.Forms.TabPage()
         Me.ChainLoad = New System.Windows.Forms.Button()
         Me.ChainSave = New System.Windows.Forms.Button()
         Me.ChainRemove = New System.Windows.Forms.Button()
-        Me.AboutTab = New System.Windows.Forms.TabPage()
-        Me.Label23 = New System.Windows.Forms.Label()
+        Me.ChainAdd = New System.Windows.Forms.Button()
+        Me.ChainPreview = New System.Windows.Forms.ListView()
+        Me.PathGroup = New System.Windows.Forms.TabPage()
+        Me.OutputBrowse = New System.Windows.Forms.Button()
+        Me.InputTextBox = New System.Windows.Forms.TextBox()
+        Me.OutputTextBox = New System.Windows.Forms.TextBox()
+        Me.InputBrowse = New System.Windows.Forms.Button()
+        Me.Label1 = New System.Windows.Forms.Label()
+        Me.Label2 = New System.Windows.Forms.Label()
+        Me.TabGroup = New System.Windows.Forms.TabControl()
         Me.CaffeGroup.SuspendLayout()
         CType(Me.CaffeScale, System.ComponentModel.ISupportInitialize).BeginInit()
         CType(Me.CaffeNoise, System.ComponentModel.ISupportInitialize).BeginInit()
@@ -136,65 +134,10 @@ Partial Class Form1
         CType(Me.AnimeCPPPasses, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.PyGroup.SuspendLayout()
         CType(Me.PyArguements, System.ComponentModel.ISupportInitialize).BeginInit()
-        Me.TabGroup.SuspendLayout()
-        Me.PathGroup.SuspendLayout()
         Me.ChainGroup.SuspendLayout()
-        Me.AboutTab.SuspendLayout()
+        Me.PathGroup.SuspendLayout()
+        Me.TabGroup.SuspendLayout()
         Me.SuspendLayout()
-        '
-        'OutputBrowse
-        '
-        Me.OutputBrowse.Location = New System.Drawing.Point(580, 32)
-        Me.OutputBrowse.Name = "OutputBrowse"
-        Me.OutputBrowse.Size = New System.Drawing.Size(30, 20)
-        Me.OutputBrowse.TabIndex = 3
-        Me.OutputBrowse.Text = "..."
-        Me.OutputBrowse.UseVisualStyleBackColor = True
-        '
-        'InputBrowse
-        '
-        Me.InputBrowse.Location = New System.Drawing.Point(580, 6)
-        Me.InputBrowse.Name = "InputBrowse"
-        Me.InputBrowse.Size = New System.Drawing.Size(30, 20)
-        Me.InputBrowse.TabIndex = 1
-        Me.InputBrowse.Text = "..."
-        Me.InputBrowse.UseVisualStyleBackColor = True
-        '
-        'OutputTextBox
-        '
-        Me.OutputTextBox.DataBindings.Add(New System.Windows.Forms.Binding("Text", Global.AutoCrispy.My.MySettings.Default, "Output", True, System.Windows.Forms.DataSourceUpdateMode.OnPropertyChanged))
-        Me.OutputTextBox.Location = New System.Drawing.Point(88, 32)
-        Me.OutputTextBox.Name = "OutputTextBox"
-        Me.OutputTextBox.Size = New System.Drawing.Size(486, 20)
-        Me.OutputTextBox.TabIndex = 2
-        Me.OutputTextBox.Text = Global.AutoCrispy.My.MySettings.Default.Output
-        '
-        'InputTextBox
-        '
-        Me.InputTextBox.DataBindings.Add(New System.Windows.Forms.Binding("Text", Global.AutoCrispy.My.MySettings.Default, "Input", True, System.Windows.Forms.DataSourceUpdateMode.OnPropertyChanged))
-        Me.InputTextBox.Location = New System.Drawing.Point(88, 7)
-        Me.InputTextBox.Name = "InputTextBox"
-        Me.InputTextBox.Size = New System.Drawing.Size(486, 20)
-        Me.InputTextBox.TabIndex = 0
-        Me.InputTextBox.Text = Global.AutoCrispy.My.MySettings.Default.Input
-        '
-        'Label2
-        '
-        Me.Label2.AutoSize = True
-        Me.Label2.Location = New System.Drawing.Point(6, 36)
-        Me.Label2.Name = "Label2"
-        Me.Label2.Size = New System.Drawing.Size(74, 13)
-        Me.Label2.TabIndex = 0
-        Me.Label2.Text = "Output Folder:"
-        '
-        'Label1
-        '
-        Me.Label1.AutoSize = True
-        Me.Label1.Location = New System.Drawing.Point(6, 10)
-        Me.Label1.Name = "Label1"
-        Me.Label1.Size = New System.Drawing.Size(66, 13)
-        Me.Label1.TabIndex = 0
-        Me.Label1.Text = "Input Folder:"
         '
         'CaffeGroup
         '
@@ -311,7 +254,7 @@ Partial Class Form1
         '
         'WatchDogButton
         '
-        Me.WatchDogButton.Location = New System.Drawing.Point(126, 327)
+        Me.WatchDogButton.Location = New System.Drawing.Point(126, 343)
         Me.WatchDogButton.Name = "WatchDogButton"
         Me.WatchDogButton.Size = New System.Drawing.Size(108, 23)
         Me.WatchDogButton.TabIndex = 10
@@ -330,7 +273,7 @@ Partial Class Form1
         Me.SettingsGroup.Controls.Add(Me.Label21)
         Me.SettingsGroup.Controls.Add(Me.Label22)
         Me.SettingsGroup.Controls.Add(Me.Label12)
-        Me.SettingsGroup.Location = New System.Drawing.Point(12, 150)
+        Me.SettingsGroup.Location = New System.Drawing.Point(12, 166)
         Me.SettingsGroup.Name = "SettingsGroup"
         Me.SettingsGroup.Size = New System.Drawing.Size(222, 171)
         Me.SettingsGroup.TabIndex = 4
@@ -340,10 +283,10 @@ Partial Class Form1
         'DefringeThresh
         '
         Me.DefringeThresh.Enabled = False
-        Me.DefringeThresh.Location = New System.Drawing.Point(112, 72)
+        Me.DefringeThresh.Location = New System.Drawing.Point(141, 72)
         Me.DefringeThresh.Maximum = New Decimal(New Integer() {255, 0, 0, 0})
         Me.DefringeThresh.Name = "DefringeThresh"
-        Me.DefringeThresh.Size = New System.Drawing.Size(98, 20)
+        Me.DefringeThresh.Size = New System.Drawing.Size(75, 20)
         Me.DefringeThresh.TabIndex = 11
         Me.DefringeThresh.Value = New Decimal(New Integer() {215, 0, 0, 0})
         '
@@ -352,7 +295,7 @@ Partial Class Form1
         Me.DefringeCheck.AutoSize = True
         Me.DefringeCheck.Checked = Global.AutoCrispy.My.MySettings.Default.Defringe
         Me.DefringeCheck.DataBindings.Add(New System.Windows.Forms.Binding("Checked", Global.AutoCrispy.My.MySettings.Default, "Defringe", True, System.Windows.Forms.DataSourceUpdateMode.OnPropertyChanged))
-        Me.DefringeCheck.Location = New System.Drawing.Point(9, 98)
+        Me.DefringeCheck.Location = New System.Drawing.Point(6, 73)
         Me.DefringeCheck.Name = "DefringeCheck"
         Me.DefringeCheck.Size = New System.Drawing.Size(66, 17)
         Me.DefringeCheck.TabIndex = 10
@@ -361,15 +304,15 @@ Partial Class Form1
         '
         'UpscaleProgress
         '
-        Me.UpscaleProgress.Location = New System.Drawing.Point(6, 142)
+        Me.UpscaleProgress.Location = New System.Drawing.Point(9, 142)
         Me.UpscaleProgress.Name = "UpscaleProgress"
-        Me.UpscaleProgress.Size = New System.Drawing.Size(210, 23)
+        Me.UpscaleProgress.Size = New System.Drawing.Size(207, 23)
         Me.UpscaleProgress.TabIndex = 9
         '
         'NumericThreads
         '
         Me.NumericThreads.DataBindings.Add(New System.Windows.Forms.Binding("Value", Global.AutoCrispy.My.MySettings.Default, "ThreadCount", True, System.Windows.Forms.DataSourceUpdateMode.OnPropertyChanged))
-        Me.NumericThreads.Location = New System.Drawing.Point(170, 46)
+        Me.NumericThreads.Location = New System.Drawing.Point(176, 46)
         Me.NumericThreads.Maximum = New Decimal(New Integer() {64, 0, 0, 0})
         Me.NumericThreads.Minimum = New Decimal(New Integer() {1, 0, 0, 0})
         Me.NumericThreads.Name = "NumericThreads"
@@ -381,10 +324,10 @@ Partial Class Form1
         '
         Me.ThreadComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
         Me.ThreadComboBox.FormattingEnabled = True
-        Me.ThreadComboBox.Items.AddRange(New Object() {"Single", "Custom", "All", "Unlimited (!!)"})
+        Me.ThreadComboBox.Items.AddRange(New Object() {"Single", "Custom", "All", "Max (512) (!!)"})
         Me.ThreadComboBox.Location = New System.Drawing.Point(65, 46)
         Me.ThreadComboBox.Name = "ThreadComboBox"
-        Me.ThreadComboBox.Size = New System.Drawing.Size(99, 21)
+        Me.ThreadComboBox.Size = New System.Drawing.Size(105, 21)
         Me.ThreadComboBox.TabIndex = 5
         '
         'ExeComboBox
@@ -393,13 +336,13 @@ Partial Class Form1
         Me.ExeComboBox.FormattingEnabled = True
         Me.ExeComboBox.Location = New System.Drawing.Point(65, 19)
         Me.ExeComboBox.Name = "ExeComboBox"
-        Me.ExeComboBox.Size = New System.Drawing.Size(145, 21)
+        Me.ExeComboBox.Size = New System.Drawing.Size(151, 21)
         Me.ExeComboBox.TabIndex = 4
         '
         'CleanupCheckBox
         '
         Me.CleanupCheckBox.AutoSize = True
-        Me.CleanupCheckBox.Location = New System.Drawing.Point(102, 98)
+        Me.CleanupCheckBox.Location = New System.Drawing.Point(6, 96)
         Me.CleanupCheckBox.Name = "CleanupCheckBox"
         Me.CleanupCheckBox.Size = New System.Drawing.Size(108, 17)
         Me.CleanupCheckBox.TabIndex = 7
@@ -418,33 +361,24 @@ Partial Class Form1
         'Label22
         '
         Me.Label22.AutoSize = True
-        Me.Label22.Location = New System.Drawing.Point(6, 74)
+        Me.Label22.Location = New System.Drawing.Point(78, 74)
         Me.Label22.Name = "Label22"
-        Me.Label22.Size = New System.Drawing.Size(100, 13)
+        Me.Label22.Size = New System.Drawing.Size(57, 13)
         Me.Label22.TabIndex = 0
-        Me.Label22.Text = "Defringe Threshold:"
+        Me.Label22.Text = "Threshold:"
         '
         'Label12
         '
         Me.Label12.AutoSize = True
-        Me.Label12.Location = New System.Drawing.Point(6, 49)
+        Me.Label12.Location = New System.Drawing.Point(6, 48)
         Me.Label12.Name = "Label12"
         Me.Label12.Size = New System.Drawing.Size(49, 13)
         Me.Label12.TabIndex = 0
         Me.Label12.Text = "Threads:"
         '
-        'ChainAdd
-        '
-        Me.ChainAdd.Location = New System.Drawing.Point(551, 6)
-        Me.ChainAdd.Name = "ChainAdd"
-        Me.ChainAdd.Size = New System.Drawing.Size(60, 23)
-        Me.ChainAdd.TabIndex = 15
-        Me.ChainAdd.Text = "Add"
-        Me.ChainAdd.UseVisualStyleBackColor = True
-        '
         'RunOnceButton
         '
-        Me.RunOnceButton.Location = New System.Drawing.Point(12, 327)
+        Me.RunOnceButton.Location = New System.Drawing.Point(12, 343)
         Me.RunOnceButton.Name = "RunOnceButton"
         Me.RunOnceButton.Size = New System.Drawing.Size(108, 23)
         Me.RunOnceButton.TabIndex = 9
@@ -934,9 +868,9 @@ Partial Class Form1
         '
         'PyInputFlag
         '
-        Me.PyInputFlag.Location = New System.Drawing.Point(72, 148)
+        Me.PyInputFlag.Location = New System.Drawing.Point(77, 148)
         Me.PyInputFlag.Name = "PyInputFlag"
-        Me.PyInputFlag.Size = New System.Drawing.Size(102, 20)
+        Me.PyInputFlag.Size = New System.Drawing.Size(97, 20)
         Me.PyInputFlag.TabIndex = 1
         Me.PyInputFlag.Text = "--input"
         '
@@ -1004,49 +938,6 @@ Partial Class Form1
         Me.ChainThumbs.ImageSize = New System.Drawing.Size(64, 64)
         Me.ChainThumbs.TransparentColor = System.Drawing.Color.Transparent
         '
-        'ChainPreview
-        '
-        Me.ChainPreview.Alignment = System.Windows.Forms.ListViewAlignment.SnapToGrid
-        Me.ChainPreview.AllowDrop = True
-        Me.ChainPreview.AutoArrange = False
-        Me.ChainPreview.GridLines = True
-        Me.ChainPreview.HideSelection = False
-        Me.ChainPreview.LargeImageList = Me.ChainThumbs
-        Me.ChainPreview.Location = New System.Drawing.Point(6, 6)
-        Me.ChainPreview.MultiSelect = False
-        Me.ChainPreview.Name = "ChainPreview"
-        Me.ChainPreview.Scrollable = False
-        Me.ChainPreview.Size = New System.Drawing.Size(539, 108)
-        Me.ChainPreview.TabIndex = 13
-        Me.ChainPreview.UseCompatibleStateImageBehavior = False
-        '
-        'TabGroup
-        '
-        Me.TabGroup.Controls.Add(Me.PathGroup)
-        Me.TabGroup.Controls.Add(Me.ChainGroup)
-        Me.TabGroup.Controls.Add(Me.AboutTab)
-        Me.TabGroup.Location = New System.Drawing.Point(12, 2)
-        Me.TabGroup.Name = "TabGroup"
-        Me.TabGroup.SelectedIndex = 0
-        Me.TabGroup.Size = New System.Drawing.Size(624, 146)
-        Me.TabGroup.TabIndex = 14
-        '
-        'PathGroup
-        '
-        Me.PathGroup.Controls.Add(Me.OutputBrowse)
-        Me.PathGroup.Controls.Add(Me.InputTextBox)
-        Me.PathGroup.Controls.Add(Me.InputBrowse)
-        Me.PathGroup.Controls.Add(Me.Label1)
-        Me.PathGroup.Controls.Add(Me.OutputTextBox)
-        Me.PathGroup.Controls.Add(Me.Label2)
-        Me.PathGroup.Location = New System.Drawing.Point(4, 22)
-        Me.PathGroup.Name = "PathGroup"
-        Me.PathGroup.Padding = New System.Windows.Forms.Padding(3)
-        Me.PathGroup.Size = New System.Drawing.Size(616, 120)
-        Me.PathGroup.TabIndex = 0
-        Me.PathGroup.Text = "Paths"
-        Me.PathGroup.UseVisualStyleBackColor = True
-        '
         'ChainGroup
         '
         Me.ChainGroup.Controls.Add(Me.ChainLoad)
@@ -1057,7 +948,7 @@ Partial Class Form1
         Me.ChainGroup.Location = New System.Drawing.Point(4, 22)
         Me.ChainGroup.Name = "ChainGroup"
         Me.ChainGroup.Padding = New System.Windows.Forms.Padding(3)
-        Me.ChainGroup.Size = New System.Drawing.Size(616, 120)
+        Me.ChainGroup.Size = New System.Drawing.Size(616, 122)
         Me.ChainGroup.TabIndex = 1
         Me.ChainGroup.Text = "Chaining"
         Me.ChainGroup.UseVisualStyleBackColor = True
@@ -1089,25 +980,111 @@ Partial Class Form1
         Me.ChainRemove.Text = "Remove"
         Me.ChainRemove.UseVisualStyleBackColor = True
         '
-        'AboutTab
+        'ChainAdd
         '
-        Me.AboutTab.Controls.Add(Me.Label23)
-        Me.AboutTab.Location = New System.Drawing.Point(4, 22)
-        Me.AboutTab.Name = "AboutTab"
-        Me.AboutTab.Padding = New System.Windows.Forms.Padding(3)
-        Me.AboutTab.Size = New System.Drawing.Size(616, 120)
-        Me.AboutTab.TabIndex = 2
-        Me.AboutTab.Text = "About"
-        Me.AboutTab.UseVisualStyleBackColor = True
+        Me.ChainAdd.Location = New System.Drawing.Point(551, 6)
+        Me.ChainAdd.Name = "ChainAdd"
+        Me.ChainAdd.Size = New System.Drawing.Size(60, 23)
+        Me.ChainAdd.TabIndex = 15
+        Me.ChainAdd.Text = "Add"
+        Me.ChainAdd.UseVisualStyleBackColor = True
         '
-        'Label23
+        'ChainPreview
         '
-        Me.Label23.AutoSize = True
-        Me.Label23.Location = New System.Drawing.Point(6, 9)
-        Me.Label23.Name = "Label23"
-        Me.Label23.Size = New System.Drawing.Size(274, 13)
-        Me.Label23.TabIndex = 0
-        Me.Label23.Text = "Wake the f*** up samurai, we have textures to upscale."
+        Me.ChainPreview.Alignment = System.Windows.Forms.ListViewAlignment.SnapToGrid
+        Me.ChainPreview.AllowDrop = True
+        Me.ChainPreview.AutoArrange = False
+        Me.ChainPreview.GridLines = True
+        Me.ChainPreview.HideSelection = False
+        Me.ChainPreview.LargeImageList = Me.ChainThumbs
+        Me.ChainPreview.Location = New System.Drawing.Point(6, 6)
+        Me.ChainPreview.MultiSelect = False
+        Me.ChainPreview.Name = "ChainPreview"
+        Me.ChainPreview.Scrollable = False
+        Me.ChainPreview.Size = New System.Drawing.Size(539, 110)
+        Me.ChainPreview.TabIndex = 13
+        Me.ChainPreview.UseCompatibleStateImageBehavior = False
+        '
+        'PathGroup
+        '
+        Me.PathGroup.Controls.Add(Me.OutputBrowse)
+        Me.PathGroup.Controls.Add(Me.InputTextBox)
+        Me.PathGroup.Controls.Add(Me.OutputTextBox)
+        Me.PathGroup.Controls.Add(Me.InputBrowse)
+        Me.PathGroup.Controls.Add(Me.Label1)
+        Me.PathGroup.Controls.Add(Me.Label2)
+        Me.PathGroup.Location = New System.Drawing.Point(4, 22)
+        Me.PathGroup.Name = "PathGroup"
+        Me.PathGroup.Padding = New System.Windows.Forms.Padding(3)
+        Me.PathGroup.Size = New System.Drawing.Size(616, 122)
+        Me.PathGroup.TabIndex = 0
+        Me.PathGroup.Text = "Paths"
+        Me.PathGroup.UseVisualStyleBackColor = True
+        '
+        'OutputBrowse
+        '
+        Me.OutputBrowse.Location = New System.Drawing.Point(580, 32)
+        Me.OutputBrowse.Name = "OutputBrowse"
+        Me.OutputBrowse.Size = New System.Drawing.Size(30, 20)
+        Me.OutputBrowse.TabIndex = 3
+        Me.OutputBrowse.Text = "..."
+        Me.OutputBrowse.UseVisualStyleBackColor = True
+        '
+        'InputTextBox
+        '
+        Me.InputTextBox.DataBindings.Add(New System.Windows.Forms.Binding("Text", Global.AutoCrispy.My.MySettings.Default, "Input", True, System.Windows.Forms.DataSourceUpdateMode.OnPropertyChanged))
+        Me.InputTextBox.Location = New System.Drawing.Point(88, 6)
+        Me.InputTextBox.Name = "InputTextBox"
+        Me.InputTextBox.Size = New System.Drawing.Size(486, 20)
+        Me.InputTextBox.TabIndex = 0
+        Me.InputTextBox.Text = Global.AutoCrispy.My.MySettings.Default.Input
+        '
+        'OutputTextBox
+        '
+        Me.OutputTextBox.DataBindings.Add(New System.Windows.Forms.Binding("Text", Global.AutoCrispy.My.MySettings.Default, "Output", True, System.Windows.Forms.DataSourceUpdateMode.OnPropertyChanged))
+        Me.OutputTextBox.Location = New System.Drawing.Point(88, 32)
+        Me.OutputTextBox.Name = "OutputTextBox"
+        Me.OutputTextBox.Size = New System.Drawing.Size(486, 20)
+        Me.OutputTextBox.TabIndex = 2
+        Me.OutputTextBox.Text = Global.AutoCrispy.My.MySettings.Default.Output
+        '
+        'InputBrowse
+        '
+        Me.InputBrowse.Location = New System.Drawing.Point(580, 6)
+        Me.InputBrowse.Name = "InputBrowse"
+        Me.InputBrowse.Size = New System.Drawing.Size(30, 20)
+        Me.InputBrowse.TabIndex = 1
+        Me.InputBrowse.Text = "..."
+        Me.InputBrowse.UseVisualStyleBackColor = True
+        '
+        'Label1
+        '
+        Me.Label1.AutoSize = True
+        Me.Label1.Location = New System.Drawing.Point(6, 9)
+        Me.Label1.Name = "Label1"
+        Me.Label1.Size = New System.Drawing.Size(66, 13)
+        Me.Label1.TabIndex = 0
+        Me.Label1.Text = "Input Folder:"
+        '
+        'Label2
+        '
+        Me.Label2.AutoSize = True
+        Me.Label2.Location = New System.Drawing.Point(6, 35)
+        Me.Label2.Name = "Label2"
+        Me.Label2.Size = New System.Drawing.Size(74, 13)
+        Me.Label2.TabIndex = 0
+        Me.Label2.Text = "Output Folder:"
+        '
+        'TabGroup
+        '
+        Me.TabGroup.Controls.Add(Me.PathGroup)
+        Me.TabGroup.Controls.Add(Me.ChainGroup)
+        Me.TabGroup.DataBindings.Add(New System.Windows.Forms.Binding("SelectedIndex", Global.AutoCrispy.My.MySettings.Default, "TabSelected", True, System.Windows.Forms.DataSourceUpdateMode.OnPropertyChanged))
+        Me.TabGroup.Location = New System.Drawing.Point(12, 12)
+        Me.TabGroup.Name = "TabGroup"
+        Me.TabGroup.SelectedIndex = Global.AutoCrispy.My.MySettings.Default.TabSelected
+        Me.TabGroup.Size = New System.Drawing.Size(624, 148)
+        Me.TabGroup.TabIndex = 14
         '
         'Form1
         '
@@ -1153,21 +1130,13 @@ Partial Class Form1
         Me.PyGroup.ResumeLayout(False)
         Me.PyGroup.PerformLayout()
         CType(Me.PyArguements, System.ComponentModel.ISupportInitialize).EndInit()
-        Me.TabGroup.ResumeLayout(False)
+        Me.ChainGroup.ResumeLayout(False)
         Me.PathGroup.ResumeLayout(False)
         Me.PathGroup.PerformLayout()
-        Me.ChainGroup.ResumeLayout(False)
-        Me.AboutTab.ResumeLayout(False)
-        Me.AboutTab.PerformLayout()
+        Me.TabGroup.ResumeLayout(False)
         Me.ResumeLayout(False)
 
     End Sub
-    Friend WithEvents OutputBrowse As Button
-    Friend WithEvents InputBrowse As Button
-    Friend WithEvents OutputTextBox As TextBox
-    Friend WithEvents InputTextBox As TextBox
-    Friend WithEvents Label2 As Label
-    Friend WithEvents Label1 As Label
     Friend WithEvents CaffeGroup As GroupBox
     Friend WithEvents WatchDog As Timer
     Friend WithEvents WatchDogButton As Button
@@ -1244,14 +1213,18 @@ Partial Class Form1
     Friend WithEvents DefringeCheck As CheckBox
     Friend WithEvents Label22 As Label
     Friend WithEvents ChainThumbs As ImageList
-    Friend WithEvents ChainPreview As ListView
-    Friend WithEvents ChainAdd As Button
-    Friend WithEvents TabGroup As TabControl
-    Friend WithEvents PathGroup As TabPage
     Friend WithEvents ChainGroup As TabPage
-    Friend WithEvents ChainRemove As Button
     Friend WithEvents ChainLoad As Button
     Friend WithEvents ChainSave As Button
-    Friend WithEvents AboutTab As TabPage
-    Friend WithEvents Label23 As Label
+    Friend WithEvents ChainRemove As Button
+    Friend WithEvents ChainAdd As Button
+    Friend WithEvents ChainPreview As ListView
+    Friend WithEvents PathGroup As TabPage
+    Friend WithEvents OutputBrowse As Button
+    Friend WithEvents InputTextBox As TextBox
+    Friend WithEvents OutputTextBox As TextBox
+    Friend WithEvents InputBrowse As Button
+    Friend WithEvents Label1 As Label
+    Friend WithEvents Label2 As Label
+    Friend WithEvents TabGroup As TabControl
 End Class

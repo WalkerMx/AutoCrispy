@@ -6,7 +6,7 @@ Public Class Form1
 
     Dim Root As String = Application.StartupPath
     Dim WaitScale As Integer = 0
-    Dim SettingsLoc As Point = New Point(240, 150)
+    Dim SettingsLoc As Point = New Point(240, 166)
     Dim PyPaths As New List(Of String)
     Dim PyModels As New List(Of String)
     Dim PyEmbedded As Boolean
@@ -165,7 +165,8 @@ Public Class Form1
 #Region "Loading"
 
     Private Sub Form1_Load(sender As Object, e As EventArgs) Handles MyBase.Load
-        Me.Size = New Size(660, 397)
+        Me.Size = New Size(660, 413)
+        Me.SetStyle(ControlStyles.OptimizedDoubleBuffer, True)
         LoadBindingString()
         ChainThumbs.Images.Add(Shrink(My.Resources._0, 64, 64))
         ChainThumbs.Images.Add(Shrink(My.Resources._1, 64, 64))
@@ -275,6 +276,10 @@ Public Class Form1
         OutputTextBox.Text = GetFolder()
     End Sub
 
+    Private Sub DefringeCheck_CheckedChanged(sender As Object, e As EventArgs) Handles DefringeCheck.CheckedChanged
+        DefringeThresh.Enabled = DefringeCheck.Checked
+    End Sub
+
     Private Sub ChainSave_Click(sender As Object, e As EventArgs) Handles ChainSave.Click
         Using SFD As New SaveFileDialog With {.Filter = "XML Files|*.xml|All Files|*.*"}
             If SFD.ShowDialog = DialogResult.OK Then
@@ -329,7 +334,7 @@ Public Class Form1
         e.Effect = DragDropEffects.Move
     End Sub
 
-    Private Sub ChainPreview_MouseUp(sender As Object, e As EventArgs) Handles ChainPreview.MouseUp
+    Private Sub ChainPreview_MouseUp(sender As Object, e As MouseEventArgs) Handles ChainPreview.MouseUp
         ChainPreview.AutoArrange = True
         ChainPreview.AutoArrange = False
         Dim Result As New List(Of String)
