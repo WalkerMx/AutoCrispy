@@ -358,6 +358,9 @@ Public Class Form1
                         Directory.CreateDirectory(Path.GetTempPath & "Single_0")
                         File.Copy(OFD.FileName, TempPath & "\" & Path.GetFileName(SFD.FileName))
                         HandOff = New ExtSettings(TempPath, Directory.GetParent(SFD.FileName).FullName, GetThreads(), False, DefringeCheck.Checked, DefringeThresh.Value)
+                        If ChainPreview.Items.Count = 0 Then
+                            PackageSettings()
+                        End If                                                        
                         SwitchGroups(False)
                         WorkHorse.RunWorkerAsync()
                     End If
