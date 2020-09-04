@@ -360,7 +360,7 @@ Public Class Form1
                         HandOff = New ExtSettings(TempPath, Directory.GetParent(SFD.FileName).FullName, GetThreads(), False, DefringeCheck.Checked, DefringeThresh.Value)
                         If ChainPreview.Items.Count = 0 Then
                             PackageSettings()
-                        End If                                                        
+                        End If
                         SwitchGroups(False)
                         WorkHorse.RunWorkerAsync()
                     End If
@@ -484,6 +484,9 @@ Public Class Form1
             WatchDogButton.Text = "Running: " & False
             SwitchGroups(Not WatchDog.Enabled)
             WatchDogButton.Enabled = True
+            If ChainPreview.Items.Count = 0 Then
+                ChainedModels.Clear()
+            End If
             Exit Sub
         End If
         If ChainPreview.Items.Count = 0 Then
@@ -503,7 +506,7 @@ Public Class Form1
 
     Private Sub MakeUpscale()
         Dim TempPath As String = Path.GetTempPath & "Temp_0"
-        Dim Source = Directory.GetFiles(HandOff.InputPath)
+        Dim Source = Directory.GetFiles(HandOff.InputPath).Except(Directory.GetFiles(HandOff.OutputPath))
         For i = 0 To Source.Count - 1 Step HandOff.Threads
             Dim ChainPaths As New List(Of String)
             Dim DeletedChainPaths As New List(Of String)
@@ -522,7 +525,7 @@ Public Class Form1
             Next
             For Each Model In ChainedModels
                 Dim NewImages As New List(Of String)
-                Dim DiffImages = GetFileNameList(ChainPaths(0)).Except(GetFileNameList(ChainPaths(1)))
+                Dim DiffImages = GetFileNameList(ChainPaths(0)).Except(GetFileNameList(HandOff.OutputPath))
                 For Each NewImage As String In DiffImages
                     Dim AcceptExt As Boolean = Model.LoadedExtensions.Contains(Path.GetExtension(NewImage).ToLower)
                     If File.Exists(ChainPaths(0) & "\" & NewImage) AndAlso AcceptExt = True Then
@@ -533,7 +536,7 @@ Public Class Form1
                     If Model.LoadedMode = "Python" Then
                         Dim BuildProcess As ProcessStartInfo
                         If PyEmbedded = True Then
-                            BuildProcess = New ProcessStartInfo(Application.StartupPath & "\python\python.exe", Quote(Model.LoadedPath) & " " & MakeCommand(ChainPaths(0), ChainPaths(1), Model))
+                            BuildProcess = New ProcessStartInfo(Root & "\python\python.exe", Quote(Model.LoadedPath) & " " & MakeCommand(ChainPaths(0), ChainPaths(1), Model))
                         Else
                             BuildProcess = New ProcessStartInfo(Model.LoadedPath, MakeCommand(ChainPaths(0), ChainPaths(1), Model))
                         End If
