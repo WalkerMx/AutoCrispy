@@ -11,14 +11,25 @@ Automatically apply AI upscaling on Dumped Textures. Comparison shots are [here]
 
 The following are the features supported in AutoCrispy. Any feature listed is not necessarily the same as the features or requirements of the program. To work, AutoCrispy requires one of the following to be downloaded, or ESRGAN to be installed.
 
-Backend|Scale Range|Denoising Support|Alpha Support|TAA|Custom Filters|Speed|Quality|Download
+Backend|Scale Range|Denoising Support|Alpha Support|TAA|Custom Filters|Speed|VRAM Requirements|Download
 :-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:
-Waifu2x Caffe|1-4|✔️|✔️|✔️|❌|Slow|Great|[Link](https://github.com/lltcggie/waifu2x-caffe/releases)
-Waifu2x Vulkan|1-2|✔️|✔️|✔️|❌|Average|Good|[Link](https://github.com/nihui/waifu2x-ncnn-vulkan/releases)
-RealSR Vulkan|4-4|❌|✔️|✔️|❌|*Slow*|Great|[Link](https://github.com/nihui/realsr-ncnn-vulkan/releases)
-SRMD Vulkan|2-4|✔️|✔️|✔️|❌|Average|Good|[Link](https://github.com/nihui/srmd-ncnn-vulkan/releases)
-Waifu2x CPP|1-8|✔️|✔️|❌|❌|Quick|OK|[Link](https://github.com/DeadSix27/waifu2x-converter-cpp/releases)
-Anime4K CPP|1-8|❌|✔️|❌|✔️|Quick|Good|[Link](https://github.com/TianZerL/Anime4KCPP)
+Waifu2x Caffe|1-4|✔️|✔️|✔️|❌|Slow|Very High|[Link](https://github.com/lltcggie/waifu2x-caffe/releases)
+Waifu2x Vulkan|1-2|✔️|✔️|✔️|❌|Average|Medium|[Link](https://github.com/nihui/waifu2x-ncnn-vulkan/releases)
+RealSR Vulkan|4-4|❌|✔️|✔️|❌|*Slow*|High|[Link](https://github.com/nihui/realsr-ncnn-vulkan/releases)
+SRMD Vulkan|2-4|✔️|✔️|✔️|❌|Average|Medium|[Link](https://github.com/nihui/srmd-ncnn-vulkan/releases)
+Waifu2x CPP|1-8|✔️|✔️|❌|❌|Quick|Low|[Link](https://github.com/DeadSix27/waifu2x-converter-cpp/releases)
+Anime4K CPP|1-8|❌|✔️|❌|✔️|Quick|Low|[Link](https://github.com/TianZerL/Anime4KCPP)
+
+## More about Backends
+
+Backend|About
+:-:|:-:
+Waifu2x Caffe|Waifu2x Caffe does great with Anime and Manga style images.  Both the Image output quality and the Alpha quality are top-notch, on the appropriate image type.
+Waifu2x Vulkan|Waifu2x Vulkan approaches the quality of Caffe, while slashing the computational and memory requirements.  The image quality is good, but the Alpha handling can be a little fuzzy around the edges (can be defringed to great effect.)
+RealSR Vulkan|RealSR's image output is great for more realistic images.  The Alpha can be a little dark around the edges, but the detail produced on images is fantastic.
+SRMD Vulkan|SRMD excels at upscaling poor-quality material.  Great for reworking a bad upscale, and also good for upscaling realistic images.
+Waifu2x CPP|Waifu2x CPP's output is visually close to Caffe's (if, a little muddier), but is quite fast with low requirements.  It does poorly on images with Alpha (but the results are acceptable with defringing turned on and calibrated).
+Anime4K CPP|Anime4K CPP is the fastest of the supported backends.  It has a high range of input settings, and is intended for Anime or Manga style images.  Visual quality has quite a bit of variance, but can look quite good once the settings are dialed in.
 
 ## ESRGAN
 
