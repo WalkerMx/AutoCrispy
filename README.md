@@ -54,3 +54,4 @@ https://upscale.wiki/wiki/ESRGAN_Installation_Guide_for_Windows
 Some people have been unusually helpful, or have gone above and beyond to show support for this project.  With their permission, they are listed below.
 
 ### u/devilskin
+### fefo-dev
