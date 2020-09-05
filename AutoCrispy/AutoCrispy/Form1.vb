@@ -356,8 +356,16 @@ Public Class Form1
     Private Sub ChainContextEdit_Click(sender As Object, e As EventArgs) Handles ChainContextEdit.Click
         If ChainPreview.SelectedItems.Count > 0 Then
             Dim ItemIndex = (ChainPreview.SelectedItems(0).Position.X - 21) / (ChainPreview.SelectedItems(0).Bounds.Width + 1)
-            Dim SourceString As String = SerializeString(ChainedModels(ItemIndex))
-            MsgBox(SourceString)
+            Using ECD As New EditChainDialog(SerializeString(ChainedModels(ItemIndex)))
+                If ECD.ShowDialog = DialogResult.OK Then
+                    Try
+                        Dim NewSettings As Settings = DeserializeString(Of Settings)(ECD.ResultText)
+                        ChainedModels(ItemIndex) = NewSettings
+                    Catch ex As Exception
+                        MsgBox("Error: New settings could not be parsed.")
+                    End Try
+                End If
+            End Using
         End If
     End Sub
 
@@ -816,13 +824,17 @@ Public Class Form1
         Return Result
     End Function
 
-    Public Shared Function DeserializeString(Of T)(ByVal xml As String) As T
-        Dim XmlBuddy As New Xml.Serialization.XmlSerializer(GetType(T))
-        Dim fs As New FileStream(xml, FileMode.Open)
-        Dim reader As New Xml.XmlTextReader(fs)
-        If XmlBuddy.CanDeserialize(reader) Then
-            Dim tempObject As Object = DirectCast(XmlBuddy.Deserialize(reader), T)
-            reader.Close()
+    Public Shared Function DeserializeString(Of T)(ByVal Xml As String) As T
+        Dim XmlSerializer As New Xml.Serialization.XmlSerializer(GetType(T))
+        Dim XmlStream As New MemoryStream
+        Dim XmlWriter As New StreamWriter(XmlStream)
+        XmlWriter.Write(Xml)
+        XmlWriter.Flush()
+        XmlStream.Position = 0
+        Dim XmlReader As New Xml.XmlTextReader(XmlStream)
+        If XmlSerializer.CanDeserialize(XmlReader) Then
+            Dim tempObject As Object = DirectCast(XmlSerializer.Deserialize(XmlReader), T)
+            XmlReader.Close()
             Return tempObject
         Else
             Return Nothing
