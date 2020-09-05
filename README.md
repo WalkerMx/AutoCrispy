@@ -9,7 +9,7 @@ Automatically apply AI upscaling on Dumped Textures.
 
 ## Backend Features
 
-The following are the features supported in AutoCrispy. Any feature listed is not necessarily the same as the features or requirements of the program. To work, AutoCrispy requires one of the following to be downloaded, or ESRGAN to be installed.  [More about the Backends and Comparison shots can be found here](https://github.com/WalkerMx/AutoCrispy/blob/master/COMPARE.md)
+The following are the features supported in AutoCrispy. Any feature listed is not necessarily the same as the features or requirements of the program. To work, AutoCrispy requires one of the following to be downloaded, or ESRGAN to be installed.  <a href="https://github.com/WalkerMx/AutoCrispy/blob/master/COMPARE.md" target="_blank">More about the Backends and Comparison shots can be found here</a>
 
 Backend|Scale Range|Denoising Support|Alpha Support|TAA|Custom Filters|Speed|VRAM Requirements|Download
 :-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:
