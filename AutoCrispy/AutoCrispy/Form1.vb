@@ -14,6 +14,14 @@ Public Class Form1
     Dim HandOff As ExtSettings
     Dim vbQuote As Char = ControlChars.Quote
 
+    Dim CaffePath As String
+    Dim WaifuNcnnPath As String
+    Dim RealSRNcnnPath As String
+    Dim SRMDNcnnPath As String
+    Dim WaifuCppPath As String
+    Dim Anime4kPath As String
+    Dim EmbeddedPyPath As String
+
 #End Region
 
 #Region "Structs"
@@ -167,6 +175,7 @@ Public Class Form1
     Private Sub Form1_Load(sender As Object, e As EventArgs) Handles MyBase.Load
         Me.Size = New Size(660, 413)
         Me.SetStyle(ControlStyles.OptimizedDoubleBuffer, True)
+        Application.CurrentCulture = New Globalization.CultureInfo("EN-US")
         LoadBindingString()
         ChainThumbs.Images.Add(Shrink(My.Resources._0, 64, 64))
         ChainThumbs.Images.Add(Shrink(My.Resources._1, 64, 64))
@@ -175,13 +184,7 @@ Public Class Form1
         ChainThumbs.Images.Add(Shrink(My.Resources._4, 64, 64))
         ChainThumbs.Images.Add(Shrink(My.Resources._5, 64, 64))
         ChainThumbs.Images.Add(Shrink(My.Resources._6, 64, 64))
-        If File.Exists(Root & "\waifu2x-caffe-cui.exe") Then ExeComboBox.Items.Add("Waifu2x Caffe")
-        If File.Exists(Root & "\waifu2x-ncnn-vulkan.exe") Then ExeComboBox.Items.Add("Waifu2x Vulkan")
-        If File.Exists(Root & "\realsr-ncnn-vulkan.exe") Then ExeComboBox.Items.Add("RealSR Vulkan")
-        If File.Exists(Root & "\srmd-ncnn-vulkan.exe") Then ExeComboBox.Items.Add("SRMD Vulkan")
-        If File.Exists(Root & "\waifu2x-converter-cpp.exe") Then ExeComboBox.Items.Add("Waifu2x CPP")
-        If File.Exists(Root & "\Anime4KCPP_CLI.exe") Then ExeComboBox.Items.Add("Anime4k CPP")
-        If File.Exists(Root & "\python\python.exe") Then PyEmbedded = True
+        StartUpCheckEXE()
         StartUpCheckPy()
         If PyPaths.Count > 0 Then
             ExeComboBox.Items.Add("Python")
@@ -203,24 +206,58 @@ Public Class Form1
         SaveBindingString()
     End Sub
 
-    Private Sub StartUpCheckPy()
-        For Each sFile As String In Directory.GetFiles(Application.StartupPath)
-            If Path.GetExtension(sFile) = ".pth" Then
-                PyModels.Add(sFile)
-                PyModel.Items.Add(Path.GetFileName(sFile))
-            ElseIf Path.GetExtension(sFile) = ".py" Then
-                PyPaths.Add(sFile)
-                PyScript.Items.Add(Path.GetFileName(sFile))
+    Private Sub StartUpCheckEXE()
+        Dim RootFolders As List(Of String) = Directory.GetDirectories(Root).ToList
+        RootFolders.Add(Root)
+        For Each Folder As String In RootFolders
+            If File.Exists(Folder & "\waifu2x-caffe-cui.exe") Then
+                ExeComboBox.Items.Add("Waifu2x Caffe")
+                CaffePath = Folder & "\waifu2x-caffe-cui.exe"
+            End If
+            If File.Exists(Folder & "\waifu2x-ncnn-vulkan.exe") Then
+                ExeComboBox.Items.Add("Waifu2x Vulkan")
+                WaifuNcnnPath = Folder & "\waifu2x-ncnn-vulkan.exe"
+            End If
+            If File.Exists(Folder & "\realsr-ncnn-vulkan.exe") Then
+                ExeComboBox.Items.Add("RealSR Vulkan")
+                RealSRNcnnPath = Folder & "\realsr-ncnn-vulkan.exe"
+            End If
+            If File.Exists(Folder & "\srmd-ncnn-vulkan.exe") Then
+                ExeComboBox.Items.Add("SRMD Vulkan")
+                SRMDNcnnPath = Folder & "\srmd-ncnn-vulkan.exe"
+            End If
+            If File.Exists(Folder & "\waifu2x-converter-cpp.exe") Then
+                ExeComboBox.Items.Add("Waifu2x CPP")
+                WaifuCppPath = Folder & "\waifu2x-converter-cpp.exe"
+            End If
+            If File.Exists(Folder & "\Anime4KCPP_CLI.exe") Then
+                ExeComboBox.Items.Add("Anime4k CPP")
+                Anime4kPath = Folder & "\Anime4KCPP_CLI.exe"
+            End If
+            If File.Exists(Folder & "\python\python.exe") Then
+                PyEmbedded = True
+                EmbeddedPyPath = Folder & "\python\python.exe"
             End If
         Next
-        If Directory.Exists(Application.StartupPath & "\models") Then
-            For Each sFile As String In Directory.GetFiles(Application.StartupPath & "\models")
-                If Path.GetExtension(sFile) = ".pth" Then
-                    PyModels.Add(sFile)
-                    PyModel.Items.Add(Path.GetFileName(sFile))
-                End If
+    End Sub
+
+    Private Sub StartUpCheckPy()
+        Dim RootFolders As List(Of String) = Directory.GetDirectories(Root).ToList
+        RootFolders.Add(Root)
+        For Each Folder As String In RootFolders
+            Dim PyFiles As String() = Directory.EnumerateFiles(Folder, "*.py").ToArray
+            For Each PythonScript As String In PyFiles
+                PyPaths.Add(PythonScript)
+                PyScript.Items.Add(Path.GetFileName(PythonScript))
             Next
-        End If
+            For Each SubFolder As String In Directory.GetDirectories(Folder)
+                Dim Models As String() = Directory.EnumerateFiles(SubFolder, "*.pth").ToArray
+                For Each PythonModel As String In Models
+                    PyModels.Add(PythonModel)
+                    PyModel.Items.Add(Path.GetFileName(PythonModel))
+                Next
+            Next
+        Next
     End Sub
 
     Private Sub SaveBindingString()
@@ -306,13 +343,21 @@ Public Class Form1
         AddModelToChain(ExeComboBox.SelectedItem)
     End Sub
 
-    Private Sub ChainRemove_Click(sender As Object, e As EventArgs) Handles ChainRemove.Click
+    Private Sub RemoveItemFromChain(sender As Object, e As EventArgs) Handles ChainRemove.Click, ChainContextDelete.Click
         If ChainPreview.SelectedIndices.Count > 0 Then
             Dim Remove As Integer = ChainPreview.SelectedIndices(0)
             ChainPreview.Items.RemoveAt(Remove)
             ChainedModels.RemoveAt(Remove)
             ChainPreview.AutoArrange = True
             ChainPreview.AutoArrange = False
+        End If
+    End Sub
+
+    Private Sub ChainContextEdit_Click(sender As Object, e As EventArgs) Handles ChainContextEdit.Click
+        If ChainPreview.SelectedItems.Count > 0 Then
+            Dim ItemIndex = (ChainPreview.SelectedItems(0).Position.X - 21) / (ChainPreview.SelectedItems(0).Bounds.Width + 1)
+            Dim SourceString As String = SerializeString(ChainedModels(ItemIndex))
+            MsgBox(SourceString)
         End If
     End Sub
 
@@ -536,7 +581,7 @@ Public Class Form1
                     If Model.LoadedMode = "Python" Then
                         Dim BuildProcess As ProcessStartInfo
                         If PyEmbedded = True Then
-                            BuildProcess = New ProcessStartInfo(Root & "\python\python.exe", Quote(Model.LoadedPath) & " " & MakeCommand(ChainPaths(0), ChainPaths(1), Model))
+                            BuildProcess = New ProcessStartInfo(EmbeddedPyPath, Quote(Model.LoadedPath) & " " & MakeCommand(ChainPaths(0), ChainPaths(1), Model))
                         Else
                             BuildProcess = New ProcessStartInfo(Model.LoadedPath, MakeCommand(ChainPaths(0), ChainPaths(1), Model))
                         End If
@@ -630,27 +675,27 @@ Public Class Form1
         Pack.LoadedMode = ExeComboBox.SelectedItem
         Select Case ExeComboBox.SelectedItem
             Case "Waifu2x Caffe"
-                Pack.LoadedPath = Root & "\waifu2x-caffe-cui.exe"
+                Pack.LoadedPath = CaffePath
                 Pack.LoadedExtensions = {".png", ".jpg", ".jpeg", ".tif", ".tiff", ".bmp", ".tga"}
                 Pack.LoadedPackage = MakeCaffePackage()
             Case "Waifu2x Vulkan"
-                Pack.LoadedPath = Root & "\waifu2x-ncnn-vulkan.exe"
+                Pack.LoadedPath = WaifuNcnnPath
                 Pack.LoadedExtensions = {".png", ".webp", ".jpg"}
                 Pack.LoadedPackage = MakeVulkanPackage()
             Case "RealSR Vulkan"
-                Pack.LoadedPath = Root & "\realsr-ncnn-vulkan.exe"
+                Pack.LoadedPath = RealSRNcnnPath
                 Pack.LoadedExtensions = {".png", ".webp", ".jpg"}
                 Pack.LoadedPackage = MakeVulkanPackage(True)
             Case "SRMD Vulkan"
-                Pack.LoadedPath = Root & "\srmd-ncnn-vulkan.exe"
+                Pack.LoadedPath = SRMDNcnnPath
                 Pack.LoadedExtensions = {".png", ".webp", ".jpg"}
                 Pack.LoadedPackage = MakeVulkanPackage()
             Case "Waifu2x CPP"
-                Pack.LoadedPath = Root & "\waifu2x-converter-cpp.exe"
+                Pack.LoadedPath = WaifuCppPath
                 Pack.LoadedExtensions = {".bmp", ".dib", ".exr", ".hdr", ".jpe", ".jpeg", ".jpg", ".pbm", ".pgm", ".pic", ".png", ".pnm", ".ppm", ".pxm", ".ras", ".sr", ".tif", ".tiff", ".webp"}
                 Pack.LoadedPackage = MakeCPPPackage()
             Case "Anime4k CPP"
-                Pack.LoadedPath = Root & "\Anime4KCPP_CLI.exe"
+                Pack.LoadedPath = Anime4kPath
                 Pack.LoadedExtensions = {".png", ".jpg"}
                 Pack.LoadedPackage = MakeA4KPackage()
             Case "Python"
@@ -740,6 +785,38 @@ Public Class Form1
     End Sub
 
     Public Shared Function Deserialize(Of T)(ByVal xml As String) As T
+        Dim XmlBuddy As New Xml.Serialization.XmlSerializer(GetType(T))
+        Dim fs As New FileStream(xml, FileMode.Open)
+        Dim reader As New Xml.XmlTextReader(fs)
+        If XmlBuddy.CanDeserialize(reader) Then
+            Dim tempObject As Object = DirectCast(XmlBuddy.Deserialize(reader), T)
+            reader.Close()
+            Return tempObject
+        Else
+            Return Nothing
+        End If
+    End Function
+
+    Public Shared Function SerializeString(Of T)(ByVal Source As T) As String
+        Dim Result As String = ""
+        Using XmlStream As New MemoryStream
+            Dim XmlSerializer As New Xml.Serialization.XmlSerializer(GetType(T))
+            Dim XmlSettings As New Xml.XmlWriterSettings()
+            XmlSettings.Indent = True
+            XmlSettings.CloseOutput = True
+            Dim XmlWriter As Xml.XmlWriter = Xml.XmlWriter.Create(XmlStream, XmlSettings)
+            XmlSerializer.Serialize(XmlWriter, Source)
+            Dim XmlReader As New StreamReader(XmlStream)
+            XmlStream.Position = 0
+            Result = XmlReader.ReadToEnd()
+            XmlWriter.Flush()
+            XmlWriter.Close()
+            XmlReader.Dispose()
+        End Using
+        Return Result
+    End Function
+
+    Public Shared Function DeserializeString(Of T)(ByVal xml As String) As T
         Dim XmlBuddy As New Xml.Serialization.XmlSerializer(GetType(T))
         Dim fs As New FileStream(xml, FileMode.Open)
         Dim reader As New Xml.XmlTextReader(fs)

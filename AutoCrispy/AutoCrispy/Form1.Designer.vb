@@ -106,6 +106,9 @@ Partial Class Form1
         Me.ChainRemove = New System.Windows.Forms.Button()
         Me.ChainAdd = New System.Windows.Forms.Button()
         Me.ChainPreview = New System.Windows.Forms.ListView()
+        Me.ChainContext = New System.Windows.Forms.ContextMenuStrip(Me.components)
+        Me.ChainContextEdit = New System.Windows.Forms.ToolStripMenuItem()
+        Me.ChainContextDelete = New System.Windows.Forms.ToolStripMenuItem()
         Me.PathGroup = New System.Windows.Forms.TabPage()
         Me.OutputBrowse = New System.Windows.Forms.Button()
         Me.InputTextBox = New System.Windows.Forms.TextBox()
@@ -135,6 +138,7 @@ Partial Class Form1
         Me.PyGroup.SuspendLayout()
         CType(Me.PyArguements, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.ChainGroup.SuspendLayout()
+        Me.ChainContext.SuspendLayout()
         Me.PathGroup.SuspendLayout()
         Me.TabGroup.SuspendLayout()
         Me.SuspendLayout()
@@ -977,7 +981,7 @@ Partial Class Form1
         Me.ChainRemove.Name = "ChainRemove"
         Me.ChainRemove.Size = New System.Drawing.Size(60, 23)
         Me.ChainRemove.TabIndex = 16
-        Me.ChainRemove.Text = "Remove"
+        Me.ChainRemove.Text = "Delete"
         Me.ChainRemove.UseVisualStyleBackColor = True
         '
         'ChainAdd
@@ -994,6 +998,7 @@ Partial Class Form1
         Me.ChainPreview.Alignment = System.Windows.Forms.ListViewAlignment.SnapToGrid
         Me.ChainPreview.AllowDrop = True
         Me.ChainPreview.AutoArrange = False
+        Me.ChainPreview.ContextMenuStrip = Me.ChainContext
         Me.ChainPreview.GridLines = True
         Me.ChainPreview.HideSelection = False
         Me.ChainPreview.LargeImageList = Me.ChainThumbs
@@ -1004,6 +1009,24 @@ Partial Class Form1
         Me.ChainPreview.Size = New System.Drawing.Size(539, 110)
         Me.ChainPreview.TabIndex = 13
         Me.ChainPreview.UseCompatibleStateImageBehavior = False
+        '
+        'ChainContext
+        '
+        Me.ChainContext.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.ChainContextEdit, Me.ChainContextDelete})
+        Me.ChainContext.Name = "ChainContext"
+        Me.ChainContext.Size = New System.Drawing.Size(181, 70)
+        '
+        'ChainContextEdit
+        '
+        Me.ChainContextEdit.Name = "ChainContextEdit"
+        Me.ChainContextEdit.Size = New System.Drawing.Size(180, 22)
+        Me.ChainContextEdit.Text = "&Edit"
+        '
+        'ChainContextDelete
+        '
+        Me.ChainContextDelete.Name = "ChainContextDelete"
+        Me.ChainContextDelete.Size = New System.Drawing.Size(180, 22)
+        Me.ChainContextDelete.Text = "&Delete"
         '
         'PathGroup
         '
@@ -1131,6 +1154,7 @@ Partial Class Form1
         Me.PyGroup.PerformLayout()
         CType(Me.PyArguements, System.ComponentModel.ISupportInitialize).EndInit()
         Me.ChainGroup.ResumeLayout(False)
+        Me.ChainContext.ResumeLayout(False)
         Me.PathGroup.ResumeLayout(False)
         Me.PathGroup.PerformLayout()
         Me.TabGroup.ResumeLayout(False)
@@ -1227,4 +1251,7 @@ Partial Class Form1
     Friend WithEvents Label1 As Label
     Friend WithEvents Label2 As Label
     Friend WithEvents TabGroup As TabControl
+    Friend WithEvents ChainContext As ContextMenuStrip
+    Friend WithEvents ChainContextEdit As ToolStripMenuItem
+    Friend WithEvents ChainContextDelete As ToolStripMenuItem
 End Class
