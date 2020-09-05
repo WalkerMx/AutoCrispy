@@ -1,15 +1,15 @@
 # AutoCrispy
-Automatically apply AI upscaling on Dumped Textures. Comparison shots are [here](https://github.com/WalkerMx/AutoCrispy/blob/master/COMPARE.md).
+Automatically apply AI upscaling on Dumped Textures.
 
 ## AutoCrispy Features
 
-   - Model Chaining - Arbitrarily chain models for upscaling.  Adding a model to a chain 'snapshots' your current settings for the backend, meaning you can apply the same backend with differant settings or models (ESRGAN), or apply any mix of backends in sequence to your textures.  Chains can be saved, but the paths are absolute - if you move AutoCrispy to a new folder, you will need to rebuild your chains!
+   - Model Chaining - Arbitrarily chain models for upscaling.  Adding a model to a chain 'snapshots' your current settings for the backend, meaning you can apply the same backend with differant settings or models (ESRGAN), or apply any mix of backends in sequence to your textures.
 
    - Defringing - Basic, GDI+ defringing scheme.  Removes ugly halo artifacts ('fringes') from textures with transparency.  This works best where all textures are roughly the same size.
 
 ## Backend Features
 
-The following are the features supported in AutoCrispy. Any feature listed is not necessarily the same as the features or requirements of the program. To work, AutoCrispy requires one of the following to be downloaded, or ESRGAN to be installed.
+The following are the features supported in AutoCrispy. Any feature listed is not necessarily the same as the features or requirements of the program. To work, AutoCrispy requires one of the following to be downloaded, or ESRGAN to be installed.  [More about the Backends and Comparison shots can be found here](https://github.com/WalkerMx/AutoCrispy/blob/master/COMPARE.md)
 
 Backend|Scale Range|Denoising Support|Alpha Support|TAA|Custom Filters|Speed|VRAM Requirements|Download
 :-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:
