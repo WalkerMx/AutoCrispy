@@ -117,6 +117,7 @@ Partial Class Form1
         Me.Label1 = New System.Windows.Forms.Label()
         Me.Label2 = New System.Windows.Forms.Label()
         Me.TabGroup = New System.Windows.Forms.TabControl()
+        Me.AdvSettingsGroup = New System.Windows.Forms.TabPage()
         Me.CaffeGroup.SuspendLayout()
         CType(Me.CaffeScale, System.ComponentModel.ISupportInitialize).BeginInit()
         CType(Me.CaffeNoise, System.ComponentModel.ISupportInitialize).BeginInit()
@@ -1014,18 +1015,18 @@ Partial Class Form1
         '
         Me.ChainContext.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.ChainContextEdit, Me.ChainContextDelete})
         Me.ChainContext.Name = "ChainContext"
-        Me.ChainContext.Size = New System.Drawing.Size(181, 70)
+        Me.ChainContext.Size = New System.Drawing.Size(108, 48)
         '
         'ChainContextEdit
         '
         Me.ChainContextEdit.Name = "ChainContextEdit"
-        Me.ChainContextEdit.Size = New System.Drawing.Size(180, 22)
+        Me.ChainContextEdit.Size = New System.Drawing.Size(107, 22)
         Me.ChainContextEdit.Text = "&Edit"
         '
         'ChainContextDelete
         '
         Me.ChainContextDelete.Name = "ChainContextDelete"
-        Me.ChainContextDelete.Size = New System.Drawing.Size(180, 22)
+        Me.ChainContextDelete.Size = New System.Drawing.Size(107, 22)
         Me.ChainContextDelete.Text = "&Delete"
         '
         'PathGroup
@@ -1102,12 +1103,23 @@ Partial Class Form1
         '
         Me.TabGroup.Controls.Add(Me.PathGroup)
         Me.TabGroup.Controls.Add(Me.ChainGroup)
+        Me.TabGroup.Controls.Add(Me.AdvSettingsGroup)
         Me.TabGroup.DataBindings.Add(New System.Windows.Forms.Binding("SelectedIndex", Global.AutoCrispy.My.MySettings.Default, "TabSelected", True, System.Windows.Forms.DataSourceUpdateMode.OnPropertyChanged))
         Me.TabGroup.Location = New System.Drawing.Point(12, 12)
         Me.TabGroup.Name = "TabGroup"
         Me.TabGroup.SelectedIndex = Global.AutoCrispy.My.MySettings.Default.TabSelected
         Me.TabGroup.Size = New System.Drawing.Size(624, 148)
         Me.TabGroup.TabIndex = 14
+        '
+        'AdvSettingsGroup
+        '
+        Me.AdvSettingsGroup.Location = New System.Drawing.Point(4, 22)
+        Me.AdvSettingsGroup.Name = "AdvSettingsGroup"
+        Me.AdvSettingsGroup.Padding = New System.Windows.Forms.Padding(3)
+        Me.AdvSettingsGroup.Size = New System.Drawing.Size(616, 122)
+        Me.AdvSettingsGroup.TabIndex = 2
+        Me.AdvSettingsGroup.Text = "Advanced"
+        Me.AdvSettingsGroup.UseVisualStyleBackColor = True
         '
         'Form1
         '
@@ -1254,4 +1266,5 @@ Partial Class Form1
     Friend WithEvents ChainContext As ContextMenuStrip
     Friend WithEvents ChainContextEdit As ToolStripMenuItem
     Friend WithEvents ChainContextDelete As ToolStripMenuItem
+    Friend WithEvents AdvSettingsGroup As TabPage
 End Class

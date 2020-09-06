@@ -12,7 +12,6 @@ Public Class Form1
     Dim PyEmbedded As Boolean
     Dim ChainedModels As New List(Of Settings)
     Dim HandOff As ExtSettings
-    Dim vbQuote As Char = ControlChars.Quote
 
     Dim CaffePath As String
     Dim WaifuNcnnPath As String
@@ -177,28 +176,14 @@ Public Class Form1
         Me.SetStyle(ControlStyles.OptimizedDoubleBuffer, True)
         Application.CurrentCulture = New Globalization.CultureInfo("EN-US")
         LoadBindingString()
-        ChainThumbs.Images.Add(Shrink(My.Resources._0, 64, 64))
-        ChainThumbs.Images.Add(Shrink(My.Resources._1, 64, 64))
-        ChainThumbs.Images.Add(Shrink(My.Resources._2, 64, 64))
-        ChainThumbs.Images.Add(Shrink(My.Resources._3, 64, 64))
-        ChainThumbs.Images.Add(Shrink(My.Resources._4, 64, 64))
-        ChainThumbs.Images.Add(Shrink(My.Resources._5, 64, 64))
-        ChainThumbs.Images.Add(Shrink(My.Resources._6, 64, 64))
+        PreloadImageList()
         StartUpCheckEXE()
         StartUpCheckPy()
-        If PyPaths.Count > 0 Then
-            ExeComboBox.Items.Add("Python")
-            PyScript.SelectedIndex = 0
-            If PyModels.Count > 0 Then
-                PyModel.SelectedIndex = 0
-            Else
-                MsgBox("No ESRGAN Models Found!", MsgBoxStyle.Critical)
-            End If
-        End If
         If ExeComboBox.Items.Count > 0 Then
             ExeComboBox.SelectedIndex = 0
             SetSettingsWindow()
         End If
+        TabGroup.Refresh()
         WatchDogButton.Select()
     End Sub
 
@@ -258,6 +243,25 @@ Public Class Form1
                 Next
             Next
         Next
+        If PyPaths.Count > 0 Then
+            ExeComboBox.Items.Add("Python")
+            PyScript.SelectedIndex = 0
+            If PyModels.Count > 0 Then
+                PyModel.SelectedIndex = 0
+            Else
+                MsgBox("No ESRGAN Models Found!", MsgBoxStyle.Critical)
+            End If
+        End If
+    End Sub
+
+    Private Sub PreloadImageList()
+        ChainThumbs.Images.Add(Shrink(My.Resources._0, 64, 64))
+        ChainThumbs.Images.Add(Shrink(My.Resources._1, 64, 64))
+        ChainThumbs.Images.Add(Shrink(My.Resources._2, 64, 64))
+        ChainThumbs.Images.Add(Shrink(My.Resources._3, 64, 64))
+        ChainThumbs.Images.Add(Shrink(My.Resources._4, 64, 64))
+        ChainThumbs.Images.Add(Shrink(My.Resources._5, 64, 64))
+        ChainThumbs.Images.Add(Shrink(My.Resources._6, 64, 64))
     End Sub
 
     Private Sub SaveBindingString()
@@ -320,7 +324,7 @@ Public Class Form1
     Private Sub ChainSave_Click(sender As Object, e As EventArgs) Handles ChainSave.Click
         Using SFD As New SaveFileDialog With {.Filter = "XML Files|*.xml|All Files|*.*"}
             If SFD.ShowDialog = DialogResult.OK Then
-                Serialize(ChainedModels, SFD.FileName)
+                File.WriteAllText(SFD.FileName, Serialize(ChainedModels))
             End If
         End Using
     End Sub
@@ -330,7 +334,7 @@ Public Class Form1
             If OFD.ShowDialog = DialogResult.OK Then
                 ChainPreview.Clear()
                 ChainedModels.Clear()
-                ChainedModels = Deserialize(Of List(Of Settings))(OFD.FileName)
+                ChainedModels = Deserialize(Of List(Of Settings))(File.ReadAllText(OFD.FileName))
                 For Each Model As Settings In ChainedModels
                     AddModelToChain(Model.LoadedMode)
                 Next
@@ -356,10 +360,10 @@ Public Class Form1
     Private Sub ChainContextEdit_Click(sender As Object, e As EventArgs) Handles ChainContextEdit.Click
         If ChainPreview.SelectedItems.Count > 0 Then
             Dim ItemIndex = (ChainPreview.SelectedItems(0).Position.X - 21) / (ChainPreview.SelectedItems(0).Bounds.Width + 1)
-            Using ECD As New EditChainDialog(SerializeString(ChainedModels(ItemIndex)))
+            Using ECD As New EditChainDialog(Serialize(ChainedModels(ItemIndex)))
                 If ECD.ShowDialog = DialogResult.OK Then
                     Try
-                        Dim NewSettings As Settings = DeserializeString(Of Settings)(ECD.ResultText)
+                        Dim NewSettings As Settings = Deserialize(Of Settings)(ECD.ResultText)
                         ChainedModels(ItemIndex) = NewSettings
                     Catch ex As Exception
                         MsgBox("Error: New settings could not be parsed.")
@@ -382,9 +386,11 @@ Public Class Form1
 
     Private Sub ChainPreview_DragOver(ByVal sender As Object, ByVal e As DragEventArgs) Handles ChainPreview.DragOver
         Dim lvi As ListViewItem = CType(e.Data.GetData("System.Windows.Forms.ListViewItem"), ListViewItem)
-        Dim Offset As Size = Size.Subtract(Cursor.Size, New Size(Cursor.HotSpot.X, Cursor.HotSpot.Y))
-        lvi.Position = Point.Subtract(ChainPreview.PointToClient(New Point(e.X, e.Y)), Offset)
-        e.Effect = DragDropEffects.Move
+        If lvi IsNot Nothing Then
+            Dim Offset As Size = Size.Subtract(Cursor.Size, New Size(Cursor.HotSpot.X, Cursor.HotSpot.Y))
+            lvi.Position = Point.Subtract(ChainPreview.PointToClient(New Point(e.X, e.Y)), Offset)
+            e.Effect = DragDropEffects.Move
+        End If
     End Sub
 
     Private Sub ChainPreview_MouseUp(sender As Object, e As MouseEventArgs) Handles ChainPreview.MouseUp
@@ -501,8 +507,8 @@ Public Class Form1
 #Region "Background"
 
     Private Sub WatchDog_Tick(sender As Object, e As EventArgs) Handles WatchDog.Tick
-        Dim Source As List(Of String) = GetFileNameListNoExtension(InputTextBox.Text)
-        Dim Dest As List(Of String) = GetFileNameListNoExtension(OutputTextBox.Text)
+        Dim Source As List(Of String) = GetFileNameList(InputTextBox.Text, False)
+        Dim Dest As List(Of String) = GetFileNameList(OutputTextBox.Text, False)
         Dim FileCheck As Boolean = Dest.SequenceEqual(Source)
         If FileCheck = True Or Source.Count = 0 Then
             WaitScale = Math.Min(WaitScale + 1, 100)
@@ -578,7 +584,7 @@ Public Class Form1
             Next
             For Each Model In ChainedModels
                 Dim NewImages As New List(Of String)
-                Dim DiffImages = GetFileNameList(ChainPaths(0)).Except(GetFileNameList(HandOff.OutputPath))
+                Dim DiffImages = GetFileNameList(ChainPaths(0), True).Except(GetFileNameList(HandOff.OutputPath, True))
                 For Each NewImage As String In DiffImages
                     Dim AcceptExt As Boolean = Model.LoadedExtensions.Contains(Path.GetExtension(NewImage).ToLower)
                     If File.Exists(ChainPaths(0) & "\" & NewImage) AndAlso AcceptExt = True Then
@@ -600,7 +606,8 @@ Public Class Form1
                     Else
                         For j = 0 To NewImages.Count - 1
                             Dim NewImage As String = ChainPaths(1) & "\" & Path.GetFileName(NewImages(j))
-                            Dim BuildProcess As ProcessStartInfo = New ProcessStartInfo(Model.LoadedPath, MakeCommand(NewImages(j), NewImage, Model))
+                            Dim BuildProcess As ProcessStartInfo = New ProcessStartInfo(Path.GetFileName(Model.LoadedPath), MakeCommand(NewImages(j), NewImage, Model))
+                            BuildProcess.WorkingDirectory = Directory.GetParent(Model.LoadedPath).FullName
                             BuildProcess.WindowStyle = ProcessWindowStyle.Hidden
                             Dim BatchProcess As Process = Process.Start(BuildProcess)
                             If (j + 1) Mod HandOff.Threads = 0 OrElse (j = NewImages.Count - 1) Then
@@ -624,7 +631,7 @@ Public Class Form1
             WorkHorse.ReportProgress(Math.Round(((i * 100) + 1) / Source.Count, 0))
         Next
         If HandOff.Defringe = True Then
-            For Each DestImage As String In Source
+            For Each DestImage As String In Directory.EnumerateFiles(HandOff.OutputPath, "*.png")
                 Defringe(HandOff.OutputPath & "\" & Path.GetFileName(DestImage))
             Next
         End If
@@ -781,37 +788,11 @@ Public Class Form1
 
 #Region "XML"
 
-    Public Shared Sub Serialize(Of T)(ByVal obj As T, sConfigFilePath As String)
-        Dim XmlBuddy As New Xml.Serialization.XmlSerializer(GetType(T))
-        Dim MySettings As New Xml.XmlWriterSettings()
-        MySettings.Indent = True
-        MySettings.CloseOutput = True
-        Dim MyWriter As Xml.XmlWriter = Xml.XmlWriter.Create(sConfigFilePath, MySettings)
-        XmlBuddy.Serialize(MyWriter, obj)
-        MyWriter.Flush()
-        MyWriter.Close()
-    End Sub
-
-    Public Shared Function Deserialize(Of T)(ByVal xml As String) As T
-        Dim XmlBuddy As New Xml.Serialization.XmlSerializer(GetType(T))
-        Dim fs As New FileStream(xml, FileMode.Open)
-        Dim reader As New Xml.XmlTextReader(fs)
-        If XmlBuddy.CanDeserialize(reader) Then
-            Dim tempObject As Object = DirectCast(XmlBuddy.Deserialize(reader), T)
-            reader.Close()
-            Return tempObject
-        Else
-            Return Nothing
-        End If
-    End Function
-
-    Public Shared Function SerializeString(Of T)(ByVal Source As T) As String
+    Public Shared Function Serialize(Of T)(ByVal Source As T) As String
         Dim Result As String = ""
         Using XmlStream As New MemoryStream
             Dim XmlSerializer As New Xml.Serialization.XmlSerializer(GetType(T))
-            Dim XmlSettings As New Xml.XmlWriterSettings()
-            XmlSettings.Indent = True
-            XmlSettings.CloseOutput = True
+            Dim XmlSettings As New Xml.XmlWriterSettings With {.Indent = True, .CloseOutput = True}
             Dim XmlWriter As Xml.XmlWriter = Xml.XmlWriter.Create(XmlStream, XmlSettings)
             XmlSerializer.Serialize(XmlWriter, Source)
             Dim XmlReader As New StreamReader(XmlStream)
@@ -824,21 +805,22 @@ Public Class Form1
         Return Result
     End Function
 
-    Public Shared Function DeserializeString(Of T)(ByVal Xml As String) As T
-        Dim XmlSerializer As New Xml.Serialization.XmlSerializer(GetType(T))
-        Dim XmlStream As New MemoryStream
-        Dim XmlWriter As New StreamWriter(XmlStream)
-        XmlWriter.Write(Xml)
-        XmlWriter.Flush()
-        XmlStream.Position = 0
-        Dim XmlReader As New Xml.XmlTextReader(XmlStream)
-        If XmlSerializer.CanDeserialize(XmlReader) Then
-            Dim tempObject As Object = DirectCast(XmlSerializer.Deserialize(XmlReader), T)
-            XmlReader.Close()
-            Return tempObject
-        Else
-            Return Nothing
-        End If
+    Public Shared Function Deserialize(Of T)(ByVal Xml As String) As T
+        Dim Result As New Object
+        Using XmlStream As New MemoryStream
+            Dim XmlSerializer As New Xml.Serialization.XmlSerializer(GetType(T))
+            Dim XmlWriter As New StreamWriter(XmlStream)
+            XmlWriter.Write(Xml)
+            XmlWriter.Flush()
+            XmlStream.Position = 0
+            Dim XmlReader As New Xml.XmlTextReader(XmlStream)
+            If XmlSerializer.CanDeserialize(XmlReader) Then
+                Result = DirectCast(XmlSerializer.Deserialize(XmlReader), T)
+            End If
+            XmlWriter.Close()
+            XmlReader.Dispose()
+        End Using
+        Return Result
     End Function
 
 #End Region
@@ -904,18 +886,14 @@ Public Class Form1
         Return ""
     End Function
 
-    Private Function GetFileNameList(Source As String) As List(Of String)
+    Private Function GetFileNameList(Source As String, Extension As Boolean) As List(Of String)
         Dim Result As New List(Of String)
-        For Each File As String In Directory.GetFileSystemEntries(Source, "*.*", SearchOption.TopDirectoryOnly).ToList
-            Result.Add(Path.GetFileName(File))
-        Next
-        Return Result
-    End Function
-
-    Private Function GetFileNameListNoExtension(Source As String) As List(Of String)
-        Dim Result As New List(Of String)
-        For Each File As String In Directory.GetFileSystemEntries(Source, "*.*", SearchOption.TopDirectoryOnly).ToList
-            Result.Add(Path.GetFileNameWithoutExtension(File))
+        For Each File As String In Directory.GetFiles(Source).ToList
+            If Extension = True Then
+                Result.Add(Path.GetFileName(File))
+            Else
+                Result.Add(Path.GetFileNameWithoutExtension(File))
+            End If
         Next
         Return Result
     End Function
@@ -992,7 +970,7 @@ Public Class Form1
     End Function
 
     Private Function Quote(Source As String) As String
-        Return vbQuote & Source & vbQuote
+        Return ControlChars.Quote & Source & ControlChars.Quote
     End Function
 
 #End Region
