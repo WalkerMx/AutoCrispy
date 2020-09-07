@@ -9,7 +9,7 @@ Public Class Form1
     Dim SettingsLoc As Point = New Point(240, 166)
     Dim PyPaths As New List(Of String)
     Dim PyModels As New List(Of String)
-    Dim PyEmbedded As Boolean
+    Dim PyDetected As Boolean
     Dim ChainedModels As New List(Of Settings)
     Dim HandOff As ExtSettings
 
@@ -19,7 +19,7 @@ Public Class Form1
     Dim SRMDNcnnPath As String
     Dim WaifuCppPath As String
     Dim Anime4kPath As String
-    Dim EmbeddedPyPath As String
+    Dim DetectedPyPath As String
 
 #End Region
 
@@ -41,16 +41,20 @@ Public Class Form1
         Public Property InputPath As String
         Public Property OutputPath As String
         Public Property Threads As Integer
+        Public Property PyBatchCount As Integer
         Public Property ResumeTimer As Boolean
         Public Property Defringe As Boolean
         Public Property Threshold As Integer
-        Public Sub New(_InputPath As String, _OutputPath As String, _Threads As Integer, _ResumeTimer As Boolean, _Defringe As Boolean, _Threshold As Integer)
+        Public Property Logging As Boolean
+        Public Sub New(_InputPath As String, _OutputPath As String, _Threads As Integer, _PyBatchCount As Integer, _ResumeTimer As Boolean, _Defringe As Boolean, _Threshold As Integer, _Logging As Boolean)
             InputPath = _InputPath
             OutputPath = _OutputPath
             Threads = _Threads
+            PyBatchCount = _PyBatchCount
             ResumeTimer = _ResumeTimer
             Defringe = _Defringe
             Threshold = _Threshold
+            Logging = _Logging
         End Sub
     End Structure
 
@@ -183,7 +187,7 @@ Public Class Form1
             ExeComboBox.SelectedIndex = 0
             SetSettingsWindow()
         End If
-        TabGroup.Refresh()
+        Dim TempTab = TabGroup.SelectedIndex : TabGroup.SelectTab(0) : TabGroup.SelectTab(TempTab)
         WatchDogButton.Select()
     End Sub
 
@@ -220,10 +224,14 @@ Public Class Form1
                 Anime4kPath = Folder & "\Anime4KCPP_CLI.exe"
             End If
             If File.Exists(Folder & "\python\python.exe") Then
-                PyEmbedded = True
-                EmbeddedPyPath = Folder & "\python\python.exe"
+                PyDetected = True
+                DetectedPyPath = Folder & "\python\python.exe"
             End If
         Next
+        If PyDetected = False AndAlso GetPythonPath() <> "" Then
+            PyDetected = True
+            DetectedPyPath = GetPythonPath()
+        End If
     End Sub
 
     Private Sub StartUpCheckPy()
@@ -415,8 +423,8 @@ Public Class Form1
                     If SFD.ShowDialog = DialogResult.OK Then
                         Dim TempPath As String = Path.GetTempPath & "Single_0"
                         Directory.CreateDirectory(Path.GetTempPath & "Single_0")
-                        File.Copy(OFD.FileName, TempPath & "\" & Path.GetFileName(SFD.FileName))
-                        HandOff = New ExtSettings(TempPath, Directory.GetParent(SFD.FileName).FullName, GetThreads(), False, DefringeCheck.Checked, DefringeThresh.Value)
+                        File.Copy(OFD.FileName, TempPath & "\" & Path.GetFileName(SFD.FileName), True)
+                        HandOff = New ExtSettings(TempPath, Directory.GetParent(SFD.FileName).FullName, GetThreads(), PyBatchSize.Value, False, DefringeCheck.Checked, DefringeThresh.Value, DebugCheckbox.Checked)
                         If ChainPreview.Items.Count = 0 Then
                             PackageSettings()
                         End If
@@ -443,7 +451,7 @@ Public Class Form1
 
     Private Sub PyScript_SelectedIndexChanged(sender As Object, e As EventArgs) Handles PyScript.SelectedIndexChanged
         If PyScript.Items.Count > 0 Then
-            CheckPyArgs(File.ReadAllText(PyPaths(PyScript.SelectedIndex)).Replace(vbCr, " ").Replace(vbLf, " ").Replace(vbCrLf, " "))
+            GetPyArgs(File.ReadAllText(PyPaths(PyScript.SelectedIndex)).Replace(vbCr, " ").Replace(vbLf, " ").Replace(vbCrLf, " "))
         End If
     End Sub
 
@@ -516,7 +524,7 @@ Public Class Form1
         Else
             WaitScale = 0
             WatchDog.Interval = 1000
-            HandOff = New ExtSettings(InputTextBox.Text, OutputTextBox.Text, GetThreads(), True, DefringeCheck.Checked, DefringeThresh.Value)
+            HandOff = New ExtSettings(InputTextBox.Text, OutputTextBox.Text, GetThreads(), PyBatchSize.Value, True, DefringeCheck.Checked, DefringeThresh.Value, DebugCheckbox.Checked)
             If ChainPreview.Items.Count = 0 Then
                 PackageSettings()
             End If
@@ -566,7 +574,7 @@ Public Class Form1
     Private Sub MakeUpscale()
         Dim TempPath As String = Path.GetTempPath & "Temp_0"
         Dim Source = Directory.GetFiles(HandOff.InputPath).Except(Directory.GetFiles(HandOff.OutputPath))
-        For i = 0 To Source.Count - 1 Step HandOff.Threads
+        For i = 0 To Source.Count - 1 Step HandOff.PyBatchCount
             Dim ChainPaths As New List(Of String)
             Dim DeletedChainPaths As New List(Of String)
             ChainPaths.Add(TempPath)
@@ -577,9 +585,9 @@ Public Class Form1
             Next
             ChainPaths.Add(HandOff.OutputPath)
             Directory.CreateDirectory(TempPath)
-            For j = i To i + HandOff.Threads - 1
+            For j = i To i + HandOff.PyBatchCount - 1
                 If j <= Source.Count - 1 Then
-                    File.Copy(Source(j), TempPath & "\" & Path.GetFileName(Source(j)))
+                    File.Copy(Source(j), TempPath & "\" & Path.GetFileName(Source(j)), True)
                 End If
             Next
             For Each Model In ChainedModels
@@ -592,26 +600,38 @@ Public Class Form1
                     End If
                 Next
                 If NewImages.Count > 0 Then
+                    Dim BuildProcess As ProcessStartInfo
                     If Model.LoadedMode = "Python" Then
-                        Dim BuildProcess As ProcessStartInfo
-                        If PyEmbedded = True Then
-                            BuildProcess = New ProcessStartInfo(EmbeddedPyPath, Quote(Model.LoadedPath) & " " & MakeCommand(ChainPaths(0), ChainPaths(1), Model))
+                        If PyDetected = True Then
+                            BuildProcess = New ProcessStartInfo(DetectedPyPath, Quote(Model.LoadedPath) & " " & MakeCommand(ChainPaths(0), ChainPaths(1), Model))
+                            BuildProcess.RedirectStandardOutput = True
+                            BuildProcess.RedirectStandardError = True
+                            BuildProcess.UseShellExecute = False
+                            BuildProcess.CreateNoWindow = True
                         Else
                             BuildProcess = New ProcessStartInfo(Model.LoadedPath, MakeCommand(ChainPaths(0), ChainPaths(1), Model))
+                            BuildProcess.UseShellExecute = True
+                            BuildProcess.WindowStyle = ProcessWindowStyle.Minimized
                         End If
-                        BuildProcess.UseShellExecute = True
-                        BuildProcess.WindowStyle = ProcessWindowStyle.Minimized
                         Dim BatchProcess As Process = Process.Start(BuildProcess)
                         BatchProcess.WaitForExit()
+                        If HandOff.Logging = True AndAlso PyDetected = True Then
+                            WriteLog(BatchProcess, HandOff.OutputPath)
+                        End If
                     Else
                         For j = 0 To NewImages.Count - 1
                             Dim NewImage As String = ChainPaths(1) & "\" & Path.GetFileName(NewImages(j))
-                            Dim BuildProcess As ProcessStartInfo = New ProcessStartInfo(Path.GetFileName(Model.LoadedPath), MakeCommand(NewImages(j), NewImage, Model))
-                            BuildProcess.WorkingDirectory = Directory.GetParent(Model.LoadedPath).FullName
-                            BuildProcess.WindowStyle = ProcessWindowStyle.Hidden
+                            BuildProcess = New ProcessStartInfo(Model.LoadedPath, MakeCommand(NewImages(j), NewImage, Model))
+                            BuildProcess.RedirectStandardOutput = True
+                            BuildProcess.RedirectStandardError = True
+                            BuildProcess.UseShellExecute = False
+                            BuildProcess.CreateNoWindow = True
                             Dim BatchProcess As Process = Process.Start(BuildProcess)
                             If (j + 1) Mod HandOff.Threads = 0 OrElse (j = NewImages.Count - 1) Then
                                 BatchProcess.WaitForExit()
+                            End If
+                            If HandOff.Logging = True Then
+                                WriteLog(BatchProcess, HandOff.OutputPath)
                             End If
                         Next
                     End If
@@ -621,6 +641,11 @@ Public Class Form1
                 End If
                 DeletedChainPaths.Add(ChainPaths(0))
                 ChainPaths.RemoveAt(0)
+                If HandOff.Defringe = True AndAlso ChainedModels.IndexOf(Model) = ChainedModels.Count - 1 Then
+                    For Each NewImage In NewImages
+                        If File.Exists(HandOff.OutputPath & "\" & Path.GetFileName(NewImage)) Then Defringe(HandOff.OutputPath & "\" & Path.GetFileName(NewImage))
+                    Next
+                End If
                 If WorkHorse.CancellationPending = True Then
                     Exit Sub
                 End If
@@ -630,13 +655,8 @@ Public Class Form1
             Next
             WorkHorse.ReportProgress(Math.Round(((i * 100) + 1) / Source.Count, 0))
         Next
-        If HandOff.Defringe = True Then
-            For Each DestImage As String In Directory.EnumerateFiles(HandOff.OutputPath, "*.png")
-                Defringe(HandOff.OutputPath & "\" & Path.GetFileName(DestImage))
-            Next
-        End If
         If CleanupCheckBox.Checked = True Then
-            For Each SourceImage As String In Directory.GetFiles(HandOff.InputPath)
+            For Each SourceImage As String In Source
                 File.Delete(SourceImage)
             Next
         End If
@@ -681,7 +701,7 @@ Public Class Form1
             Case "Anime4k CPP"
                 ChainPreview.Items.Add(New ListViewItem("Anime4K", 5))
             Case "Python"
-                ChainPreview.Items.Add(New ListViewItem("Python", 6))
+                ChainPreview.Items.Add(New ListViewItem(PyModel.SelectedItem.ToString, 6))
         End Select
     End Sub
 
@@ -840,7 +860,21 @@ Public Class Form1
         End Select
     End Function
 
-    Private Sub CheckPyArgs(Source As String)
+    Private Function GetPythonPath() As String
+        Dim Result As String = ""
+        Dim PathVar As String = Environment.GetEnvironmentVariable("PATH")
+        If PathVar IsNot Nothing Then
+            For Each PathString In PathVar.Split(";"c)
+                If File.Exists(PathString & "\python.exe") Then
+                    Result = PathString & "\python.exe"
+                    Exit For
+                End If
+            Next
+        End If
+        Return Result
+    End Function
+
+    Private Sub GetPyArgs(Source As String)
         PyArguements.Rows.Clear()
         Dim Result As New List(Of String)
         Dim matches As Text.RegularExpressions.MatchCollection = System.Text.RegularExpressions.Regex.Matches(Source, "parser\.add_argument\((.*?)\)")
@@ -897,6 +931,15 @@ Public Class Form1
         Next
         Return Result
     End Function
+
+    Private Sub WriteLog(Source As Process, SaveLoc As String)
+        Dim Filename As String = SaveLoc & "\Log_" & Now.ToString("yyyy-MM-dd_HH-mm-ss") & ".txt"
+        Dim Output As String = ""
+        Output += Source.StandardOutput.ReadToEnd
+        Output += vbNewLine & vbNewLine
+        Output += Source.StandardError.ReadToEnd
+        File.WriteAllText(Filename, Output)
+    End Sub
 
     Private Function MakeCaffeCommand(SourceImage As String, NewImage As String, Package As CaffePackage) As String
         Dim Result As New ArguementString

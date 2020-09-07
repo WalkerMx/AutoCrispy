@@ -118,6 +118,9 @@ Partial Class Form1
         Me.Label2 = New System.Windows.Forms.Label()
         Me.TabGroup = New System.Windows.Forms.TabControl()
         Me.AdvSettingsGroup = New System.Windows.Forms.TabPage()
+        Me.DebugCheckbox = New System.Windows.Forms.CheckBox()
+        Me.Label23 = New System.Windows.Forms.Label()
+        Me.PyBatchSize = New System.Windows.Forms.NumericUpDown()
         Me.CaffeGroup.SuspendLayout()
         CType(Me.CaffeScale, System.ComponentModel.ISupportInitialize).BeginInit()
         CType(Me.CaffeNoise, System.ComponentModel.ISupportInitialize).BeginInit()
@@ -142,6 +145,8 @@ Partial Class Form1
         Me.ChainContext.SuspendLayout()
         Me.PathGroup.SuspendLayout()
         Me.TabGroup.SuspendLayout()
+        Me.AdvSettingsGroup.SuspendLayout()
+        CType(Me.PyBatchSize, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.SuspendLayout()
         '
         'CaffeGroup
@@ -822,6 +827,8 @@ Partial Class Form1
         '
         'PyGroup
         '
+        Me.PyGroup.Controls.Add(Me.PyBatchSize)
+        Me.PyGroup.Controls.Add(Me.Label23)
         Me.PyGroup.Controls.Add(Me.PyArguements)
         Me.PyGroup.Controls.Add(Me.PyModel)
         Me.PyGroup.Controls.Add(Me.PyInputFlag)
@@ -1113,6 +1120,7 @@ Partial Class Form1
         '
         'AdvSettingsGroup
         '
+        Me.AdvSettingsGroup.Controls.Add(Me.DebugCheckbox)
         Me.AdvSettingsGroup.Location = New System.Drawing.Point(4, 22)
         Me.AdvSettingsGroup.Name = "AdvSettingsGroup"
         Me.AdvSettingsGroup.Padding = New System.Windows.Forms.Padding(3)
@@ -1120,6 +1128,35 @@ Partial Class Form1
         Me.AdvSettingsGroup.TabIndex = 2
         Me.AdvSettingsGroup.Text = "Advanced"
         Me.AdvSettingsGroup.UseVisualStyleBackColor = True
+        '
+        'DebugCheckbox
+        '
+        Me.DebugCheckbox.AutoSize = True
+        Me.DebugCheckbox.Location = New System.Drawing.Point(3, 6)
+        Me.DebugCheckbox.Name = "DebugCheckbox"
+        Me.DebugCheckbox.Size = New System.Drawing.Size(99, 17)
+        Me.DebugCheckbox.TabIndex = 0
+        Me.DebugCheckbox.Text = "Output Logging"
+        Me.DebugCheckbox.UseVisualStyleBackColor = True
+        '
+        'Label23
+        '
+        Me.Label23.AutoSize = True
+        Me.Label23.Location = New System.Drawing.Point(6, 75)
+        Me.Label23.Name = "Label23"
+        Me.Label23.Size = New System.Drawing.Size(61, 13)
+        Me.Label23.TabIndex = 4
+        Me.Label23.Text = "Batch Size:"
+        '
+        'PyBatchSize
+        '
+        Me.PyBatchSize.Location = New System.Drawing.Point(77, 73)
+        Me.PyBatchSize.Maximum = New Decimal(New Integer() {256, 0, 0, 0})
+        Me.PyBatchSize.Minimum = New Decimal(New Integer() {1, 0, 0, 0})
+        Me.PyBatchSize.Name = "PyBatchSize"
+        Me.PyBatchSize.Size = New System.Drawing.Size(97, 20)
+        Me.PyBatchSize.TabIndex = 5
+        Me.PyBatchSize.Value = New Decimal(New Integer() {16, 0, 0, 0})
         '
         'Form1
         '
@@ -1170,6 +1207,9 @@ Partial Class Form1
         Me.PathGroup.ResumeLayout(False)
         Me.PathGroup.PerformLayout()
         Me.TabGroup.ResumeLayout(False)
+        Me.AdvSettingsGroup.ResumeLayout(False)
+        Me.AdvSettingsGroup.PerformLayout()
+        CType(Me.PyBatchSize, System.ComponentModel.ISupportInitialize).EndInit()
         Me.ResumeLayout(False)
 
     End Sub
@@ -1267,4 +1307,7 @@ Partial Class Form1
     Friend WithEvents ChainContextEdit As ToolStripMenuItem
     Friend WithEvents ChainContextDelete As ToolStripMenuItem
     Friend WithEvents AdvSettingsGroup As TabPage
+    Friend WithEvents DebugCheckbox As CheckBox
+    Friend WithEvents PyBatchSize As NumericUpDown
+    Friend WithEvents Label23 As Label
 End Class
