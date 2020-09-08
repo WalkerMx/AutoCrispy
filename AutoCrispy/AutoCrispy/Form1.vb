@@ -86,31 +86,31 @@ Public Class Form1
         For Each Folder As String In RootFolders
             If File.Exists(Folder & "\waifu2x-caffe-cui.exe") Then
                 ExeComboBox.Items.Add("Waifu2x Caffe")
-                CaffePath = Folder & "\waifu2x-caffe-cui.exe"
+                CaffePath = "\" & Path.GetFileName(Folder) & "\waifu2x-caffe-cui.exe"
             End If
             If File.Exists(Folder & "\waifu2x-ncnn-vulkan.exe") Then
                 ExeComboBox.Items.Add("Waifu2x Vulkan")
-                WaifuNcnnPath = Folder & "\waifu2x-ncnn-vulkan.exe"
+                WaifuNcnnPath = "\" & Path.GetFileName(Folder) & "\waifu2x-ncnn-vulkan.exe"
             End If
             If File.Exists(Folder & "\realsr-ncnn-vulkan.exe") Then
                 ExeComboBox.Items.Add("RealSR Vulkan")
-                RealSRNcnnPath = Folder & "\realsr-ncnn-vulkan.exe"
+                RealSRNcnnPath = "\" & Path.GetFileName(Folder) & "\realsr-ncnn-vulkan.exe"
             End If
             If File.Exists(Folder & "\srmd-ncnn-vulkan.exe") Then
                 ExeComboBox.Items.Add("SRMD Vulkan")
-                SRMDNcnnPath = Folder & "\srmd-ncnn-vulkan.exe"
+                SRMDNcnnPath = "\" & Path.GetFileName(Folder) & "\srmd-ncnn-vulkan.exe"
             End If
             If File.Exists(Folder & "\waifu2x-converter-cpp.exe") Then
                 ExeComboBox.Items.Add("Waifu2x CPP")
-                WaifuCppPath = Folder & "\waifu2x-converter-cpp.exe"
+                WaifuCppPath = "\" & Path.GetFileName(Folder) & "\waifu2x-converter-cpp.exe"
             End If
             If File.Exists(Folder & "\Anime4KCPP_CLI.exe") Then
                 ExeComboBox.Items.Add("Anime4k CPP")
-                Anime4kPath = Folder & "\Anime4KCPP_CLI.exe"
+                Anime4kPath = "\" & Path.GetFileName(Folder) & "\Anime4KCPP_CLI.exe"
             End If
             If File.Exists(Folder & "\python\python.exe") Then
                 PyDetected = True
-                DetectedPyPath = Folder & "\python\python.exe"
+                DetectedPyPath = "\" & Path.GetFileName(Folder) & "\python\python.exe"
             End If
         Next
         If PyDetected = False AndAlso GetPythonPath() <> "" Then
@@ -468,7 +468,7 @@ Public Class Form1
                     Dim BuildProcess As ProcessStartInfo
                     If Model.PackageType = "Python" Then
                         If PyDetected = True Then
-                            BuildProcess = New ProcessStartInfo(Model.FileLocation, Quote(Model.Package.Script) & " " & MakeCommand(ChainPaths(0), ChainPaths(1), Model.PackageType, Model.Package))
+                            BuildProcess = New ProcessStartInfo(IIf(DetectedPyPath(0) = "\"c, Root & Model.FileLocation, Model.FileLocation), Quote(Model.Package.Script) & " " & MakeCommand(ChainPaths(0), ChainPaths(1), Model.PackageType, Model.Package))
                             BuildProcess.RedirectStandardOutput = True
                             BuildProcess.RedirectStandardError = True
                             BuildProcess.UseShellExecute = False
@@ -486,8 +486,8 @@ Public Class Form1
                     Else
                         For j = 0 To NewImages.Count - 1
                             Dim NewImage As String = ChainPaths(1) & "\" & Path.GetFileName(NewImages(j))
-                            BuildProcess = New ProcessStartInfo(Model.FileLocation, MakeCommand(NewImages(j), NewImage, Model.PackageType, Model.Package))
-                            BuildProcess.WorkingDirectory = Directory.GetParent(Model.FileLocation).FullName
+                            BuildProcess = New ProcessStartInfo(Root & Model.FileLocation, MakeCommand(NewImages(j), NewImage, Model.PackageType, Model.Package))
+                            BuildProcess.WorkingDirectory = Directory.GetParent(Root & Model.FileLocation).FullName
                             BuildProcess.RedirectStandardOutput = True
                             BuildProcess.RedirectStandardError = True
                             BuildProcess.UseShellExecute = False

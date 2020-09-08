@@ -105,12 +105,18 @@
             VulkanPak = New VulkanNcnnPackage(Source.VulkanScale.Value, Source.VulkanNoise.Value, Source.VulkanFormat.Text.ToLower, Source.VulkanTAA.Checked)
             CppPak = New Waifu2xCppPackage(Source.WaifuCPPMode.Text.ToLower, Source.WaifuCPPScale.Value, Source.WaifuCPPNoise.Value, Source.WaifuCPPFormat.Text.ToLower, Source.WaifuCppGPU.Checked, Source.WaifuCPPOpenCL.Checked)
             AnimePak = New Anime4kPackage(Source.AnimeCPPScale.Value, Source.AnimeCppPre.Checked, Source.AnimeCppPost.Checked, Source.AnimeCppPreFilter.Checked, Source.AnimeCppPostFilter.Checked, GetFilters(Source.AnimeCppPreFilters), GetFilters(Source.AnimeCppPostFilters), Source.AnimeCPPGpu.Checked, Source.AnimeCPPCnn.Checked)
-            PythonPak = New PythonPackage(Source.PyPaths(Source.PyScript.SelectedIndex), Source.PyModels(Source.PyModel.SelectedIndex), Source.PyBatchSize.Value, Source.PyInputFlag.Text.Trim, Source.PyOutputFlag.Text.Trim, Source.PyArguements)
+            PythonPak = New PythonPackage(GetPyStr(Source.PyPaths, Source.PyScript.SelectedIndex), GetPyStr(Source.PyModels, Source.PyModel.SelectedIndex), Source.PyBatchSize.Value, Source.PyInputFlag.Text.Trim, Source.PyOutputFlag.Text.Trim, Source.PyArguements)
             Paths = New ProgramPaths(Source.InputTextBox.Text, Source.OutputTextBox.Text)
             BasicSettings = New ProgramSettings(Source.ExeComboBox.SelectedItem, Source.ThreadComboBox.SelectedIndex, Source.NumericThreads.Value, Source.DefringeCheck.Checked, Source.DefringeThresh.Value, Source.TabGroup.SelectedIndex)
             ExpertSettings = New AdvancedSettings(Source.DebugCheckbox.Checked, Source.ExpertSettingsBox.Text, Source.CleanupCheckBox.Checked, Source.PortableCheckBox.Checked)
             Chain = Source.ChainList
         End Sub
+        Public Function GetPyStr(PyList As List(Of String), Index As Integer) As String
+            If PyList.Count > 0 Then
+                Return PyList(Index)
+            End If
+            Return ""
+        End Function
     End Structure
 
     <Serializable()> Public Structure ProgramPaths
