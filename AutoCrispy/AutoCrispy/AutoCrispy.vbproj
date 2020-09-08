@@ -107,6 +107,7 @@
       <DependentUpon>Form1.vb</DependentUpon>
       <SubType>Form</SubType>
     </Compile>
+    <Compile Include="FormSettings.vb" />
     <Compile Include="My Project\AssemblyInfo.vb" />
     <Compile Include="My Project\Application.Designer.vb">
       <AutoGen>True</AutoGen>
@@ -152,6 +153,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="crisp2.ico" />
+    <None Include="Resources\default.txt" />
     <None Include="Resources\Licenseing and Modifications.txt" />
     <None Include="Resources\6.png" />
     <None Include="Resources\5.png" />

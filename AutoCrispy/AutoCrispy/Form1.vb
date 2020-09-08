@@ -5,58 +5,26 @@ Public Class Form1
 #Region "VARS"
 
     Dim Root As String = Application.StartupPath
+    Dim AppData As String = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData)
     Dim WaitScale As Integer = 0
     Dim SettingsLoc As Point = New Point(240, 166)
-    Dim PyPaths As New List(Of String)
-    Dim PyModels As New List(Of String)
     Dim PyDetected As Boolean
-    Dim ChainedModels As New List(Of Settings)
-    Dim HandOff As ExtSettings
+    Dim LoadedSettings As FormSettings.Settings
 
-    Dim CaffePath As String
-    Dim WaifuNcnnPath As String
-    Dim RealSRNcnnPath As String
-    Dim SRMDNcnnPath As String
-    Dim WaifuCppPath As String
-    Dim Anime4kPath As String
-    Dim DetectedPyPath As String
+    Public Property ChainList As New List(Of FormSettings.ChainObject)
+    Public Property PyPaths As New List(Of String)
+    Public Property PyModels As New List(Of String)
+    Public Property CaffePath As String
+    Public Property WaifuNcnnPath As String
+    Public Property RealSRNcnnPath As String
+    Public Property SRMDNcnnPath As String
+    Public Property WaifuCppPath As String
+    Public Property Anime4kPath As String
+    Public Property DetectedPyPath As String
 
 #End Region
 
 #Region "Structs"
-
-    <Xml.Serialization.XmlInclude(GetType(CaffePackage))>
-    <Xml.Serialization.XmlInclude(GetType(VulkanPackage))>
-    <Xml.Serialization.XmlInclude(GetType(CPPPackage))>
-    <Xml.Serialization.XmlInclude(GetType(A4KPackage))>
-    <Xml.Serialization.XmlInclude(GetType(PyPackage))>
-    <Serializable()> Public Structure Settings
-        Public Property LoadedPackage As Object
-        Public Property LoadedPath As String
-        Public Property LoadedExtensions As String()
-        Public Property LoadedMode As String
-    End Structure
-
-    <Serializable()> Public Structure ExtSettings
-        Public Property InputPath As String
-        Public Property OutputPath As String
-        Public Property Threads As Integer
-        Public Property PyBatchCount As Integer
-        Public Property ResumeTimer As Boolean
-        Public Property Defringe As Boolean
-        Public Property Threshold As Integer
-        Public Property Logging As Boolean
-        Public Sub New(_InputPath As String, _OutputPath As String, _Threads As Integer, _PyBatchCount As Integer, _ResumeTimer As Boolean, _Defringe As Boolean, _Threshold As Integer, _Logging As Boolean)
-            InputPath = _InputPath
-            OutputPath = _OutputPath
-            Threads = _Threads
-            PyBatchCount = _PyBatchCount
-            ResumeTimer = _ResumeTimer
-            Defringe = _Defringe
-            Threshold = _Threshold
-            Logging = _Logging
-        End Sub
-    End Structure
 
     <Serializable()> Public Structure ArguementString
         Dim Arguements As String
@@ -71,106 +39,6 @@ Public Class Form1
         End Sub
     End Structure
 
-    <Serializable()> Public Structure CaffePackage
-        Public Property Mode As String
-        Public Property Scale As Decimal
-        Public Property Noise As Decimal
-        Public Property Process As String
-        Public Property TAA As Boolean
-        Public Sub New(_Mode As String, _Scale As Decimal, _Noise As Decimal, _Process As String, _TAA As Boolean)
-            Mode = _Mode
-            Scale = _Scale
-            Noise = _Noise
-            Process = _Process
-            TAA = _TAA
-        End Sub
-    End Structure
-
-    <Serializable()> Public Structure VulkanPackage
-        Public Property Scale As Decimal
-        Public Property Noise As Decimal
-        Public Property Format As String
-        Public Property TAA As Boolean
-        Public Property NoNoise As Boolean
-        Public Sub New(_Scale As Decimal, _Noise As Decimal, _Format As String, _TAA As Boolean, Optional _NoNoise As Boolean = False)
-            Scale = _Scale
-            Noise = _Noise
-            Format = _Format
-            TAA = _TAA
-            NoNoise = _NoNoise
-        End Sub
-    End Structure
-
-    <Serializable()> Public Structure CPPPackage
-        Public Property Mode As String
-        Public Property Scale As Decimal
-        Public Property Noise As Decimal
-        Public Property Format As String
-        Public Property NoGPU As Boolean
-        Public Property OpenCL As Boolean
-        Public Property TTA As Boolean
-        Public Sub New(_Mode As String, _Scale As Decimal, _Noise As Decimal, _Format As String, _NoGPU As Boolean, _OpenCL As Boolean, _TTA As Boolean)
-            Mode = _Mode
-            Scale = _Scale
-            Noise = _Noise
-            Format = _Format
-            NoGPU = _NoGPU
-            OpenCL = _OpenCL
-            TTA = _TTA
-        End Sub
-    End Structure
-
-    <Serializable()> Public Structure A4KPackage
-        Public Property Passes As Decimal
-        Public Property PushColors As Decimal
-        Public Property ColorStrength As Decimal
-        Public Property GradStrength As Decimal
-        Public Property Scale As Decimal
-        Public Property Pre As Boolean
-        Public Property Post As Boolean
-        Public Property Filter As Integer
-        Public Property FilterType As Integer
-        Public Property GPU As Boolean
-        Public Property CNN As Boolean
-        Public Sub New(_Passes As Decimal, _PushColors As Decimal, _ColorStrength As Decimal, _GradStrength As Decimal, _Scale As Decimal, _Pre As Boolean, _Post As Boolean, _Filter As Integer, _FilterType As Integer, _GPU As Boolean, _CNN As Boolean)
-            Passes = _Passes
-            PushColors = _PushColors
-            ColorStrength = _ColorStrength
-            GradStrength = _GradStrength
-            Scale = _Scale
-            Pre = _Pre
-            Post = _Post
-            Filter = _Filter
-            FilterType = _FilterType
-            GPU = _GPU
-            CNN = _CNN
-        End Sub
-    End Structure
-
-    <Serializable()> Public Structure PyPackage
-        Public Property Model As String
-        Public Property InputFlag As String
-        Public Property OutputFlag As String
-        Public Property Arguements As List(Of String)
-        Public Sub New(_Model As String, _InputFlag As String, _OutputFlag As String, Data As DataGridView)
-            Model = _Model
-            InputFlag = _InputFlag
-            OutputFlag = _OutputFlag
-            Arguements = New List(Of String)
-            For i = 0 To Data.Rows.Count - 2
-                If Not Data.Rows(i).Cells(0).Value = Nothing Then
-                    If Data.Rows(i).Cells(1).Value = Nothing Then
-                        Arguements.Add(Data.Rows(i).Cells(0).Value.ToString)
-                        Arguements.Add("")
-                    Else
-                        Arguements.Add(Data.Rows(i).Cells(0).Value.ToString)
-                        Arguements.Add(Data.Rows(i).Cells(1).Value.ToString)
-                    End If
-                End If
-            Next
-        End Sub
-    End Structure
-
 #End Region
 
 #Region "Loading"
@@ -179,20 +47,37 @@ Public Class Form1
         Me.Size = New Size(660, 413)
         Me.SetStyle(ControlStyles.OptimizedDoubleBuffer, True)
         Application.CurrentCulture = New Globalization.CultureInfo("EN-US")
-        LoadBindingString()
         PreloadImageList()
+        Try
+            If File.Exists(Root & "\portable.xml") Then
+                FormSettings.LoadSettings(Me, Deserialize(Of FormSettings.Settings)(File.ReadAllText(Root & "\portable.xml")))
+            ElseIf File.Exists(AppData & "\AutoCrispy\settings.xml") Then
+                FormSettings.LoadSettings(Me, Deserialize(Of FormSettings.Settings)(File.ReadAllText(AppData & "\AutoCrispy\settings.xml")))
+            Else
+                FormSettings.LoadSettings(Me, Deserialize(Of FormSettings.Settings)(My.Resources.default_settings))
+                If Not Directory.Exists(AppData & "\AutoCrispy") Then
+                    Directory.CreateDirectory(AppData & "\AutoCrispy")
+                End If
+            End If
+        Catch ex As Exception
+            MsgBox("Failed to load Settings!  Loading program defaults.")
+            FormSettings.LoadSettings(Me, Deserialize(Of FormSettings.Settings)(My.Resources.default_settings))
+        End Try
         StartUpCheckEXE()
         StartUpCheckPy()
         If ExeComboBox.Items.Count > 0 Then
             ExeComboBox.SelectedIndex = 0
             SetSettingsWindow()
         End If
-        Dim TempTab = TabGroup.SelectedIndex : TabGroup.SelectTab(0) : TabGroup.SelectTab(TempTab)
         WatchDogButton.Select()
     End Sub
 
     Private Sub Form1_Closing(sender As Object, e As EventArgs) Handles MyBase.Closing
-        SaveBindingString()
+        If PortableCheckBox.Checked = True Then
+            File.WriteAllText(Root & "\portable.xml", Serialize(New FormSettings.Settings(Me)))
+        Else
+            File.WriteAllText(AppData & "\AutoCrispy\settings.xml", Serialize(New FormSettings.Settings(Me)))
+        End If
     End Sub
 
     Private Sub StartUpCheckEXE()
@@ -272,43 +157,6 @@ Public Class Form1
         ChainThumbs.Images.Add(Shrink(My.Resources._6, 64, 64))
     End Sub
 
-    Private Sub SaveBindingString()
-        Dim Binding As String = ""
-        Binding += ThreadComboBox.SelectedIndex.ToString
-        Binding += CaffeMode.SelectedIndex.ToString
-        Binding += CaffeProcess.SelectedIndex.ToString
-        Binding += VulkanFormat.SelectedIndex.ToString
-        Binding += WaifuCPPMode.SelectedIndex.ToString
-        Binding += WaifuCPPFormat.SelectedIndex.ToString
-        Binding += AnimeCPPFilterType.SelectedIndex.ToString
-        For i = 0 To 6
-            If AnimeCPPFilters.GetItemChecked(i) = True Then
-                Binding += "1"
-            Else
-                Binding += "0"
-            End If
-        Next
-        My.Settings.BindingString = Binding
-    End Sub
-
-    Private Sub LoadBindingString()
-        If My.Settings.BindingString.Length <> 14 Then
-            My.Settings.BindingString = "02102010001010"
-        End If
-        ThreadComboBox.SelectedIndex = Val(My.Settings.BindingString(0))
-        CaffeMode.SelectedIndex = Val(My.Settings.BindingString(1))
-        CaffeProcess.SelectedIndex = Val(My.Settings.BindingString(2))
-        VulkanFormat.SelectedIndex = Val(My.Settings.BindingString(3))
-        WaifuCPPMode.SelectedIndex = Val(My.Settings.BindingString(4))
-        WaifuCPPFormat.SelectedIndex = Val(My.Settings.BindingString(5))
-        AnimeCPPFilterType.SelectedIndex = Val(My.Settings.BindingString(6))
-        For i = 7 To 13
-            If Val(My.Settings.BindingString(i)) = 1 Then
-                AnimeCPPFilters.SetItemChecked(i - 7, True)
-            End If
-        Next
-    End Sub
-
 #End Region
 
 #Region "UI"
@@ -332,7 +180,7 @@ Public Class Form1
     Private Sub ChainSave_Click(sender As Object, e As EventArgs) Handles ChainSave.Click
         Using SFD As New SaveFileDialog With {.Filter = "XML Files|*.xml|All Files|*.*"}
             If SFD.ShowDialog = DialogResult.OK Then
-                File.WriteAllText(SFD.FileName, Serialize(ChainedModels))
+                File.WriteAllText(SFD.FileName, Serialize(ChainList))
             End If
         End Using
     End Sub
@@ -341,17 +189,16 @@ Public Class Form1
         Using OFD As New OpenFileDialog With {.Filter = "XML Files|*.xml|All Files|*.*"}
             If OFD.ShowDialog = DialogResult.OK Then
                 ChainPreview.Clear()
-                ChainedModels.Clear()
-                ChainedModels = Deserialize(Of List(Of Settings))(File.ReadAllText(OFD.FileName))
-                For Each Model As Settings In ChainedModels
-                    AddModelToChain(Model.LoadedMode)
+                ChainList.Clear()
+                ChainList = Deserialize(Of List(Of FormSettings.ChainObject))(File.ReadAllText(OFD.FileName))
+                For Each ChainItem As FormSettings.ChainObject In ChainList
+                    ChainPreview.Items.Add(New ListViewItem(ChainItem.Name, ChainItem.IconIndex))
                 Next
             End If
         End Using
     End Sub
 
     Private Sub ChainAdd_Click(sender As Object, e As EventArgs) Handles ChainAdd.Click
-        PackageSettings()
         AddModelToChain(ExeComboBox.SelectedItem)
     End Sub
 
@@ -359,7 +206,7 @@ Public Class Form1
         If ChainPreview.SelectedIndices.Count > 0 Then
             Dim Remove As Integer = ChainPreview.SelectedIndices(0)
             ChainPreview.Items.RemoveAt(Remove)
-            ChainedModels.RemoveAt(Remove)
+            ChainList.RemoveAt(Remove)
             ChainPreview.AutoArrange = True
             ChainPreview.AutoArrange = False
         End If
@@ -367,12 +214,13 @@ Public Class Form1
 
     Private Sub ChainContextEdit_Click(sender As Object, e As EventArgs) Handles ChainContextEdit.Click
         If ChainPreview.SelectedItems.Count > 0 Then
-            Dim ItemIndex = (ChainPreview.SelectedItems(0).Position.X - 21) / (ChainPreview.SelectedItems(0).Bounds.Width + 1)
-            Using ECD As New EditChainDialog(Serialize(ChainedModels(ItemIndex)))
+            Dim ItemIndex As Integer = (ChainPreview.SelectedItems(0).Position.X - 21) / (ChainPreview.SelectedItems(0).Bounds.Width + 1)
+            Using ECD As New EditChainDialog(Serialize(ChainList(ItemIndex)))
                 If ECD.ShowDialog = DialogResult.OK Then
                     Try
-                        Dim NewSettings As Settings = Deserialize(Of Settings)(ECD.ResultText)
-                        ChainedModels(ItemIndex) = NewSettings
+                        Dim NewChainItem As FormSettings.ChainObject = Deserialize(Of FormSettings.ChainObject)(ECD.ResultText)
+                        ChainList(ItemIndex) = NewChainItem
+                        ChainPreview.Items(ChainPreview.Items.IndexOf(ChainPreview.SelectedItems(0))) = New ListViewItem(NewChainItem.Name, NewChainItem.IconIndex)
                     Catch ex As Exception
                         MsgBox("Error: New settings could not be parsed.")
                     End Try
@@ -409,11 +257,20 @@ Public Class Form1
             Result.Add((Model.Position.X - 21) / (Model.Bounds.Width + 1) & "|" & Model.Index)
         Next
         Result.Sort()
-        Dim NeuModelOrder As New List(Of Settings)
-        For Each ReOrder As String In Result
-            NeuModelOrder.Add(ChainedModels(ReOrder.Split("|")(1)))
+        For Each Item As String In Result
+            If Item.Split("|")(0) <> Item.Split("|")(1) Then
+                Dim NewChainOrder As New List(Of FormSettings.ChainObject)
+                For Each ReOrder As String In Result
+                    NewChainOrder.Add(ChainList(ReOrder.Split("|")(1)))
+                Next
+                ChainList = NewChainOrder
+                ChainPreview.Clear()
+                For Each ChainItem As FormSettings.ChainObject In ChainList
+                    ChainPreview.Items.Add(New ListViewItem(ChainItem.Name, ChainItem.IconIndex))
+                Next
+                Exit For
+            End If
         Next
-        ChainedModels = NeuModelOrder
     End Sub
 
     Private Sub RunOnceButton_Click(sender As Object, e As EventArgs) Handles RunOnceButton.Click
@@ -424,9 +281,10 @@ Public Class Form1
                         Dim TempPath As String = Path.GetTempPath & "Single_0"
                         Directory.CreateDirectory(Path.GetTempPath & "Single_0")
                         File.Copy(OFD.FileName, TempPath & "\" & Path.GetFileName(SFD.FileName), True)
-                        HandOff = New ExtSettings(TempPath, Directory.GetParent(SFD.FileName).FullName, GetThreads(), PyBatchSize.Value, False, DefringeCheck.Checked, DefringeThresh.Value, DebugCheckbox.Checked)
+                        LoadedSettings = New FormSettings.Settings(Me)
+                        LoadedSettings.Paths = New FormSettings.ProgramPaths(TempPath, Directory.GetParent(SFD.FileName).FullName)
                         If ChainPreview.Items.Count = 0 Then
-                            PackageSettings()
+                            AddModelToChain(ExeComboBox.SelectedItem, False)
                         End If
                         SwitchGroups(False)
                         WorkHorse.RunWorkerAsync()
@@ -463,6 +321,19 @@ Public Class Form1
         End If
     End Sub
 
+    Private Sub Anime4kCheck_Changes(sender As Object, e As EventArgs) Handles MyBase.Load, AnimeCppPre.CheckedChanged, AnimeCppPreFilter.CheckedChanged, AnimeCppPost.CheckedChanged, AnimeCppPostFilter.CheckedChanged, AnimeCPPCnn.CheckedChanged
+        If AnimeCPPCnn.Checked = True Then
+            AnimeCppPre.Checked = False
+            AnimeCppPost.Checked = False
+        End If
+        AnimeCppPreFilter.Enabled = AnimeCppPre.Checked
+        AnimeCppPreFilters.Enabled = AnimeCppPreFilter.Checked
+        If AnimeCppPre.Checked = False Then AnimeCppPreFilter.Checked = False
+        AnimeCppPostFilter.Enabled = AnimeCppPost.Checked
+        AnimeCppPostFilters.Enabled = AnimeCppPostFilter.Checked
+        If AnimeCppPost.Checked = False Then AnimeCppPostFilter.Checked = False
+    End Sub
+
     Private Sub SetSettingsWindow()
         CaffeGroup.Visible = False
         VulkanGroup.Visible = False
@@ -475,17 +346,14 @@ Public Class Form1
                 MoveShowGroup(CaffeGroup)
             Case "Waifu2x Vulkan"
                 MoveShowGroup(VulkanGroup)
-                VulkanScale.Minimum = 1
-                VulkanScale.Maximum = 2
+                VulkanScale.Value = 2
             Case "RealSR Vulkan"
                 MoveShowGroup(VulkanGroup)
-                VulkanScale.Minimum = 4
-                VulkanScale.Maximum = 4
+                VulkanScale.Value = 4
                 VulkanNoise.Enabled = False
             Case "SRMD Vulkan"
                 MoveShowGroup(VulkanGroup)
-                VulkanScale.Minimum = 2
-                VulkanScale.Maximum = 4
+                VulkanScale.Value = 4
             Case "Waifu2x CPP"
                 MoveShowGroup(WaifuCPPGroup)
             Case "Anime4k CPP"
@@ -524,9 +392,9 @@ Public Class Form1
         Else
             WaitScale = 0
             WatchDog.Interval = 1000
-            HandOff = New ExtSettings(InputTextBox.Text, OutputTextBox.Text, GetThreads(), PyBatchSize.Value, True, DefringeCheck.Checked, DefringeThresh.Value, DebugCheckbox.Checked)
+            LoadedSettings = New FormSettings.Settings(Me)
             If ChainPreview.Items.Count = 0 Then
-                PackageSettings()
+                AddModelToChain(ExeComboBox.SelectedItem, False)
             End If
             WorkHorse.RunWorkerAsync()
         End If
@@ -546,20 +414,17 @@ Public Class Form1
 
     Private Sub WorkHorse_RunWorkerCompleted(sender As Object, e As System.ComponentModel.RunWorkerCompletedEventArgs) Handles WorkHorse.RunWorkerCompleted
         UpscaleProgress.Value = 0
+        If ChainPreview.Items.Count = 0 Then
+            ChainList.Clear()
+        End If
         If e.Cancelled = True Then
             WatchDog.Enabled = False
             WatchDogButton.Text = "Running: " & False
             SwitchGroups(Not WatchDog.Enabled)
             WatchDogButton.Enabled = True
-            If ChainPreview.Items.Count = 0 Then
-                ChainedModels.Clear()
-            End If
             Exit Sub
         End If
-        If ChainPreview.Items.Count = 0 Then
-            ChainedModels.Clear()
-        End If
-        If HandOff.ResumeTimer = True Then
+        If WatchDogButton.Text = "Running: True" Then
             WatchDog.Start()
         Else
             Directory.Delete(Path.GetTempPath & "Single_0", True)
@@ -573,65 +438,66 @@ Public Class Form1
 
     Private Sub MakeUpscale()
         Dim TempPath As String = Path.GetTempPath & "Temp_0"
-        Dim Source = Directory.GetFiles(HandOff.InputPath).Except(Directory.GetFiles(HandOff.OutputPath))
-        For i = 0 To Source.Count - 1 Step HandOff.PyBatchCount
+        Dim Source = Directory.GetFiles(LoadedSettings.Paths.InputPath).Except(Directory.GetFiles(LoadedSettings.Paths.OutputPath))
+        For i = 0 To Source.Count - 1 Step LoadedSettings.PythonPak.BatchSize
             Dim ChainPaths As New List(Of String)
             Dim DeletedChainPaths As New List(Of String)
             ChainPaths.Add(TempPath)
-            For j = 0 To ChainedModels.Count - 2
+            For j = 0 To ChainList.Count - 2
                 Dim TempName As String = Path.GetTempPath & "Chain_" & j
                 ChainPaths.Add(TempName)
                 Directory.CreateDirectory(TempName)
             Next
-            ChainPaths.Add(HandOff.OutputPath)
+            ChainPaths.Add(LoadedSettings.Paths.OutputPath)
             Directory.CreateDirectory(TempPath)
-            For j = i To i + HandOff.PyBatchCount - 1
+            For j = i To i + LoadedSettings.PythonPak.BatchSize - 1
                 If j <= Source.Count - 1 Then
                     File.Copy(Source(j), TempPath & "\" & Path.GetFileName(Source(j)), True)
                 End If
             Next
-            For Each Model In ChainedModels
+            For Each Model In ChainList
                 Dim NewImages As New List(Of String)
-                Dim DiffImages = GetFileNameList(ChainPaths(0), True).Except(GetFileNameList(HandOff.OutputPath, True))
+                Dim DiffImages = GetFileNameList(ChainPaths(0), True).Except(GetFileNameList(LoadedSettings.Paths.OutputPath, True))
                 For Each NewImage As String In DiffImages
-                    Dim AcceptExt As Boolean = Model.LoadedExtensions.Contains(Path.GetExtension(NewImage).ToLower)
+                    Dim AcceptExt As Boolean = Model.Package.FileTypes.Contains(Path.GetExtension(NewImage).ToLower)
                     If File.Exists(ChainPaths(0) & "\" & NewImage) AndAlso AcceptExt = True Then
                         NewImages.Add(ChainPaths(0) & "\" & NewImage)
                     End If
                 Next
                 If NewImages.Count > 0 Then
                     Dim BuildProcess As ProcessStartInfo
-                    If Model.LoadedMode = "Python" Then
+                    If Model.PackageType = "Python" Then
                         If PyDetected = True Then
-                            BuildProcess = New ProcessStartInfo(DetectedPyPath, Quote(Model.LoadedPath) & " " & MakeCommand(ChainPaths(0), ChainPaths(1), Model))
+                            BuildProcess = New ProcessStartInfo(Model.FileLocation, Quote(Model.Package.Script) & " " & MakeCommand(ChainPaths(0), ChainPaths(1), Model.PackageType, Model.Package))
                             BuildProcess.RedirectStandardOutput = True
                             BuildProcess.RedirectStandardError = True
                             BuildProcess.UseShellExecute = False
                             BuildProcess.CreateNoWindow = True
                         Else
-                            BuildProcess = New ProcessStartInfo(Model.LoadedPath, MakeCommand(ChainPaths(0), ChainPaths(1), Model))
+                            BuildProcess = New ProcessStartInfo(Model.Package.Script, MakeCommand(ChainPaths(0), ChainPaths(1), Model.PackageType, Model.Package))
                             BuildProcess.UseShellExecute = True
                             BuildProcess.WindowStyle = ProcessWindowStyle.Minimized
                         End If
                         Dim BatchProcess As Process = Process.Start(BuildProcess)
                         BatchProcess.WaitForExit()
-                        If HandOff.Logging = True AndAlso PyDetected = True Then
-                            WriteLog(BatchProcess, HandOff.OutputPath)
+                        If LoadedSettings.ExpertSettings.Logging = True AndAlso PyDetected = True Then
+                            WriteLog(BatchProcess, LoadedSettings.Paths.OutputPath)
                         End If
                     Else
                         For j = 0 To NewImages.Count - 1
                             Dim NewImage As String = ChainPaths(1) & "\" & Path.GetFileName(NewImages(j))
-                            BuildProcess = New ProcessStartInfo(Model.LoadedPath, MakeCommand(NewImages(j), NewImage, Model))
+                            BuildProcess = New ProcessStartInfo(Model.FileLocation, MakeCommand(NewImages(j), NewImage, Model.PackageType, Model.Package))
+                            BuildProcess.WorkingDirectory = Directory.GetParent(Model.FileLocation).FullName
                             BuildProcess.RedirectStandardOutput = True
                             BuildProcess.RedirectStandardError = True
                             BuildProcess.UseShellExecute = False
                             BuildProcess.CreateNoWindow = True
                             Dim BatchProcess As Process = Process.Start(BuildProcess)
-                            If (j + 1) Mod HandOff.Threads = 0 OrElse (j = NewImages.Count - 1) Then
+                            If (j + 1) Mod GetThreads(LoadedSettings.BasicSettings.ThreadIndex, LoadedSettings.BasicSettings.ThreadCount) = 0 OrElse (j = NewImages.Count - 1) Then
                                 BatchProcess.WaitForExit()
                             End If
-                            If HandOff.Logging = True Then
-                                WriteLog(BatchProcess, HandOff.OutputPath)
+                            If LoadedSettings.ExpertSettings.Logging = True Then
+                                WriteLog(BatchProcess, LoadedSettings.Paths.OutputPath)
                             End If
                         Next
                     End If
@@ -641,12 +507,17 @@ Public Class Form1
                 End If
                 DeletedChainPaths.Add(ChainPaths(0))
                 ChainPaths.RemoveAt(0)
-                If HandOff.Defringe = True AndAlso ChainedModels.IndexOf(Model) = ChainedModels.Count - 1 Then
+                If LoadedSettings.BasicSettings.Defringe = True AndAlso ChainList.IndexOf(Model) = ChainList.Count - 1 Then
                     For Each NewImage In NewImages
-                        If File.Exists(HandOff.OutputPath & "\" & Path.GetFileName(NewImage)) Then Defringe(HandOff.OutputPath & "\" & Path.GetFileName(NewImage))
+                        If File.Exists(LoadedSettings.Paths.OutputPath & "\" & Path.GetFileName(NewImage)) Then Defringe(LoadedSettings.Paths.OutputPath & "\" & Path.GetFileName(NewImage), LoadedSettings.BasicSettings.DefringeThreshold)
                     Next
                 End If
                 If WorkHorse.CancellationPending = True Then
+                    Directory.Delete(TempPath, True)
+                    For j = 0 To ChainList.Count - 2
+                        Dim TempName As String = Path.GetTempPath & "Chain_" & j
+                        Directory.Delete(TempName, True)
+                    Next
                     Exit Sub
                 End If
             Next
@@ -666,113 +537,61 @@ Public Class Form1
 
 #Region "Packageing"
 
-    Private Function MakeCommand(Source As String, Dest As String, Setting As Settings) As String
-        Select Case Setting.LoadedMode
+    Private Function MakeCommand(Source As String, Dest As String, Mode As String, Package As Object) As String
+        Select Case Mode
             Case "Waifu2x Caffe"
-                Return MakeCaffeCommand(Source, Dest, Setting.LoadedPackage)
+                Return MakeCaffeCommand(Source, Dest, Package)
             Case "Waifu2x Vulkan"
-                Return MakeVulkanCommand(Source, Dest, Setting.LoadedPackage)
+                Return MakeVulkanCommand(Source, Dest, False, Package)
             Case "RealSR Vulkan"
-                Return MakeVulkanCommand(Source, Dest, Setting.LoadedPackage)
+                Return MakeVulkanCommand(Source, Dest, True, Package)
             Case "SRMD Vulkan"
-                Return MakeVulkanCommand(Source, Dest, Setting.LoadedPackage)
+                Return MakeVulkanCommand(Source, Dest, False, Package)
             Case "Waifu2x CPP"
-                Return MakeCPPCommand(Source, Dest, Setting.LoadedPackage)
+                Return MakeCPPCommand(Source, Dest, Package)
             Case "Anime4k CPP"
-                Return MakeA4KCommand(Source, Dest, Setting.LoadedPackage)
+                Return MakeA4KCommand(Source, Dest, Package)
             Case "Python"
-                Return MakePyCommand(Source, Dest, Setting.LoadedPackage)
+                Return MakePyCommand(Source, Dest, Package)
         End Select
         Return ""
     End Function
 
-    Private Sub AddModelToChain(Mode As String)
+    Private Sub AddModelToChain(Mode As String, Optional AddPreview As Boolean = True)
         Select Case Mode
             Case "Waifu2x Caffe"
-                ChainPreview.Items.Add(New ListViewItem("Caffe", 0))
+                If AddPreview = True Then ChainPreview.Items.Add(New ListViewItem("Caffe", 0))
+                ChainList.Add(New FormSettings.ChainObject("Caffe", 0, CaffePath, "Waifu2x Caffe", Me))
             Case "Waifu2x Vulkan"
-                ChainPreview.Items.Add(New ListViewItem("Waifu Vulkan", 1))
+                If AddPreview = True Then ChainPreview.Items.Add(New ListViewItem("Waifu Vulkan", 1))
+                ChainList.Add(New FormSettings.ChainObject("Waifu Vulkan", 1, WaifuNcnnPath, "Waifu2x Vulkan", Me))
             Case "RealSR Vulkan"
-                ChainPreview.Items.Add(New ListViewItem("RealSR Vulkan", 2))
+                If AddPreview = True Then ChainPreview.Items.Add(New ListViewItem("RealSR Vulkan", 2))
+                ChainList.Add(New FormSettings.ChainObject("RealSR Vulkan", 2, RealSRNcnnPath, "RealSR Vulkan", Me))
             Case "SRMD Vulkan"
-                ChainPreview.Items.Add(New ListViewItem("SRMD Vulkan", 3))
+                If AddPreview = True Then ChainPreview.Items.Add(New ListViewItem("SRMD Vulkan", 3))
+                ChainList.Add(New FormSettings.ChainObject("SRMD Vulkan", 3, SRMDNcnnPath, "SRMD Vulkan", Me))
             Case "Waifu2x CPP"
-                ChainPreview.Items.Add(New ListViewItem("Waifu CPP", 4))
+                If AddPreview = True Then ChainPreview.Items.Add(New ListViewItem("Waifu CPP", 4))
+                ChainList.Add(New FormSettings.ChainObject("Waifu CPP", 4, WaifuCppPath, "Waifu2x CPP", Me))
             Case "Anime4k CPP"
-                ChainPreview.Items.Add(New ListViewItem("Anime4K", 5))
+                If AddPreview = True Then ChainPreview.Items.Add(New ListViewItem("Anime4K", 5))
+                ChainList.Add(New FormSettings.ChainObject("Anime4k", 5, Anime4kPath, "Anime4k CPP", Me))
             Case "Python"
-                ChainPreview.Items.Add(New ListViewItem(PyModel.SelectedItem.ToString, 6))
+                If AddPreview = True Then ChainPreview.Items.Add(New ListViewItem(PyModel.SelectedItem.ToString, 6))
+                ChainList.Add(New FormSettings.ChainObject(PyModel.SelectedItem.ToString, 6, DetectedPyPath, "Python", Me))
         End Select
     End Sub
-
-    Private Sub PackageSettings()
-        Dim Pack As New Settings
-        Pack.LoadedMode = ExeComboBox.SelectedItem
-        Select Case ExeComboBox.SelectedItem
-            Case "Waifu2x Caffe"
-                Pack.LoadedPath = CaffePath
-                Pack.LoadedExtensions = {".png", ".jpg", ".jpeg", ".tif", ".tiff", ".bmp", ".tga"}
-                Pack.LoadedPackage = MakeCaffePackage()
-            Case "Waifu2x Vulkan"
-                Pack.LoadedPath = WaifuNcnnPath
-                Pack.LoadedExtensions = {".png", ".webp", ".jpg"}
-                Pack.LoadedPackage = MakeVulkanPackage()
-            Case "RealSR Vulkan"
-                Pack.LoadedPath = RealSRNcnnPath
-                Pack.LoadedExtensions = {".png", ".webp", ".jpg"}
-                Pack.LoadedPackage = MakeVulkanPackage(True)
-            Case "SRMD Vulkan"
-                Pack.LoadedPath = SRMDNcnnPath
-                Pack.LoadedExtensions = {".png", ".webp", ".jpg"}
-                Pack.LoadedPackage = MakeVulkanPackage()
-            Case "Waifu2x CPP"
-                Pack.LoadedPath = WaifuCppPath
-                Pack.LoadedExtensions = {".bmp", ".dib", ".exr", ".hdr", ".jpe", ".jpeg", ".jpg", ".pbm", ".pgm", ".pic", ".png", ".pnm", ".ppm", ".pxm", ".ras", ".sr", ".tif", ".tiff", ".webp"}
-                Pack.LoadedPackage = MakeCPPPackage()
-            Case "Anime4k CPP"
-                Pack.LoadedPath = Anime4kPath
-                Pack.LoadedExtensions = {".png", ".jpg"}
-                Pack.LoadedPackage = MakeA4KPackage()
-            Case "Python"
-                Pack.LoadedPath = PyPaths(PyScript.SelectedIndex)
-                Pack.LoadedExtensions = {".png", ".jpg", ".bmp"}
-                Pack.LoadedPackage = MakePyPackage()
-        End Select
-        ChainedModels.Add(Pack)
-    End Sub
-
-    Private Function MakeCaffePackage() As Object
-        Return New CaffePackage(CaffeMode.Text.ToLower, CaffeScale.Value, CaffeNoise.Value, CaffeProcess.Text.ToLower, CaffeTAA.Checked)
-    End Function
-
-    Private Function MakeVulkanPackage(Optional NoNoise As Boolean = False) As Object
-        Return New VulkanPackage(VulkanScale.Value, VulkanNoise.Value, VulkanFormat.Text.ToLower, VulkanTAA.Checked, NoNoise)
-    End Function
-
-    Private Function MakeCPPPackage() As Object
-        Return New CPPPackage(WaifuCPPMode.Text.ToLower, WaifuCPPScale.Value, WaifuCPPNoise.Value, WaifuCPPFormat.Text.ToLower,
-                              WaifuCPPNoGPU.Checked, WaifuCPPOpenCL.Checked, WaifuCPPTTA.Checked)
-    End Function
-
-    Private Function MakeA4KPackage() As Object
-        Return New A4KPackage(AnimeCPPPasses.Value, AnimeCPPPushColors.Value, AnimeCPPColorStrength.Value,
-                              AnimeCPPGradStrength.Value, AnimeCPPScale.Value, AnimeCPPPre.Checked, AnimeCPPPost.Checked,
-                              GetFilters, AnimeCPPFilterType.SelectedIndex, AnimeCPPGpu.Checked, AnimeCPPCnn.Checked)
-    End Function
-
-    Private Function MakePyPackage() As Object
-        Return New PyPackage(PyModels(PyModel.SelectedIndex), PyInputFlag.Text.Trim, PyOutputFlag.Text.Trim, PyArguements)
-    End Function
 
 #End Region
 
 #Region "Graphics"
 
-    Private Sub Defringe(Source As String)
+    Private Sub Defringe(Source As String, Threshold As Integer)
         Dim SourceImage As Bitmap = Image.FromFile(Source)
         Dim NewImage As New Bitmap(SourceImage)
         SourceImage.Dispose()
-        LockbitsDefringe(NewImage, HandOff.Threshold)
+        LockbitsDefringe(NewImage, Threshold)
         NewImage.Save(Source)
     End Sub
 
@@ -847,12 +666,12 @@ Public Class Form1
 
 #Region "Utils"
 
-    Private Function GetThreads()
-        Select Case ThreadComboBox.SelectedIndex
+    Private Function GetThreads(Index As Integer, Count As Integer)
+        Select Case Index
             Case 0
                 Return 1
             Case 1
-                Return NumericThreads.Value
+                Return Count
             Case 2
                 Return Environment.ProcessorCount
             Case Else
@@ -899,18 +718,6 @@ Public Class Form1
         End If
     End Sub
 
-    Private Function GetFilters() As Integer
-        Dim StringResult As String = ""
-        For i = 0 To 6
-            If AnimeCPPFilters.GetItemChecked(i) = True Then
-                StringResult = "1"c & StringResult
-            Else
-                StringResult = "0"c & StringResult
-            End If
-        Next
-        Return Convert.ToInt32(StringResult, 2)
-    End Function
-
     Private Function GetFolder() As String
         Using FBD As New FolderBrowserDialog
             If FBD.ShowDialog = DialogResult.OK Then
@@ -935,16 +742,20 @@ Public Class Form1
     Private Sub WriteLog(Source As Process, SaveLoc As String)
         Dim Filename As String = SaveLoc & "\Log_" & Now.ToString("yyyy-MM-dd_HH-mm-ss") & ".txt"
         Dim Output As String = ""
+        Output += Source.StartInfo.FileName & " "
+        Output += Source.StartInfo.Arguments
+        Output += vbNewLine & vbNewLine
         Output += Source.StandardOutput.ReadToEnd
         Output += vbNewLine & vbNewLine
         Output += Source.StandardError.ReadToEnd
         File.WriteAllText(Filename, Output)
     End Sub
 
-    Private Function MakeCaffeCommand(SourceImage As String, NewImage As String, Package As CaffePackage) As String
+    Private Function MakeCaffeCommand(SourceImage As String, NewImage As String, Package As FormSettings.Waifu2xCaffePackage) As String
         Dim Result As New ArguementString
         Result.AddArguement("-i", Quote(SourceImage))
         Result.AddArguement("-o", Quote(NewImage))
+        Result.AddArguement(LoadedSettings.ExpertSettings.ExpertFlags)
         Result.AddArguement("-m", Package.Mode)
         Result.AddArguement("-s", Package.Scale)
         Result.AddArguement("-n", Package.Noise)
@@ -953,61 +764,59 @@ Public Class Form1
         Return Result.GetArguements
     End Function
 
-    Private Function MakeVulkanCommand(SourceImage As String, NewImage As String, Package As VulkanPackage) As String
+    Private Function MakeVulkanCommand(SourceImage As String, NewImage As String, NoNoise As Boolean, Package As FormSettings.VulkanNcnnPackage) As String
         Dim Result As New ArguementString
         Result.AddArguement("-i", Quote(SourceImage))
-        Result.AddArguement("-o", Quote(NewImage))
+        Result.AddArguement("-o", Quote(Path.ChangeExtension(NewImage, Package.Format)))
+        Result.AddArguement(LoadedSettings.ExpertSettings.ExpertFlags)
         Result.AddArguement("-s", Package.Scale)
-        If Package.NoNoise = False Then Result.AddArguement("-n", Package.Noise)
+        If NoNoise = False Then Result.AddArguement("-n", Package.Noise)
         Result.AddArguement("-f", Package.Format)
         Result.AddArguement(IIf(Package.TAA = True, "-x", ""))
         Return Result.GetArguements
     End Function
 
-    Private Function MakeCPPCommand(SourceImage As String, NewImage As String, Package As CPPPackage) As String
+    Private Function MakeCPPCommand(SourceImage As String, NewImage As String, Package As FormSettings.Waifu2xCppPackage) As String
         Dim Result As New ArguementString
         Result.AddArguement("-i", Quote(SourceImage))
-        Result.AddArguement("-o", Quote(NewImage))
+        Result.AddArguement("-o", Quote(Path.ChangeExtension(NewImage, Package.Format)))
+        Result.AddArguement(LoadedSettings.ExpertSettings.ExpertFlags)
         Result.AddArguement("-m", Package.Mode)
         Result.AddArguement("--scale-ratio", Package.Scale)
         Result.AddArguement("--noise-level", Package.Noise)
         Result.AddArguement("-f", Package.Format)
-        Result.AddArguement(IIf(Package.NoGPU = True, "--disable-gpu", ""))
-        Result.AddArguement(IIf(Package.OpenCL = True, "--force-OpenCL", ""))
-        Result.AddArguement(IIf(Package.TTA = True, "-t", ""))
+        Result.AddArguement(IIf(Package.GPU = False, "--disable-gpu", ""))
+        Result.AddArguement(IIf(Package.ForceOpenCL = True, "--force-OpenCL", ""))
         Return Result.GetArguements
     End Function
 
-    Private Function MakeA4KCommand(SourceImage As String, NewImage As String, Package As A4KPackage) As String
+    Private Function MakeA4KCommand(SourceImage As String, NewImage As String, Package As FormSettings.Anime4kPackage) As String
         Dim Result As New ArguementString
         Result.AddArguement("-i", Quote(SourceImage))
         Result.AddArguement("-o", Quote(NewImage))
+        Result.AddArguement(LoadedSettings.ExpertSettings.ExpertFlags)
         Result.AddArguement("-p", Package.Passes)
         Result.AddArguement("-n", Package.PushColors)
-        Result.AddArguement("-c", Package.ColorStrength)
-        Result.AddArguement("-g", Package.GradStrength)
+        Result.AddArguement("-c", Package.PushColorStrength)
+        Result.AddArguement("-g", Package.PushGradStrength)
         Result.AddArguement("-z", Package.Scale)
-        Result.AddArguement(IIf(Package.Pre = True, "-b", ""))
-        Result.AddArguement(IIf(Package.Post = True, "-a", ""))
-        Select Case Package.FilterType
-            Case 1
-                Result.AddArguement("-r", Package.Filter)
-            Case 2
-                Result.AddArguement("-e", Package.Filter)
-        End Select
+        Result.AddArguement(IIf(Package.PreProcess = True, "-b", ""))
+        Result.AddArguement(IIf(Package.PreFilter = True, "-r " & Package.PreFilterType, ""))
+        Result.AddArguement(IIf(Package.PostProcess = True, "-a", ""))
+        Result.AddArguement(IIf(Package.PostFilter = True, "-e " & Package.PostFilterType, ""))
         Result.AddArguement(IIf(Package.GPU = True, "-q", ""))
         Result.AddArguement(IIf(Package.CNN = True, "-w", ""))
         Result.AddArguement("-A")
         Return Result.GetArguements
     End Function
 
-    Private Function MakePyCommand(SourceFolder As String, DestFolder As String, Package As PyPackage) As String
+    Private Function MakePyCommand(SourceFolder As String, DestFolder As String, Package As FormSettings.PythonPackage) As String
         Dim Result As New ArguementString
         Result.AddArguement(Quote(Package.Model))
         Result.AddArguement(Package.InputFlag, Quote(SourceFolder))
         Result.AddArguement(Package.OutputFlag, Quote(DestFolder))
-        For i = 0 To Package.Arguements.Count - 1 Step 2
-            Result.AddArguement(Package.Arguements(i), Package.Arguements(i + 1))
+        For i = 0 To Package.ScriptFlags.Count - 1
+            Result.AddArguement(Package.ScriptFlags(i)(0), Package.ScriptFlags(i)(1))
         Next
         Return Result.GetArguements
     End Function

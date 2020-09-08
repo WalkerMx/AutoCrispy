@@ -131,6 +131,31 @@ Namespace My.Resources
         End Property
         
         '''<summary>
+        '''  Looks up a localized string similar to &lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot;?&gt;
+        '''&lt;Settings xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot; xmlns:xsd=&quot;http://www.w3.org/2001/XMLSchema&quot;&gt;
+        '''  &lt;CaffePak&gt;
+        '''    &lt;Mode&gt;noise_scale&lt;/Mode&gt;
+        '''    &lt;Scale&gt;2&lt;/Scale&gt;
+        '''    &lt;Noise&gt;1&lt;/Noise&gt;
+        '''    &lt;Process&gt;gpu&lt;/Process&gt;
+        '''    &lt;TAA&gt;false&lt;/TAA&gt;
+        '''    &lt;FileTypes&gt;
+        '''      &lt;string&gt;.png&lt;/string&gt;
+        '''      &lt;string&gt;.jpg&lt;/string&gt;
+        '''      &lt;string&gt;.jpeg&lt;/string&gt;
+        '''      &lt;string&gt;.tif&lt;/string&gt;
+        '''      &lt;string&gt;.tiff&lt;/string&gt;
+        '''      &lt;string&gt;.bmp&lt;/string&gt;
+        '''      &lt;string&gt;.tga&lt;/string&gt;
+        '''  [rest of string was truncated]&quot;;.
+        '''</summary>
+        Friend ReadOnly Property default_settings() As String
+            Get
+                Return ResourceManager.GetString("default_settings", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
         '''  Looks up a localized string similar to These files were modified and used under the terms of their respective licenses, which are made openly available through their pages.
         '''Also included are the modifications, as per the license agreements.
         '''
