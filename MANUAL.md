@@ -9,7 +9,7 @@ Autocrispy also searches in these subfolders for Python Scrips and ESRGAN Models
 
 ## Chains
 
-AutoCripsy supports chaining models together.  This is agnostic of process and platform; you can chain any of the backends together, with any other backedn, and with any script and/or model from ESRGAN.
+AutoCripsy supports chaining models together.  This is agnostic of process and platform; you can chain any of the backends together, with any other backend, and with any script and/or model from ESRGAN.
 
 To add a model to the chain, first set the settings you'd like to add to the chain in the UI.  Then, under "Chaining", click the "Add" button.  This "snapshots" your settings, and adds them to the chain.  Chain objects can be re-arranged, by clicking and draging them.  Be aware that only ~5 models should be added to the chain (after this, you will encounter strange/unexpected behaviour.  You can make longer chains, using a text editor on an existing saved chain, and they will work, however the UI will misbehave if you try to edit it).
 
