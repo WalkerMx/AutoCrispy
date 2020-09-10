@@ -7,6 +7,12 @@ AutoCrispy will try to detect any Executables it supports on startup.  They can 
 
 Autocrispy also searches in these subfolders for Python Scrips and ESRGAN Models.  For ESRGAN Models, AutoCrispy searches down one level further (So, two directorys down).  The intent, is to have a folder for ESRGAN, with the scripts inside it, and a folder with your models inside that (and, if you have the portable build provided, that in the folder with the scripts as well.)
 
+## Special Notes about Python
+
+AutoCrispy does its best to detect Python installations.  First, it checks for the portable Python build.  Next, it will attempt to read PATH to see if Python is installed somewhere on the system, and if so, gets its path.
+
+Otherwise, AutoCrispy will try to send Python commands directly through the shell (sometimes this works even without PATH set, somehow).  Be aware, that if Python runs commands via the shell, Output Logging will be Disabled, and you will see the Python Interpreter open in your taskbar, minimized.
+
 ## Chains
 
 AutoCripsy supports chaining models together.  This is agnostic of process and platform; you can chain any of the backends together, with any other backend, and with any script and/or model from ESRGAN.
