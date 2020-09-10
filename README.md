@@ -46,6 +46,7 @@ https://upscale.wiki/wiki/ESRGAN_Installation_Guide_for_Windows
   
   Also, make sure you have enough VRAM if you use multithreading, especially with Caffe and ESRGAN. More threads & higher upscales dramatically increase the memory requirements!
   
+  More info about AutoCrispy and how it works can be found [Here](https://github.com/WalkerMx/AutoCrispy/blob/master/MANUAL.md)
   Guides for some common programs can be found [Here](https://github.com/WalkerMx/AutoCrispy/blob/master/GUIDES.md).
 
 
