@@ -1,5 +1,4 @@
-# Manual (UNDER CONSTRUCTION)
-
+# Manual
 AutoCrispy has some features.  I'll explain them here.
 
 ## Files
@@ -17,6 +16,8 @@ To add a model to the chain, first set the settings you'd like to add to the cha
 In addition to adding, re-arranging, and removing, you can also Edit and Rename models in the chain.  This is done through the Right Click -> Edit menu.  This will bring up an XML representation of the chain object, letting you edit its Name, Icon, and internal settings.
 
 Chains can also be saved and loaded.  One important note, is that both the saves and AutoCrispy rely on the folder structure of your backends to function; if you move the files around, or change the folder names, your chains will have to be remade for them to function (the backends will "error out", because the files aren't found).  This issue has been addressed, by making the internal folder structures *relative*.  This means that, you can move the folder that AutoCrispy is in, and everything should still work (i.e. if you put AutoCrispy and the backends on a flash drive or external hdd, or if you move everything from your desktop to your Documents, everything should still work.)
+
+The last thing to note, is that if no models are in the chain (i.e. the "Chaining" tab is empty), AutoCrispy will simply use whatever settings you have currently set in the UI.
 
 ## Defringing
 
