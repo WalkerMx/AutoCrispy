@@ -1077,6 +1077,7 @@ Partial Class Form1
         Me.Controls.Add(Me.CaffeGroup)
         Me.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog
         Me.Icon = CType(resources.GetObject("$this.Icon"), System.Drawing.Icon)
+        Me.MaximizeBox = False
         Me.Name = "Form1"
         Me.Text = "AutoCrispy"
         Me.CaffeGroup.ResumeLayout(False)

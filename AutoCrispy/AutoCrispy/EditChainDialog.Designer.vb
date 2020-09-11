@@ -25,11 +25,16 @@ Partial Class EditChainDialog
         Me.TableLayoutPanel1 = New System.Windows.Forms.TableLayoutPanel()
         Me.OK_Button = New System.Windows.Forms.Button()
         Me.Cancel_Button = New System.Windows.Forms.Button()
-        Me.EditTextBox = New System.Windows.Forms.TextBox()
         Me.Reset_Button = New System.Windows.Forms.Button()
         Me.TableLayoutPanel2 = New System.Windows.Forms.TableLayoutPanel()
+        Me.EditTextBox = New System.Windows.Forms.RichTextBox()
+        Me.SplitContainer1 = New System.Windows.Forms.SplitContainer()
         Me.TableLayoutPanel1.SuspendLayout()
         Me.TableLayoutPanel2.SuspendLayout()
+        CType(Me.SplitContainer1, System.ComponentModel.ISupportInitialize).BeginInit()
+        Me.SplitContainer1.Panel1.SuspendLayout()
+        Me.SplitContainer1.Panel2.SuspendLayout()
+        Me.SplitContainer1.SuspendLayout()
         Me.SuspendLayout()
         '
         'TableLayoutPanel1
@@ -40,7 +45,7 @@ Partial Class EditChainDialog
         Me.TableLayoutPanel1.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50.0!))
         Me.TableLayoutPanel1.Controls.Add(Me.OK_Button, 0, 0)
         Me.TableLayoutPanel1.Controls.Add(Me.Cancel_Button, 1, 0)
-        Me.TableLayoutPanel1.Location = New System.Drawing.Point(576, 320)
+        Me.TableLayoutPanel1.Location = New System.Drawing.Point(585, -2)
         Me.TableLayoutPanel1.Name = "TableLayoutPanel1"
         Me.TableLayoutPanel1.RowCount = 1
         Me.TableLayoutPanel1.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50.0!))
@@ -66,16 +71,6 @@ Partial Class EditChainDialog
         Me.Cancel_Button.TabIndex = 1
         Me.Cancel_Button.Text = "Cancel"
         '
-        'EditTextBox
-        '
-        Me.EditTextBox.Font = New System.Drawing.Font("Courier New", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.EditTextBox.Location = New System.Drawing.Point(12, 12)
-        Me.EditTextBox.Multiline = True
-        Me.EditTextBox.Name = "EditTextBox"
-        Me.EditTextBox.ScrollBars = System.Windows.Forms.ScrollBars.Vertical
-        Me.EditTextBox.Size = New System.Drawing.Size(710, 302)
-        Me.EditTextBox.TabIndex = 1
-        '
         'Reset_Button
         '
         Me.Reset_Button.Location = New System.Drawing.Point(3, 3)
@@ -92,7 +87,7 @@ Partial Class EditChainDialog
         Me.TableLayoutPanel2.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50.0!))
         Me.TableLayoutPanel2.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50.0!))
         Me.TableLayoutPanel2.Controls.Add(Me.Reset_Button, 0, 0)
-        Me.TableLayoutPanel2.Location = New System.Drawing.Point(12, 320)
+        Me.TableLayoutPanel2.Location = New System.Drawing.Point(3, -2)
         Me.TableLayoutPanel2.Name = "TableLayoutPanel2"
         Me.TableLayoutPanel2.RowCount = 1
         Me.TableLayoutPanel2.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50.0!))
@@ -100,33 +95,63 @@ Partial Class EditChainDialog
         Me.TableLayoutPanel2.Size = New System.Drawing.Size(70, 29)
         Me.TableLayoutPanel2.TabIndex = 3
         '
+        'EditTextBox
+        '
+        Me.EditTextBox.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle
+        Me.EditTextBox.Dock = System.Windows.Forms.DockStyle.Fill
+        Me.EditTextBox.Font = New System.Drawing.Font("Courier New", 9.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.EditTextBox.Location = New System.Drawing.Point(0, 0)
+        Me.EditTextBox.Name = "EditTextBox"
+        Me.EditTextBox.Size = New System.Drawing.Size(734, 377)
+        Me.EditTextBox.TabIndex = 4
+        Me.EditTextBox.Text = ""
+        '
+        'SplitContainer1
+        '
+        Me.SplitContainer1.Dock = System.Windows.Forms.DockStyle.Fill
+        Me.SplitContainer1.FixedPanel = System.Windows.Forms.FixedPanel.Panel2
+        Me.SplitContainer1.Location = New System.Drawing.Point(0, 0)
+        Me.SplitContainer1.Name = "SplitContainer1"
+        Me.SplitContainer1.Orientation = System.Windows.Forms.Orientation.Horizontal
+        '
+        'SplitContainer1.Panel1
+        '
+        Me.SplitContainer1.Panel1.Controls.Add(Me.EditTextBox)
+        '
+        'SplitContainer1.Panel2
+        '
+        Me.SplitContainer1.Panel2.Controls.Add(Me.TableLayoutPanel2)
+        Me.SplitContainer1.Panel2.Controls.Add(Me.TableLayoutPanel1)
+        Me.SplitContainer1.Size = New System.Drawing.Size(734, 411)
+        Me.SplitContainer1.SplitterDistance = 377
+        Me.SplitContainer1.TabIndex = 5
+        '
         'EditChainDialog
         '
-        Me.AcceptButton = Me.OK_Button
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
         Me.CancelButton = Me.Cancel_Button
-        Me.ClientSize = New System.Drawing.Size(734, 361)
-        Me.Controls.Add(Me.TableLayoutPanel2)
-        Me.Controls.Add(Me.EditTextBox)
-        Me.Controls.Add(Me.TableLayoutPanel1)
-        Me.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog
-        Me.MaximizeBox = False
-        Me.MinimizeBox = False
+        Me.ClientSize = New System.Drawing.Size(734, 411)
+        Me.Controls.Add(Me.SplitContainer1)
+        Me.DoubleBuffered = True
         Me.Name = "EditChainDialog"
         Me.ShowInTaskbar = False
         Me.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent
         Me.Text = "Edit Chain"
         Me.TableLayoutPanel1.ResumeLayout(False)
         Me.TableLayoutPanel2.ResumeLayout(False)
+        Me.SplitContainer1.Panel1.ResumeLayout(False)
+        Me.SplitContainer1.Panel2.ResumeLayout(False)
+        CType(Me.SplitContainer1, System.ComponentModel.ISupportInitialize).EndInit()
+        Me.SplitContainer1.ResumeLayout(False)
         Me.ResumeLayout(False)
-        Me.PerformLayout()
 
     End Sub
     Friend WithEvents TableLayoutPanel1 As System.Windows.Forms.TableLayoutPanel
     Friend WithEvents OK_Button As System.Windows.Forms.Button
     Friend WithEvents Cancel_Button As System.Windows.Forms.Button
-    Friend WithEvents EditTextBox As TextBox
     Friend WithEvents Reset_Button As Button
     Friend WithEvents TableLayoutPanel2 As TableLayoutPanel
+    Friend WithEvents EditTextBox As RichTextBox
+    Friend WithEvents SplitContainer1 As SplitContainer
 End Class
