@@ -25,6 +25,16 @@ Chains can also be saved and loaded.  One important note, is that both the saves
 
 The last thing to note, is that if no models are in the chain (i.e. the "Chaining" tab is empty), AutoCrispy will simply use whatever settings you have currently set in the UI.
 
+## Seamless Modes
+
+Textures that are intended to be seamless sometimes lose this quality when they are upscaled, resulting in ugly seams in-game.  This feature aims to correct this.
+
+What's actually happening, is AutoCrispy is taking this image, and tiling it in a 3x3 grid (for a total of 9 copies of the image).  Then, to conserve compute time, the image is trimmed, leaving a predetermined margin around the image.  Once this process is complete, AutoCrispy passes the image to the backend for upscaling.
+
+After the upscaing is done, the margins (which now contains the edge artifacts) are trimmed off, resulting in a cleaner image.
+
+The 'flipped' option is very similar, with one exception - instead of simply tiling the images, the images are reflected from the center. This removes hard edges from the grid, and can result in better overall upscale quality.
+
 ## Defringing
 
 Some backends don't have the nicest output, when fed images with Alpha.  To fix this, provided is a *basic* GDI+ defringing scheme; what it does, is look at each Alpha byte, and make it fully transparent if it isn't above a certain threshold (user set; varies). Otherwise, it makes the Alpha byte fully opaque.
