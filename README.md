@@ -3,6 +3,8 @@ Automatically apply AI upscaling on Dumped Textures.
 
 ## AutoCrispy Features
 
+   - Seamless Upscaling - Experimental system for improving seamless texture upscales, based on [JoeyBallentine's](https://github.com/JoeyBallentine/ESRGAN) 'upscale.py' script.  Available for all backends.  For advanced users.  More information will be available in the [manual](https://github.com/WalkerMx/AutoCrispy/blob/master/MANUAL.md).
+
    - Model Chaining - Arbitrarily chain models for upscaling.  Adding a model to a chain 'snapshots' your current settings for the backend, meaning you can apply the same backend with differant settings or models (ESRGAN), or apply any mix of backends in sequence to your textures.
 
    - Defringing - Basic, GDI+ defringing scheme.  Removes ugly halo artifacts ('fringes') from textures with transparency.  This works best where all textures are roughly the same size.
