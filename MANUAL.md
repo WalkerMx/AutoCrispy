@@ -35,6 +35,10 @@ After the upscaing is done, the margins (which now contains the edge artifacts) 
 
 The 'flipped' option is very similar, with one exception - instead of simply tiling the images, the images are reflected from the center. This removes hard edges from the grid, and can result in better overall upscale quality.
 
+The Seam Scale setting should be set to the final upscale value.  If you are only upscaling 4x, then this value would be 4.  If you have a chain, the value will need to be calculated as the product off all scales in the chain; for example, if you had a chain like 1x - 3x - 4x, you would calculate 1\*4\*3 = 12, and so 12 would be your value.
+
+The Seam Margin setting determines how wide the margins about the image are.  Setting this lower than 4 is not recommended.  The higher the value, the more computer resources it will take to process the same image, however the results may be better.  Do not set this value higher than the width of the original image.
+
 ## Defringing
 
 Some backends don't have the nicest output, when fed images with Alpha.  To fix this, provided is a *basic* GDI+ defringing scheme; what it does, is look at each Alpha byte, and make it fully transparent if it isn't above a certain threshold (user set; varies). Otherwise, it makes the Alpha byte fully opaque.
