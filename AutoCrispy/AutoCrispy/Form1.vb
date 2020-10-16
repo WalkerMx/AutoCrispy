@@ -533,7 +533,7 @@ Public Class Form1
                     If LoadedSettings.ExpertSettings.SeamlessMode > 0 Then
                         For Each NewImage In NewImages
                             If File.Exists(LoadedSettings.Paths.OutputPath & "\" & Path.GetFileName(NewImage)) Then
-                                Dim ScaleVal As Integer = LoadedSettings.ExpertSettings.SeamlessScale * 16
+                                Dim ScaleVal As Integer = LoadedSettings.ExpertSettings.SeamlessScale * LoadedSettings.ExpertSettings.SeamlessMargin
                                 Dim SourceImage As Bitmap = Image.FromFile(LoadedSettings.Paths.OutputPath & "\" & Path.GetFileName(NewImage))
                                 Dim TrimmedImage As New Bitmap(SourceImage)
                                 SourceImage.Dispose()
