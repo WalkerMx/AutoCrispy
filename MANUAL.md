@@ -29,7 +29,7 @@ The last thing to note, is that if no models are in the chain (i.e. the "Chainin
 
 Textures that are intended to be seamless sometimes lose this quality when they are upscaled, resulting in ugly seams in-game.  This feature aims to correct this.
 
-What's actually happening, is AutoCrispy is taking this image, and tiling it in a 3x3 grid (for a total of 9 copies of the image).  Then, to conserve compute time, the image is trimmed, leaving a predetermined margin around the image.  Once this process is complete, AutoCrispy passes the image to the backend for upscaling.
+What's actually happening, is AutoCrispy is taking the image, and tiling it in a 3x3 grid (for a total of 9 copies of the image).  Then, to conserve compute time, the image is trimmed, leaving a predetermined margin around the image.  Once this process is complete, AutoCrispy passes the image to the backend for upscaling.
 
 After the upscaing is done, the margins (which now contains the edge artifacts) are trimmed off, resulting in a cleaner image.
 
