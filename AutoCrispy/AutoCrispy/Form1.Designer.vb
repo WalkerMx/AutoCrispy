@@ -112,10 +112,16 @@ Partial Class Form1
         Me.Label2 = New System.Windows.Forms.Label()
         Me.TabGroup = New System.Windows.Forms.TabControl()
         Me.AdvSettingsGroup = New System.Windows.Forms.TabPage()
+        Me.SeamScale = New System.Windows.Forms.NumericUpDown()
+        Me.SeamsBox = New System.Windows.Forms.ComboBox()
+        Me.Label17 = New System.Windows.Forms.Label()
+        Me.Label16 = New System.Windows.Forms.Label()
         Me.PortableCheckBox = New System.Windows.Forms.CheckBox()
         Me.Label15 = New System.Windows.Forms.Label()
         Me.ExpertSettingsBox = New System.Windows.Forms.TextBox()
         Me.DebugCheckbox = New System.Windows.Forms.CheckBox()
+        Me.SeamMargin = New System.Windows.Forms.NumericUpDown()
+        Me.Label18 = New System.Windows.Forms.Label()
         Me.CaffeGroup.SuspendLayout()
         CType(Me.CaffeScale, System.ComponentModel.ISupportInitialize).BeginInit()
         CType(Me.CaffeNoise, System.ComponentModel.ISupportInitialize).BeginInit()
@@ -138,6 +144,8 @@ Partial Class Form1
         Me.PathGroup.SuspendLayout()
         Me.TabGroup.SuspendLayout()
         Me.AdvSettingsGroup.SuspendLayout()
+        CType(Me.SeamScale, System.ComponentModel.ISupportInitialize).BeginInit()
+        CType(Me.SeamMargin, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.SuspendLayout()
         '
         'CaffeGroup
@@ -362,7 +370,7 @@ Partial Class Form1
         'CleanupCheckBox
         '
         Me.CleanupCheckBox.AutoSize = True
-        Me.CleanupCheckBox.Location = New System.Drawing.Point(9, 55)
+        Me.CleanupCheckBox.Location = New System.Drawing.Point(9, 57)
         Me.CleanupCheckBox.Name = "CleanupCheckBox"
         Me.CleanupCheckBox.Size = New System.Drawing.Size(108, 17)
         Me.CleanupCheckBox.TabIndex = 7
@@ -1012,6 +1020,12 @@ Partial Class Form1
         '
         'AdvSettingsGroup
         '
+        Me.AdvSettingsGroup.Controls.Add(Me.SeamMargin)
+        Me.AdvSettingsGroup.Controls.Add(Me.SeamScale)
+        Me.AdvSettingsGroup.Controls.Add(Me.SeamsBox)
+        Me.AdvSettingsGroup.Controls.Add(Me.Label18)
+        Me.AdvSettingsGroup.Controls.Add(Me.Label17)
+        Me.AdvSettingsGroup.Controls.Add(Me.Label16)
         Me.AdvSettingsGroup.Controls.Add(Me.PortableCheckBox)
         Me.AdvSettingsGroup.Controls.Add(Me.Label15)
         Me.AdvSettingsGroup.Controls.Add(Me.ExpertSettingsBox)
@@ -1025,10 +1039,48 @@ Partial Class Form1
         Me.AdvSettingsGroup.Text = "Advanced"
         Me.AdvSettingsGroup.UseVisualStyleBackColor = True
         '
+        'SeamScale
+        '
+        Me.SeamScale.Location = New System.Drawing.Point(459, 59)
+        Me.SeamScale.Maximum = New Decimal(New Integer() {2048, 0, 0, 0})
+        Me.SeamScale.Minimum = New Decimal(New Integer() {1, 0, 0, 0})
+        Me.SeamScale.Name = "SeamScale"
+        Me.SeamScale.Size = New System.Drawing.Size(151, 20)
+        Me.SeamScale.TabIndex = 15
+        Me.SeamScale.Value = New Decimal(New Integer() {2, 0, 0, 0})
+        '
+        'SeamsBox
+        '
+        Me.SeamsBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
+        Me.SeamsBox.FormattingEnabled = True
+        Me.SeamsBox.Items.AddRange(New Object() {"Default (Off)", "Tiled Seamless", "Flipped Seamless"})
+        Me.SeamsBox.Location = New System.Drawing.Point(459, 32)
+        Me.SeamsBox.Name = "SeamsBox"
+        Me.SeamsBox.Size = New System.Drawing.Size(151, 21)
+        Me.SeamsBox.TabIndex = 14
+        '
+        'Label17
+        '
+        Me.Label17.AutoSize = True
+        Me.Label17.Location = New System.Drawing.Point(381, 61)
+        Me.Label17.Name = "Label17"
+        Me.Label17.Size = New System.Drawing.Size(67, 13)
+        Me.Label17.TabIndex = 13
+        Me.Label17.Text = "Seam Scale:"
+        '
+        'Label16
+        '
+        Me.Label16.AutoSize = True
+        Me.Label16.Location = New System.Drawing.Point(381, 35)
+        Me.Label16.Name = "Label16"
+        Me.Label16.Size = New System.Drawing.Size(42, 13)
+        Me.Label16.TabIndex = 13
+        Me.Label16.Text = "Seams:"
+        '
         'PortableCheckBox
         '
         Me.PortableCheckBox.AutoSize = True
-        Me.PortableCheckBox.Location = New System.Drawing.Point(9, 78)
+        Me.PortableCheckBox.Location = New System.Drawing.Point(9, 83)
         Me.PortableCheckBox.Name = "PortableCheckBox"
         Me.PortableCheckBox.Size = New System.Drawing.Size(95, 17)
         Me.PortableCheckBox.TabIndex = 10
@@ -1054,12 +1106,31 @@ Partial Class Form1
         'DebugCheckbox
         '
         Me.DebugCheckbox.AutoSize = True
-        Me.DebugCheckbox.Location = New System.Drawing.Point(9, 32)
+        Me.DebugCheckbox.Location = New System.Drawing.Point(9, 31)
         Me.DebugCheckbox.Name = "DebugCheckbox"
         Me.DebugCheckbox.Size = New System.Drawing.Size(99, 17)
         Me.DebugCheckbox.TabIndex = 0
         Me.DebugCheckbox.Text = "Output Logging"
         Me.DebugCheckbox.UseVisualStyleBackColor = True
+        '
+        'SeamMargin
+        '
+        Me.SeamMargin.Location = New System.Drawing.Point(459, 85)
+        Me.SeamMargin.Maximum = New Decimal(New Integer() {128, 0, 0, 0})
+        Me.SeamMargin.Minimum = New Decimal(New Integer() {1, 0, 0, 0})
+        Me.SeamMargin.Name = "SeamMargin"
+        Me.SeamMargin.Size = New System.Drawing.Size(151, 20)
+        Me.SeamMargin.TabIndex = 16
+        Me.SeamMargin.Value = New Decimal(New Integer() {16, 0, 0, 0})
+        '
+        'Label18
+        '
+        Me.Label18.AutoSize = True
+        Me.Label18.Location = New System.Drawing.Point(381, 87)
+        Me.Label18.Name = "Label18"
+        Me.Label18.Size = New System.Drawing.Size(72, 13)
+        Me.Label18.TabIndex = 13
+        Me.Label18.Text = "Seam Margin:"
         '
         'Form1
         '
@@ -1110,6 +1181,8 @@ Partial Class Form1
         Me.TabGroup.ResumeLayout(False)
         Me.AdvSettingsGroup.ResumeLayout(False)
         Me.AdvSettingsGroup.PerformLayout()
+        CType(Me.SeamScale, System.ComponentModel.ISupportInitialize).EndInit()
+        CType(Me.SeamMargin, System.ComponentModel.ISupportInitialize).EndInit()
         Me.ResumeLayout(False)
 
     End Sub
@@ -1205,4 +1278,10 @@ Partial Class Form1
     Friend WithEvents Label15 As Label
     Friend WithEvents ExpertSettingsBox As TextBox
     Friend WithEvents PortableCheckBox As CheckBox
+    Friend WithEvents SeamScale As NumericUpDown
+    Friend WithEvents SeamsBox As ComboBox
+    Friend WithEvents Label17 As Label
+    Friend WithEvents Label16 As Label
+    Friend WithEvents SeamMargin As NumericUpDown
+    Friend WithEvents Label18 As Label
 End Class

@@ -86,31 +86,31 @@ Public Class Form1
         For Each Folder As String In RootFolders
             If File.Exists(Folder & "\waifu2x-caffe-cui.exe") Then
                 ExeComboBox.Items.Add("Waifu2x Caffe")
-                CaffePath = "\" & Path.GetFileName(Folder) & "\waifu2x-caffe-cui.exe"
+                CaffePath = "\" & IIf(Folder <> Root, Path.GetFileName(Folder), "") & "\waifu2x-caffe-cui.exe"
             End If
             If File.Exists(Folder & "\waifu2x-ncnn-vulkan.exe") Then
                 ExeComboBox.Items.Add("Waifu2x Vulkan")
-                WaifuNcnnPath = "\" & Path.GetFileName(Folder) & "\waifu2x-ncnn-vulkan.exe"
+                WaifuNcnnPath = "\" & IIf(Folder <> Root, Path.GetFileName(Folder), "") & "\waifu2x-ncnn-vulkan.exe"
             End If
             If File.Exists(Folder & "\realsr-ncnn-vulkan.exe") Then
                 ExeComboBox.Items.Add("RealSR Vulkan")
-                RealSRNcnnPath = "\" & Path.GetFileName(Folder) & "\realsr-ncnn-vulkan.exe"
+                RealSRNcnnPath = "\" & IIf(Folder <> Root, Path.GetFileName(Folder), "") & "\realsr-ncnn-vulkan.exe"
             End If
             If File.Exists(Folder & "\srmd-ncnn-vulkan.exe") Then
                 ExeComboBox.Items.Add("SRMD Vulkan")
-                SRMDNcnnPath = "\" & Path.GetFileName(Folder) & "\srmd-ncnn-vulkan.exe"
+                SRMDNcnnPath = "\" & IIf(Folder <> Root, Path.GetFileName(Folder), "") & "\srmd-ncnn-vulkan.exe"
             End If
             If File.Exists(Folder & "\waifu2x-converter-cpp.exe") Then
                 ExeComboBox.Items.Add("Waifu2x CPP")
-                WaifuCppPath = "\" & Path.GetFileName(Folder) & "\waifu2x-converter-cpp.exe"
+                WaifuCppPath = "\" & IIf(Folder <> Root, Path.GetFileName(Folder), "") & "\waifu2x-converter-cpp.exe"
             End If
             If File.Exists(Folder & "\Anime4KCPP_CLI.exe") Then
                 ExeComboBox.Items.Add("Anime4k CPP")
-                Anime4kPath = "\" & Path.GetFileName(Folder) & "\Anime4KCPP_CLI.exe"
+                Anime4kPath = "\" & IIf(Folder <> Root, Path.GetFileName(Folder), "") & "\Anime4KCPP_CLI.exe"
             End If
             If File.Exists(Folder & "\python\python.exe") Then
                 PyDetected = True
-                DetectedPyPath = "\" & Path.GetFileName(Folder) & "\python\python.exe"
+                DetectedPyPath = "\" & IIf(Folder <> Root, Path.GetFileName(Folder), "") & "\python\python.exe"
             End If
         Next
         If PyDetected = False AndAlso GetPythonPath() <> "" Then
@@ -214,7 +214,7 @@ Public Class Form1
 
     Private Sub ChainContextEdit_Click(sender As Object, e As EventArgs) Handles ChainContextEdit.Click
         If ChainPreview.SelectedItems.Count > 0 Then
-            Dim ItemIndex As Integer = (ChainPreview.SelectedItems(0).Position.X - 21) / (ChainPreview.SelectedItems(0).Bounds.Width + 1)
+            Dim ItemIndex As Integer = GetListIndex(ChainPreview.SelectedItems(0))
             Using ECD As New EditChainDialog(Serialize(ChainList(ItemIndex)))
                 If ECD.ShowDialog = DialogResult.OK Then
                     Try
@@ -254,7 +254,7 @@ Public Class Form1
         ChainPreview.AutoArrange = False
         Dim Result As New List(Of String)
         For Each Model As ListViewItem In ChainPreview.Items
-            Result.Add((Model.Position.X - 21) / (Model.Bounds.Width + 1) & "|" & Model.Index)
+            Result.Add(GetListIndex(Model) & "|" & Model.Index)
         Next
         Result.Sort()
         For Each Item As String In Result
@@ -318,6 +318,16 @@ Public Class Form1
             NumericThreads.Enabled = True
         Else
             NumericThreads.Enabled = False
+        End If
+    End Sub
+
+    Private Sub SeamsBox_SelectedIndexChanged(sender As Object, e As EventArgs) Handles SeamsBox.SelectedIndexChanged
+        If SeamsBox.SelectedIndex > 0 Then
+            SeamScale.Enabled = True
+            SeamMargin.Enabled = True
+        Else
+            SeamScale.Enabled = False
+            SeamMargin.Enabled = False
         End If
     End Sub
 
@@ -453,6 +463,13 @@ Public Class Form1
             For j = i To i + LoadedSettings.PythonPak.BatchSize - 1
                 If j <= Source.Count - 1 Then
                     File.Copy(Source(j), TempPath & "\" & Path.GetFileName(Source(j)), True)
+                    If LoadedSettings.ExpertSettings.SeamlessMode > 0 Then
+                        Dim SourceImage As Bitmap = Image.FromFile(TempPath & "\" & Path.GetFileName(Source(j)))
+                        Dim NewImage As New Bitmap(SourceImage)
+                        SourceImage.Dispose()
+                        NewImage = MakeSeamless(NewImage, LoadedSettings.ExpertSettings.SeamlessMode, LoadedSettings.ExpertSettings.SeamlessMargin)
+                        NewImage.Save(TempPath & "\" & Path.GetFileName(Source(j)))
+                    End If
                 End If
             Next
             For Each Model In ChainList
@@ -507,10 +524,24 @@ Public Class Form1
                 End If
                 DeletedChainPaths.Add(ChainPaths(0))
                 ChainPaths.RemoveAt(0)
-                If LoadedSettings.BasicSettings.Defringe = True AndAlso ChainList.IndexOf(Model) = ChainList.Count - 1 Then
-                    For Each NewImage In NewImages
-                        If File.Exists(LoadedSettings.Paths.OutputPath & "\" & Path.GetFileName(NewImage)) Then Defringe(LoadedSettings.Paths.OutputPath & "\" & Path.GetFileName(NewImage), LoadedSettings.BasicSettings.DefringeThreshold)
-                    Next
+                If ChainList.IndexOf(Model) = ChainList.Count - 1 Then
+                    If LoadedSettings.BasicSettings.Defringe = True Then
+                        For Each NewImage In NewImages
+                            If File.Exists(LoadedSettings.Paths.OutputPath & "\" & Path.GetFileName(NewImage)) Then Defringe(LoadedSettings.Paths.OutputPath & "\" & Path.GetFileName(NewImage), LoadedSettings.BasicSettings.DefringeThreshold)
+                        Next
+                    End If
+                    If LoadedSettings.ExpertSettings.SeamlessMode > 0 Then
+                        For Each NewImage In NewImages
+                            If File.Exists(LoadedSettings.Paths.OutputPath & "\" & Path.GetFileName(NewImage)) Then
+                                Dim ScaleVal As Integer = LoadedSettings.ExpertSettings.SeamlessScale * 16
+                                Dim SourceImage As Bitmap = Image.FromFile(LoadedSettings.Paths.OutputPath & "\" & Path.GetFileName(NewImage))
+                                Dim TrimmedImage As New Bitmap(SourceImage)
+                                SourceImage.Dispose()
+                                TrimmedImage = CropImage(TrimmedImage, ScaleVal, ScaleVal, TrimmedImage.Width - (ScaleVal * 2), TrimmedImage.Height - (ScaleVal * 2), 0)
+                                TrimmedImage.Save(LoadedSettings.Paths.OutputPath & "\" & Path.GetFileName(NewImage))
+                            End If
+                        Next
+                    End If
                 End If
                 If WorkHorse.CancellationPending = True Then
                     Directory.Delete(TempPath, True)
@@ -586,6 +617,46 @@ Public Class Form1
 #End Region
 
 #Region "Graphics"
+
+    Private Function MakeSeamless(Source As Bitmap, Mirrored As Integer, Margin As Integer) As Bitmap
+        Dim Result As New Bitmap(Source.Width * 3, Source.Height * 3)
+        Using g As Graphics = Graphics.FromImage(Result)
+            g.PixelOffsetMode = Drawing2D.PixelOffsetMode.None
+            g.SmoothingMode = Drawing2D.SmoothingMode.None
+            g.InterpolationMode = Drawing2D.InterpolationMode.NearestNeighbor
+            If Mirrored = 2 Then
+                Dim X = Source.Width
+                Dim Y = Source.Height
+                Dim fX As New Bitmap(Source) : fX.RotateFlip(RotateFlipType.RotateNoneFlipX)
+                Dim fY As New Bitmap(Source) : fY.RotateFlip(RotateFlipType.RotateNoneFlipY)
+                Dim fXY As New Bitmap(Source) : fXY.RotateFlip(RotateFlipType.RotateNoneFlipXY)
+                g.DrawImage(fXY, 0, 0, X, Y) : g.DrawImage(fY, X, 0, X, Y) : g.DrawImage(fXY, 2 * X, 0, X, Y)
+                g.DrawImage(fX, 0, Y, X, Y) : g.DrawImage(Source, X, Y, X, Y) : g.DrawImage(fX, 2 * X, Y, X, Y)
+                g.DrawImage(fXY, 0, 2 * Y, X, Y) : g.DrawImage(fY, X, 2 * Y, X, Y) : g.DrawImage(fXY, 2 * X, 2 * Y, X, Y)
+            ElseIf Mirrored = 1 Then
+                For i = 0 To Source.Width * 2 Step Source.Width
+                    For j = 0 To Source.Height * 2 Step Source.Height
+                        g.DrawImage(Source, i, j, Source.Width, Source.Height)
+                    Next
+                Next
+            Else
+                Return Source
+            End If
+        End Using
+        Return CropImage(Result, Source.Width, Source.Height, Source.Width, Source.Height, Margin)
+    End Function
+
+    Private Function CropImage(Source As Bitmap, OffsetX As Integer, OffsetY As Integer, Width As Integer, Height As Integer, Margins As Integer) As Bitmap
+        Dim CropSize As New Rectangle(OffsetX - Margins, OffsetY - Margins, Width + (2 * Margins), Height + (2 * Margins))
+        Dim Result = New Bitmap(CropSize.Width, CropSize.Height)
+        Using g As Graphics = Graphics.FromImage(Result)
+            g.PixelOffsetMode = Drawing2D.PixelOffsetMode.None
+            g.SmoothingMode = Drawing2D.SmoothingMode.None
+            g.InterpolationMode = Drawing2D.InterpolationMode.NearestNeighbor
+            g.DrawImage(Source, New Rectangle(0, 0, CropSize.Width, CropSize.Height), CropSize, GraphicsUnit.Pixel)
+        End Using
+        Return Result
+    End Function
 
     Private Sub Defringe(Source As String, Threshold As Integer)
         Dim SourceImage As Bitmap = Image.FromFile(Source)
@@ -717,6 +788,10 @@ Public Class Form1
             Next
         End If
     End Sub
+
+    Private Function GetListIndex(ListItem As ListViewItem) As Integer
+        Return ((ListItem.Position.X - 21) / 107) + (4 * Math.Floor(ListItem.Position.Y / 107))
+    End Function
 
     Private Function GetFolder() As String
         Using FBD As New FolderBrowserDialog

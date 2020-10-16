@@ -17,7 +17,7 @@
     </FileTypes>
   </CaffePak>
   <VulkanPak>
-    <Scale>4</Scale>
+    <Scale>2</Scale>
     <Noise>1</Noise>
     <Format>png</Format>
     <TAA>false</TAA>
@@ -61,7 +61,7 @@
     <PushColors>2</PushColors>
     <PushColorStrength>0.3</PushColorStrength>
     <PushGradStrength>1</PushGradStrength>
-    <Scale>2.0</Scale>
+    <Scale>2</Scale>
     <PreProcess>false</PreProcess>
     <PostProcess>false</PostProcess>
     <PreFilter>false</PreFilter>
@@ -129,6 +129,9 @@
     <Logging>false</Logging>
     <ExpertFlags />
     <ClearInput>false</ClearInput>
+    <SeamlessMode>0</SeamlessMode>
+    <SeamlessScale>2</SeamlessScale>
+    <SeamlessMargin>16</SeamlessMargin>
     <Portable>false</Portable>
   </ExpertSettings>
   <Chain />

@@ -53,6 +53,9 @@
         Source.DebugCheckbox.Checked = LoadedSettings.ExpertSettings.Logging
         Source.ExpertSettingsBox.Text = LoadedSettings.ExpertSettings.ExpertFlags
         Source.CleanupCheckBox.Checked = LoadedSettings.ExpertSettings.ClearInput
+        Source.SeamsBox.SelectedIndex = LoadedSettings.ExpertSettings.SeamlessMode
+        Source.SeamScale.Value = ResetDefault(LoadedSettings.ExpertSettings.SeamlessScale, 1, 2)
+        Source.SeamMargin.Value = ResetDefault(LoadedSettings.ExpertSettings.SeamlessMargin, 1, 16)
         Source.PortableCheckBox.Checked = LoadedSettings.ExpertSettings.Portable
 
         'Load Internal Settings
@@ -81,6 +84,10 @@
         Next
     End Sub
 
+    Private Shared Function ResetDefault(Value As Integer, MinValue As Integer, DefaultValue As Integer) As Integer
+        Return IIf(Value >= MinValue, Value, DefaultValue)
+    End Function
+
     <Xml.Serialization.XmlInclude(GetType(Waifu2xCaffePackage))>
     <Xml.Serialization.XmlInclude(GetType(VulkanNcnnPackage))>
     <Xml.Serialization.XmlInclude(GetType(Waifu2xCppPackage))>
@@ -108,7 +115,7 @@
             PythonPak = New PythonPackage(GetPyStr(Source.PyPaths, Source.PyScript.SelectedIndex), GetPyStr(Source.PyModels, Source.PyModel.SelectedIndex), Source.PyBatchSize.Value, Source.PyInputFlag.Text.Trim, Source.PyOutputFlag.Text.Trim, Source.PyArguements)
             Paths = New ProgramPaths(Source.InputTextBox.Text, Source.OutputTextBox.Text)
             BasicSettings = New ProgramSettings(Source.ExeComboBox.SelectedItem, Source.ThreadComboBox.SelectedIndex, Source.NumericThreads.Value, Source.DefringeCheck.Checked, Source.DefringeThresh.Value, Source.TabGroup.SelectedIndex)
-            ExpertSettings = New AdvancedSettings(Source.DebugCheckbox.Checked, Source.ExpertSettingsBox.Text, Source.CleanupCheckBox.Checked, Source.PortableCheckBox.Checked)
+            ExpertSettings = New AdvancedSettings(Source.DebugCheckbox.Checked, Source.ExpertSettingsBox.Text, Source.CleanupCheckBox.Checked, Source.SeamsBox.SelectedIndex, Source.SeamScale.Value, Source.SeamMargin.Value, Source.PortableCheckBox.Checked)
             Chain = Source.ChainList
         End Sub
         Public Function GetPyStr(PyList As List(Of String), Index As Integer) As String
@@ -149,11 +156,17 @@
         Public Property Logging As Boolean
         Public Property ExpertFlags As String
         Public Property ClearInput As Boolean
+        Public Property SeamlessMode As Integer
+        Public Property SeamlessScale As Integer
+        Public Property SeamlessMargin As Integer
         Public Property Portable As Boolean
-        Public Sub New(_Logging As Boolean, _ExpertFlags As String, _ClearInput As Boolean, _Portable As Boolean)
+        Public Sub New(_Logging As Boolean, _ExpertFlags As String, _ClearInput As Boolean, _SeamlessMode As Integer, _SeamlessScale As Integer, _SeamlessMargin As Integer, _Portable As Boolean)
             Logging = _Logging
             ExpertFlags = _ExpertFlags
             ClearInput = _ClearInput
+            SeamlessMode = _SeamlessMode
+            SeamlessScale = _SeamlessScale
+            SeamlessMargin = _SeamlessMargin
             Portable = _Portable
         End Sub
     End Structure
