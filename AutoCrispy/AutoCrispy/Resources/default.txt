@@ -75,9 +75,35 @@
       <string>.jpg</string>
     </FileTypes>
   </AnimePak>
+  <TexConvPak>
+    <Mode>DDS Input</Mode>
+    <Format>BGRA</Format>
+    <FeatureLevel>11.0</FeatureLevel>
+    <ForceDx9>false</ForceDx9>
+    <ForceDx10>false</ForceDx10>
+    <SeperateAlpha>false</SeperateAlpha>
+    <PremultiplyAlpha>false</PremultiplyAlpha>
+    <StraightAlpha>false</StraightAlpha>
+    <FileTypes>
+      <string>.bmp</string>
+      <string>.jpg</string>
+      <string>.jpeg</string>
+      <string>.png</string>
+      <string>.dds</string>
+      <string>.tga</string>
+      <string>.hdr</string>
+      <string>.tif</string>
+      <string>.tiff</string>
+      <string>.wdp</string>
+      <string>.hdp</string>
+      <string>.jxr</string>
+      <string>.ppm</string>
+      <string>.pfm</string>
+    </FileTypes>
+  </TexConvPak>
   <PythonPak>
-    <Script>D:\OneDrive\Documents\VS 19\AutoCrispy\AutoCrispy\bin\Debug\esrgan\esrgan.py</Script>
-    <Model>D:\OneDrive\Documents\VS 19\AutoCrispy\AutoCrispy\bin\Debug\esrgan\models\1x_ColorizerV2_22000G.pth</Model>
+    <Script></Script>
+    <Model></Model>
     <BatchSize>16</BatchSize>
     <InputFlag>--input</InputFlag>
     <OutputFlag>--output</OutputFlag>

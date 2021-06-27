@@ -20,6 +20,7 @@ Public Class Form1
     Public Property SRMDNcnnPath As String
     Public Property WaifuCppPath As String
     Public Property Anime4kPath As String
+    Public Property TexConvPath As String
     Public Property DetectedPyPath As String
 
 #End Region
@@ -108,6 +109,10 @@ Public Class Form1
                 ExeComboBox.Items.Add("Anime4k CPP")
                 Anime4kPath = "\" & IIf(Folder <> Root, Path.GetFileName(Folder), "") & "\Anime4KCPP_CLI.exe"
             End If
+            If File.Exists(Folder & "\texconv.exe") Then
+                ExeComboBox.Items.Add("TexConv")
+                TexConvPath = "\" & IIf(Folder <> Root, Path.GetFileName(Folder), "") & "\texconv.exe"
+            End If
             If File.Exists(Folder & "\python\python.exe") Then
                 PyDetected = True
                 DetectedPyPath = "\" & IIf(Folder <> Root, Path.GetFileName(Folder), "") & "\python\python.exe"
@@ -155,6 +160,7 @@ Public Class Form1
         ChainThumbs.Images.Add(Shrink(My.Resources._4, 64, 64))
         ChainThumbs.Images.Add(Shrink(My.Resources._5, 64, 64))
         ChainThumbs.Images.Add(Shrink(My.Resources._6, 64, 64))
+        ChainThumbs.Images.Add(Shrink(My.Resources._7, 64, 64))
     End Sub
 
 #End Region
@@ -273,6 +279,10 @@ Public Class Form1
         Next
     End Sub
 
+    Private Sub DDxFormatListBox_SelectedIndexChanged(sender As Object, e As EventArgs) Handles DDxFormatListBox.SelectedIndexChanged
+        DDxFormatLabel.Text = "Format: " & DDxFormatListBox.SelectedItem
+    End Sub
+
     Private Sub RunOnceButton_Click(sender As Object, e As EventArgs) Handles RunOnceButton.Click
         Using OFD As New OpenFileDialog With {.Filter = "Image Files|*.png;*.jpg;*.bmp"}
             If OFD.ShowDialog = DialogResult.OK Then
@@ -349,6 +359,7 @@ Public Class Form1
         VulkanGroup.Visible = False
         WaifuCPPGroup.Visible = False
         AnimeCPPGroup.Visible = False
+        DDxGroup.Visible = False
         PyGroup.Visible = False
         VulkanNoise.Enabled = True
         Select Case ExeComboBox.SelectedItem
@@ -368,6 +379,8 @@ Public Class Form1
                 MoveShowGroup(WaifuCPPGroup)
             Case "Anime4k CPP"
                 MoveShowGroup(AnimeCPPGroup)
+            Case "TexConv"
+                MoveShowGroup(DDxGroup)
             Case "Python"
                 MoveShowGroup(PyGroup)
         End Select
@@ -385,6 +398,7 @@ Public Class Form1
         VulkanGroup.Enabled = Enabled
         WaifuCPPGroup.Enabled = Enabled
         AnimeCPPGroup.Enabled = Enabled
+        DDxGroup.Enabled = Enabled
         PyGroup.Enabled = Enabled
     End Sub
 
@@ -463,7 +477,7 @@ Public Class Form1
             For j = i To i + LoadedSettings.PythonPak.BatchSize - 1
                 If j <= Source.Count - 1 Then
                     File.Copy(Source(j), TempPath & "\" & Path.GetFileName(Source(j)), True)
-                    If LoadedSettings.ExpertSettings.SeamlessMode > 0 Then
+                    If LoadedSettings.ExpertSettings.SeamlessMode > 0 AndAlso ChainList(0).Name <> "TexConv" Then
                         Dim SourceImage As Bitmap = Image.FromFile(TempPath & "\" & Path.GetFileName(Source(j)))
                         Dim NewImage As New Bitmap(SourceImage)
                         SourceImage.Dispose()
@@ -519,12 +533,19 @@ Public Class Form1
                         Next
                     End If
                     For Each TempImage As String In Directory.GetFiles(ChainPaths(0))
-                        File.Delete(TempImage)
+                        Do
+                            Try
+                                File.Delete(TempImage)
+                                Exit Do
+                            Catch ex As Exception
+                                Threading.Thread.Sleep(100)
+                            End Try
+                        Loop
                     Next
                 End If
                 DeletedChainPaths.Add(ChainPaths(0))
                 ChainPaths.RemoveAt(0)
-                If ChainList.IndexOf(Model) = ChainList.Count - 1 Then
+                If ChainList.IndexOf(Model) = ChainList.Count - 1 AndAlso ChainList(ChainList.Count - 1).Name <> "TexConv" Then
                     If LoadedSettings.BasicSettings.Defringe = True Then
                         For Each NewImage In NewImages
                             If File.Exists(LoadedSettings.Paths.OutputPath & "\" & Path.GetFileName(NewImage)) Then Defringe(LoadedSettings.Paths.OutputPath & "\" & Path.GetFileName(NewImage), LoadedSettings.BasicSettings.DefringeThreshold)
@@ -582,6 +603,8 @@ Public Class Form1
                 Return MakeCPPCommand(Source, Dest, Package)
             Case "Anime4k CPP"
                 Return MakeA4KCommand(Source, Dest, Package)
+            Case "TexConv"
+                Return MakeTexConvCommand(Source, Dest, Package)
             Case "Python"
                 Return MakePyCommand(Source, Dest, Package)
         End Select
@@ -608,6 +631,9 @@ Public Class Form1
             Case "Anime4k CPP"
                 If AddPreview = True Then ChainPreview.Items.Add(New ListViewItem("Anime4K", 5))
                 ChainList.Add(New FormSettings.ChainObject("Anime4k", 5, Anime4kPath, "Anime4k CPP", Me))
+            Case "TexConv"
+                If AddPreview = True Then ChainPreview.Items.Add(New ListViewItem("TexConv", 7))
+                ChainList.Add(New FormSettings.ChainObject("TexConv", 7, TexConvPath, "TexConv", Me))
             Case "Python"
                 If AddPreview = True Then ChainPreview.Items.Add(New ListViewItem(PyModel.SelectedItem.ToString, 6))
                 ChainList.Add(New FormSettings.ChainObject(PyModel.SelectedItem.ToString, 6, DetectedPyPath, "Python", Me))
@@ -736,6 +762,10 @@ Public Class Form1
 #End Region
 
 #Region "Utils"
+
+    Private Function NewFileExists(Source As String, Optional NewExtension As String = ".png") As Boolean
+        Return File.Exists(Source.Replace(Path.GetExtension(Path.GetFileName(Source)), NewExtension))
+    End Function
 
     Private Function GetThreads(Index As Integer, Count As Integer)
         Select Case Index
@@ -885,6 +915,26 @@ Public Class Form1
         Return Result.GetArguements
     End Function
 
+    Private Function MakeTexConvCommand(SourceImage As String, NewImage As String, Package As FormSettings.DDxPackage) As String
+        Dim Result As New ArguementString
+        Result.AddArguement("-f", Package.Format)
+        Select Case Package.Mode
+            Case "DDS Input"
+                Result.AddArguement("-ft bmp")
+            Case "DDS Output"
+                Result.AddArguement("-ft dds")
+                Result.AddArguement("-fl", Package.FeatureLevel)
+                Result.AddArguement(IIf(Package.ForceDx9 = True, "-dx9", ""))
+                Result.AddArguement(IIf(Package.ForceDx10 = True, "-dx10", ""))
+        End Select
+        Result.AddArguement(IIf(Package.SeperateAlpha = True, "-sepalpha", ""))
+        Result.AddArguement(IIf(Package.PremultiplyAlpha = True, "-pmalpha", ""))
+        Result.AddArguement(IIf(Package.StraightAlpha = True, "-alpha", ""))
+        Result.AddArguement("-o", GetShortPath(Path.GetDirectoryName(NewImage)))
+        Result.AddArguement(GetShortPath(SourceImage))
+        Return Result.GetArguements
+    End Function
+
     Private Function MakePyCommand(SourceFolder As String, DestFolder As String, Package As FormSettings.PythonPackage) As String
         Dim Result As New ArguementString
         Result.AddArguement(Quote(Package.Model))
@@ -898,6 +948,14 @@ Public Class Form1
 
     Private Function Quote(Source As String) As String
         Return ControlChars.Quote & Source & ControlChars.Quote
+    End Function
+
+    Declare Auto Function GetShortPathName Lib "kernel32.dll" (lpszLongPath As String, lpszShortPath As Text.StringBuilder, cchBuffer As Integer) As Integer
+
+    Private Function GetShortPath(Source As String)
+        Dim sbShortPath As Text.StringBuilder = New Text.StringBuilder()
+        GetShortPathName(Source, sbShortPath, 255)
+        Return sbShortPath.ToString
     End Function
 
 #End Region

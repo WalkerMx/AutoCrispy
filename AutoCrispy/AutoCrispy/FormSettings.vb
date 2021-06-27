@@ -33,6 +33,16 @@
         Source.AnimeCPPGpu.Checked = LoadedSettings.AnimePak.GPU
         Source.AnimeCPPCnn.Checked = LoadedSettings.AnimePak.CNN
 
+        'Load TexConv Settings
+        Source.DDxModeBox.SelectedItem = LoadedSettings.TexConvPak.Mode
+        Source.DDxFormatLabel.Text = "Format: " & LoadedSettings.TexConvPak.Format
+        Source.FlComboBox.SelectedItem = LoadedSettings.TexConvPak.FeatureLevel
+        Source.Dx9CheckBox.Checked = LoadedSettings.TexConvPak.ForceDx9
+        Source.Dx10Checkbox.Checked = LoadedSettings.TexConvPak.ForceDx10
+        Source.SepAlphaCheckBox.Checked = LoadedSettings.TexConvPak.SeperateAlpha
+        Source.PmAlphaCheckBox.Checked = LoadedSettings.TexConvPak.PremultiplyAlpha
+        Source.AlphaCheckBox.Checked = LoadedSettings.TexConvPak.StraightAlpha
+
         'Load Python Settings
         Source.PyBatchSize.Value = LoadedSettings.PythonPak.BatchSize
         Source.PyInputFlag.Text = LoadedSettings.PythonPak.InputFlag
@@ -102,6 +112,7 @@
         Public Property VulkanPak As VulkanNcnnPackage
         Public Property CppPak As Waifu2xCppPackage
         Public Property AnimePak As Anime4kPackage
+        Public Property TexConvPak As DDxPackage
         Public Property PythonPak As PythonPackage
         Public Property Paths As ProgramPaths
         Public Property BasicSettings As ProgramSettings
@@ -112,6 +123,7 @@
             VulkanPak = New VulkanNcnnPackage(Source.VulkanScale.Value, Source.VulkanNoise.Value, Source.VulkanFormat.Text.ToLower, Source.VulkanTAA.Checked)
             CppPak = New Waifu2xCppPackage(Source.WaifuCPPMode.Text.ToLower, Source.WaifuCPPScale.Value, Source.WaifuCPPNoise.Value, Source.WaifuCPPFormat.Text.ToLower, Source.WaifuCppGPU.Checked, Source.WaifuCPPOpenCL.Checked)
             AnimePak = New Anime4kPackage(Source.AnimeCPPScale.Value, Source.AnimeCppPre.Checked, Source.AnimeCppPost.Checked, Source.AnimeCppPreFilter.Checked, Source.AnimeCppPostFilter.Checked, GetFilters(Source.AnimeCppPreFilters), GetFilters(Source.AnimeCppPostFilters), Source.AnimeCPPGpu.Checked, Source.AnimeCPPCnn.Checked)
+            TexConvPak = New DDxPackage(Source.DDxModeBox.SelectedItem, Source.DDxFormatLabel.Text.Replace("Format: ", ""), Source.FlComboBox.SelectedItem, Source.Dx9CheckBox.Checked, Source.Dx10Checkbox.Checked, Source.SepAlphaCheckBox.Checked, Source.PmAlphaCheckBox.Checked, Source.AlphaCheckBox.Checked)
             PythonPak = New PythonPackage(GetPyStr(Source.PyPaths, Source.PyScript.SelectedIndex), GetPyStr(Source.PyModels, Source.PyModel.SelectedIndex), Source.PyBatchSize.Value, Source.PyInputFlag.Text.Trim, Source.PyOutputFlag.Text.Trim, Source.PyArguements)
             Paths = New ProgramPaths(Source.InputTextBox.Text, Source.OutputTextBox.Text)
             BasicSettings = New ProgramSettings(Source.ExeComboBox.SelectedItem, Source.ThreadComboBox.SelectedIndex, Source.NumericThreads.Value, Source.DefringeCheck.Checked, Source.DefringeThresh.Value, Source.TabGroup.SelectedIndex)
@@ -200,6 +212,8 @@
                     Package = New Waifu2xCppPackage(Source.WaifuCPPMode.Text.ToLower, Source.WaifuCPPScale.Value, Source.WaifuCPPNoise.Value, Source.WaifuCPPFormat.Text.ToLower, Source.WaifuCppGPU.Checked, Source.WaifuCPPOpenCL.Checked)
                 Case "Anime4k CPP"
                     Package = New Anime4kPackage(Source.AnimeCPPScale.Value, Source.AnimeCppPre.Checked, Source.AnimeCppPost.Checked, Source.AnimeCppPreFilter.Checked, Source.AnimeCppPostFilter.Checked, GetFilters(Source.AnimeCppPreFilters), GetFilters(Source.AnimeCppPostFilters), Source.AnimeCPPGpu.Checked, Source.AnimeCPPCnn.Checked)
+                Case "TexConv"
+                    Package = New DDxPackage(Source.DDxModeBox.SelectedItem, Source.DDxFormatLabel.Text.Replace("Format: ", ""), Source.FlComboBox.SelectedItem, Source.Dx9CheckBox.Checked, Source.Dx10Checkbox.Checked, Source.SepAlphaCheckBox.Checked, Source.PmAlphaCheckBox.Checked, Source.AlphaCheckBox.Checked)
                 Case "Python"
                     Package = New PythonPackage(Source.PyPaths(Source.PyScript.SelectedIndex), Source.PyModels(Source.PyModel.SelectedIndex), Source.PyBatchSize.Value, Source.PyInputFlag.Text.Trim, Source.PyOutputFlag.Text.Trim, Source.PyArguements)
             End Select
@@ -287,6 +301,29 @@
             GPU = _GPU
             CNN = _CNN
             FileTypes = {".png", ".jpg"}.ToList
+        End Sub
+    End Structure
+
+    <Serializable()> Public Structure DDxPackage
+        Public Property Mode As String
+        Public Property Format As String
+        Public Property FeatureLevel As String
+        Public Property ForceDx9 As Boolean
+        Public Property ForceDx10 As Boolean
+        Public Property SeperateAlpha As Boolean
+        Public Property PremultiplyAlpha As Boolean
+        Public Property StraightAlpha As Boolean
+        Public Property FileTypes As List(Of String)
+        Public Sub New(_Mode As String, _Format As String, _FeatureLevel As String, _ForceDx9 As Boolean, _ForceDx10 As Boolean, _SeperateAlpha As Boolean, _PremultiplyAlpha As Boolean, _StraightAlpha As Boolean)
+            Mode = _Mode
+            Format = _Format
+            FeatureLevel = _FeatureLevel
+            ForceDx9 = _ForceDx9
+            ForceDx10 = _ForceDx10
+            SeperateAlpha = _SeperateAlpha
+            PremultiplyAlpha = _PremultiplyAlpha
+            StraightAlpha = _StraightAlpha
+            FileTypes = {".bmp", ".jpg", ".jpeg", ".png", ".dds", ".tga", ".hdr", ".tif", ".tiff", ".wdp", ".hdp", ".jxr", ".ppm", ".pfm"}.ToList
         End Sub
     End Structure
 

@@ -112,16 +112,28 @@ Partial Class Form1
         Me.Label2 = New System.Windows.Forms.Label()
         Me.TabGroup = New System.Windows.Forms.TabControl()
         Me.AdvSettingsGroup = New System.Windows.Forms.TabPage()
+        Me.SeamMargin = New System.Windows.Forms.NumericUpDown()
         Me.SeamScale = New System.Windows.Forms.NumericUpDown()
         Me.SeamsBox = New System.Windows.Forms.ComboBox()
+        Me.Label18 = New System.Windows.Forms.Label()
         Me.Label17 = New System.Windows.Forms.Label()
         Me.Label16 = New System.Windows.Forms.Label()
         Me.PortableCheckBox = New System.Windows.Forms.CheckBox()
         Me.Label15 = New System.Windows.Forms.Label()
         Me.ExpertSettingsBox = New System.Windows.Forms.TextBox()
         Me.DebugCheckbox = New System.Windows.Forms.CheckBox()
-        Me.SeamMargin = New System.Windows.Forms.NumericUpDown()
-        Me.Label18 = New System.Windows.Forms.Label()
+        Me.DDxGroup = New System.Windows.Forms.GroupBox()
+        Me.DDxFormatLabel = New System.Windows.Forms.Label()
+        Me.DDxFormatListBox = New System.Windows.Forms.ListBox()
+        Me.Dx10Checkbox = New System.Windows.Forms.CheckBox()
+        Me.Dx9CheckBox = New System.Windows.Forms.CheckBox()
+        Me.FlComboBox = New System.Windows.Forms.ComboBox()
+        Me.Label24 = New System.Windows.Forms.Label()
+        Me.AlphaCheckBox = New System.Windows.Forms.CheckBox()
+        Me.PmAlphaCheckBox = New System.Windows.Forms.CheckBox()
+        Me.SepAlphaCheckBox = New System.Windows.Forms.CheckBox()
+        Me.Label19 = New System.Windows.Forms.Label()
+        Me.DDxModeBox = New System.Windows.Forms.ComboBox()
         Me.CaffeGroup.SuspendLayout()
         CType(Me.CaffeScale, System.ComponentModel.ISupportInitialize).BeginInit()
         CType(Me.CaffeNoise, System.ComponentModel.ISupportInitialize).BeginInit()
@@ -144,8 +156,9 @@ Partial Class Form1
         Me.PathGroup.SuspendLayout()
         Me.TabGroup.SuspendLayout()
         Me.AdvSettingsGroup.SuspendLayout()
-        CType(Me.SeamScale, System.ComponentModel.ISupportInitialize).BeginInit()
         CType(Me.SeamMargin, System.ComponentModel.ISupportInitialize).BeginInit()
+        CType(Me.SeamScale, System.ComponentModel.ISupportInitialize).BeginInit()
+        Me.DDxGroup.SuspendLayout()
         Me.SuspendLayout()
         '
         'CaffeGroup
@@ -1039,6 +1052,16 @@ Partial Class Form1
         Me.AdvSettingsGroup.Text = "Advanced"
         Me.AdvSettingsGroup.UseVisualStyleBackColor = True
         '
+        'SeamMargin
+        '
+        Me.SeamMargin.Location = New System.Drawing.Point(459, 85)
+        Me.SeamMargin.Maximum = New Decimal(New Integer() {128, 0, 0, 0})
+        Me.SeamMargin.Minimum = New Decimal(New Integer() {1, 0, 0, 0})
+        Me.SeamMargin.Name = "SeamMargin"
+        Me.SeamMargin.Size = New System.Drawing.Size(151, 20)
+        Me.SeamMargin.TabIndex = 16
+        Me.SeamMargin.Value = New Decimal(New Integer() {16, 0, 0, 0})
+        '
         'SeamScale
         '
         Me.SeamScale.Location = New System.Drawing.Point(459, 59)
@@ -1058,6 +1081,15 @@ Partial Class Form1
         Me.SeamsBox.Name = "SeamsBox"
         Me.SeamsBox.Size = New System.Drawing.Size(151, 21)
         Me.SeamsBox.TabIndex = 14
+        '
+        'Label18
+        '
+        Me.Label18.AutoSize = True
+        Me.Label18.Location = New System.Drawing.Point(381, 87)
+        Me.Label18.Name = "Label18"
+        Me.Label18.Size = New System.Drawing.Size(72, 13)
+        Me.Label18.TabIndex = 13
+        Me.Label18.Text = "Seam Margin:"
         '
         'Label17
         '
@@ -1113,30 +1145,138 @@ Partial Class Form1
         Me.DebugCheckbox.Text = "Output Logging"
         Me.DebugCheckbox.UseVisualStyleBackColor = True
         '
-        'SeamMargin
+        'DDxGroup
         '
-        Me.SeamMargin.Location = New System.Drawing.Point(459, 85)
-        Me.SeamMargin.Maximum = New Decimal(New Integer() {128, 0, 0, 0})
-        Me.SeamMargin.Minimum = New Decimal(New Integer() {1, 0, 0, 0})
-        Me.SeamMargin.Name = "SeamMargin"
-        Me.SeamMargin.Size = New System.Drawing.Size(151, 20)
-        Me.SeamMargin.TabIndex = 16
-        Me.SeamMargin.Value = New Decimal(New Integer() {16, 0, 0, 0})
+        Me.DDxGroup.Controls.Add(Me.DDxFormatLabel)
+        Me.DDxGroup.Controls.Add(Me.DDxFormatListBox)
+        Me.DDxGroup.Controls.Add(Me.Dx10Checkbox)
+        Me.DDxGroup.Controls.Add(Me.Dx9CheckBox)
+        Me.DDxGroup.Controls.Add(Me.FlComboBox)
+        Me.DDxGroup.Controls.Add(Me.Label24)
+        Me.DDxGroup.Controls.Add(Me.AlphaCheckBox)
+        Me.DDxGroup.Controls.Add(Me.PmAlphaCheckBox)
+        Me.DDxGroup.Controls.Add(Me.SepAlphaCheckBox)
+        Me.DDxGroup.Controls.Add(Me.Label19)
+        Me.DDxGroup.Controls.Add(Me.DDxModeBox)
+        Me.DDxGroup.Location = New System.Drawing.Point(1045, 424)
+        Me.DDxGroup.Name = "DDxGroup"
+        Me.DDxGroup.Size = New System.Drawing.Size(396, 200)
+        Me.DDxGroup.TabIndex = 16
+        Me.DDxGroup.TabStop = False
+        Me.DDxGroup.Text = "TexConv Settings"
         '
-        'Label18
+        'DDxFormatLabel
         '
-        Me.Label18.AutoSize = True
-        Me.Label18.Location = New System.Drawing.Point(381, 87)
-        Me.Label18.Name = "Label18"
-        Me.Label18.Size = New System.Drawing.Size(72, 13)
-        Me.Label18.TabIndex = 13
-        Me.Label18.Text = "Seam Margin:"
+        Me.DDxFormatLabel.AutoSize = True
+        Me.DDxFormatLabel.Location = New System.Drawing.Point(180, 49)
+        Me.DDxFormatLabel.Name = "DDxFormatLabel"
+        Me.DDxFormatLabel.Size = New System.Drawing.Size(78, 13)
+        Me.DDxFormatLabel.TabIndex = 10
+        Me.DDxFormatLabel.Text = "Format:  BGRA"
+        '
+        'DDxFormatListBox
+        '
+        Me.DDxFormatListBox.FormattingEnabled = True
+        Me.DDxFormatListBox.Items.AddRange(New Object() {"R32G32B32A32_FLOAT", "R32G32B32A32_UINT", "R32G32B32A32_SINT", "R32G32B32_FLOAT", "R32G32B32_UINT", "R32G32B32_SINT", "R16G16B16A16_FLOAT", "R16G16B16A16_UNORM", "R16G16B16A16_UINT", "R16G16B16A16_SNORM", "R16G16B16A16_SINT", "R32G32_FLOAT", "R32G32_UINT", "R32G32_SINT", "R10G10B10A2_UNORM", "R10G10B10A2_UINT", "R11G11B10_FLOAT", "R8G8B8A8_UNORM", "R8G8B8A8_UNORM_SRGB", "R8G8B8A8_UINT", "R8G8B8A8_SNORM", "R8G8B8A8_SINT", "R16G16_FLOAT", "R16G16_UNORM", "R16G16_UINT", "R16G16_SNORM", "R16G16_SINT", "R32_FLOAT", "R32_UINT", "R32_SINT", "R8G8_UNORM", "R8G8_UINT", "R8G8_SNORM", "R8G8_SINT", "R16_FLOAT", "R16_UNORM", "R16_UINT", "R16_SNORM", "R16_SINT", "R8_UNORM", "R8_UINT", "R8_SNORM", "R8_SINT", "A8_UNORM", "R9G9B9E5_SHAREDEXP", "R8G8_B8G8_UNORM", "G8R8_G8B8_UNORM", "BC1_UNORM", "BC1_UNORM_SRGB", "BC2_UNORM", "BC2_UNORM_SRGB", "BC3_UNORM", "BC3_UNORM_SRGB", "BC4_UNORM", "BC4_SNORM", "BC5_UNORM", "BC5_SNORM", "B5G6R5_UNORM", "B5G5R5A1_UNORM", "B8G8R8A8_UNORM", "B8G8R8X8_UNORM", "R10G10B10_XR_BIAS_A2_UNORM", "B8G8R8A8_UNORM_SRGB", "B8G8R8X8_UNORM_SRGB", "BC6H_UF16", "BC6H_SF16", "BC7_UNORM", "BC7_UNORM_SRGB", "AYUV", "Y410", "Y416", "YUY2", "Y210", "Y216", "B4G4R4A4_UNORM", "DXT1", "DXT2", "DXT3", "DXT4", "DXT5", "RGBA", "BGRA", "BGR", "FP16", "FP32", "BPTC", "BPTC_FLOAT"})
+        Me.DDxFormatListBox.Location = New System.Drawing.Point(9, 46)
+        Me.DDxFormatListBox.Name = "DDxFormatListBox"
+        Me.DDxFormatListBox.Size = New System.Drawing.Size(165, 147)
+        Me.DDxFormatListBox.TabIndex = 9
+        '
+        'Dx10Checkbox
+        '
+        Me.Dx10Checkbox.AutoSize = True
+        Me.Dx10Checkbox.Location = New System.Drawing.Point(183, 176)
+        Me.Dx10Checkbox.Name = "Dx10Checkbox"
+        Me.Dx10Checkbox.Size = New System.Drawing.Size(81, 17)
+        Me.Dx10Checkbox.TabIndex = 8
+        Me.Dx10Checkbox.Text = "Force Dx10"
+        Me.Dx10Checkbox.UseVisualStyleBackColor = True
+        '
+        'Dx9CheckBox
+        '
+        Me.Dx9CheckBox.AutoSize = True
+        Me.Dx9CheckBox.Location = New System.Drawing.Point(183, 153)
+        Me.Dx9CheckBox.Name = "Dx9CheckBox"
+        Me.Dx9CheckBox.Size = New System.Drawing.Size(75, 17)
+        Me.Dx9CheckBox.TabIndex = 7
+        Me.Dx9CheckBox.Text = "Force Dx9"
+        Me.Dx9CheckBox.UseVisualStyleBackColor = True
+        '
+        'FlComboBox
+        '
+        Me.FlComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
+        Me.FlComboBox.FormattingEnabled = True
+        Me.FlComboBox.Items.AddRange(New Object() {"9.1", "9.2", "9.3", "10.0", "10.1", "11.0", "11.1", "12.0", "12.1"})
+        Me.FlComboBox.Location = New System.Drawing.Point(261, 19)
+        Me.FlComboBox.Name = "FlComboBox"
+        Me.FlComboBox.Size = New System.Drawing.Size(87, 21)
+        Me.FlComboBox.TabIndex = 6
+        '
+        'Label24
+        '
+        Me.Label24.AutoSize = True
+        Me.Label24.Location = New System.Drawing.Point(180, 22)
+        Me.Label24.Name = "Label24"
+        Me.Label24.Size = New System.Drawing.Size(75, 13)
+        Me.Label24.TabIndex = 5
+        Me.Label24.Text = "Feature Level:"
+        '
+        'AlphaCheckBox
+        '
+        Me.AlphaCheckBox.AutoSize = True
+        Me.AlphaCheckBox.Location = New System.Drawing.Point(183, 84)
+        Me.AlphaCheckBox.Name = "AlphaCheckBox"
+        Me.AlphaCheckBox.Size = New System.Drawing.Size(92, 17)
+        Me.AlphaCheckBox.TabIndex = 4
+        Me.AlphaCheckBox.Text = "Straight Alpha"
+        Me.AlphaCheckBox.UseVisualStyleBackColor = True
+        '
+        'PmAlphaCheckBox
+        '
+        Me.PmAlphaCheckBox.AutoSize = True
+        Me.PmAlphaCheckBox.Location = New System.Drawing.Point(183, 107)
+        Me.PmAlphaCheckBox.Name = "PmAlphaCheckBox"
+        Me.PmAlphaCheckBox.Size = New System.Drawing.Size(106, 17)
+        Me.PmAlphaCheckBox.TabIndex = 3
+        Me.PmAlphaCheckBox.Text = "Premultiply Alpha"
+        Me.PmAlphaCheckBox.UseVisualStyleBackColor = True
+        '
+        'SepAlphaCheckBox
+        '
+        Me.SepAlphaCheckBox.AutoSize = True
+        Me.SepAlphaCheckBox.Location = New System.Drawing.Point(183, 130)
+        Me.SepAlphaCheckBox.Name = "SepAlphaCheckBox"
+        Me.SepAlphaCheckBox.Size = New System.Drawing.Size(99, 17)
+        Me.SepAlphaCheckBox.TabIndex = 2
+        Me.SepAlphaCheckBox.Text = "Seperate Alpha"
+        Me.SepAlphaCheckBox.UseVisualStyleBackColor = True
+        '
+        'Label19
+        '
+        Me.Label19.AutoSize = True
+        Me.Label19.Location = New System.Drawing.Point(6, 22)
+        Me.Label19.Name = "Label19"
+        Me.Label19.Size = New System.Drawing.Size(37, 13)
+        Me.Label19.TabIndex = 1
+        Me.Label19.Text = "Mode:"
+        '
+        'DDxModeBox
+        '
+        Me.DDxModeBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
+        Me.DDxModeBox.FormattingEnabled = True
+        Me.DDxModeBox.Items.AddRange(New Object() {"DDS Input", "DDS Output"})
+        Me.DDxModeBox.Location = New System.Drawing.Point(60, 19)
+        Me.DDxModeBox.Name = "DDxModeBox"
+        Me.DDxModeBox.Size = New System.Drawing.Size(114, 21)
+        Me.DDxModeBox.TabIndex = 0
         '
         'Form1
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
         Me.ClientSize = New System.Drawing.Size(1456, 718)
+        Me.Controls.Add(Me.DDxGroup)
         Me.Controls.Add(Me.TabGroup)
         Me.Controls.Add(Me.PyGroup)
         Me.Controls.Add(Me.RunOnceButton)
@@ -1181,8 +1321,10 @@ Partial Class Form1
         Me.TabGroup.ResumeLayout(False)
         Me.AdvSettingsGroup.ResumeLayout(False)
         Me.AdvSettingsGroup.PerformLayout()
-        CType(Me.SeamScale, System.ComponentModel.ISupportInitialize).EndInit()
         CType(Me.SeamMargin, System.ComponentModel.ISupportInitialize).EndInit()
+        CType(Me.SeamScale, System.ComponentModel.ISupportInitialize).EndInit()
+        Me.DDxGroup.ResumeLayout(False)
+        Me.DDxGroup.PerformLayout()
         Me.ResumeLayout(False)
 
     End Sub
@@ -1284,4 +1426,16 @@ Partial Class Form1
     Friend WithEvents Label16 As Label
     Friend WithEvents SeamMargin As NumericUpDown
     Friend WithEvents Label18 As Label
+    Friend WithEvents DDxGroup As GroupBox
+    Friend WithEvents DDxFormatLabel As Label
+    Friend WithEvents DDxFormatListBox As ListBox
+    Friend WithEvents Dx10Checkbox As CheckBox
+    Friend WithEvents Dx9CheckBox As CheckBox
+    Friend WithEvents FlComboBox As ComboBox
+    Friend WithEvents Label24 As Label
+    Friend WithEvents AlphaCheckBox As CheckBox
+    Friend WithEvents PmAlphaCheckBox As CheckBox
+    Friend WithEvents SepAlphaCheckBox As CheckBox
+    Friend WithEvents Label19 As Label
+    Friend WithEvents DDxModeBox As ComboBox
 End Class
