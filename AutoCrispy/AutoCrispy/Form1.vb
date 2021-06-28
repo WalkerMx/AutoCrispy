@@ -283,6 +283,15 @@ Public Class Form1
         DDxFormatLabel.Text = "Format: " & DDxFormatListBox.SelectedItem
     End Sub
 
+    Private Sub DDxModeBox_SelectedIndexChanged(sender As Object, e As EventArgs) Handles DDxModeBox.SelectedIndexChanged
+        Select Case DDxModeBox.SelectedIndex
+            Case 0
+                DDxConvFormat.Enabled = True
+            Case 1
+                DDxConvFormat.Enabled = False
+        End Select
+    End Sub
+
     Private Sub RunOnceButton_Click(sender As Object, e As EventArgs) Handles RunOnceButton.Click
         Using OFD As New OpenFileDialog With {.Filter = "Image Files|*.png;*.jpg;*.bmp"}
             If OFD.ShowDialog = DialogResult.OK Then
@@ -407,10 +416,9 @@ Public Class Form1
 #Region "Background"
 
     Private Sub WatchDog_Tick(sender As Object, e As EventArgs) Handles WatchDog.Tick
-        Dim Source As List(Of String) = GetFileNameList(InputTextBox.Text, False)
-        Dim Dest As List(Of String) = GetFileNameList(OutputTextBox.Text, False)
-        Dim FileCheck As Boolean = Dest.SequenceEqual(Source)
-        If FileCheck = True Or Source.Count = 0 Then
+        Dim Source = Directory.GetFiles(InputTextBox.Text).Count
+        Dim FileCheck = GetMissingFiles(InputTextBox.Text, OutputTextBox.Text).Count
+        If Source = 0 OrElse FileCheck = 0 Then
             WaitScale = Math.Min(WaitScale + 1, 100)
             WatchDog.Interval = 1000 + (WaitScale * 590)
         Else
@@ -462,8 +470,8 @@ Public Class Form1
 
     Private Sub MakeUpscale()
         Dim TempPath As String = Path.GetTempPath & "Temp_0"
-        Dim Source = Directory.GetFiles(LoadedSettings.Paths.InputPath).Except(Directory.GetFiles(LoadedSettings.Paths.OutputPath))
-        For i = 0 To Source.Count - 1 Step LoadedSettings.PythonPak.BatchSize
+        Dim Source = GetMissingFiles(LoadedSettings.Paths.InputPath, LoadedSettings.Paths.OutputPath)
+        For i = 0 To Source.Count - 1 Step GetThreads(LoadedSettings.BasicSettings.ThreadIndex, LoadedSettings.BasicSettings.ThreadCount)
             Dim ChainPaths As New List(Of String)
             Dim DeletedChainPaths As New List(Of String)
             ChainPaths.Add(TempPath)
@@ -474,25 +482,25 @@ Public Class Form1
             Next
             ChainPaths.Add(LoadedSettings.Paths.OutputPath)
             Directory.CreateDirectory(TempPath)
-            For j = i To i + LoadedSettings.PythonPak.BatchSize - 1
+            For j = i To i + GetThreads(LoadedSettings.BasicSettings.ThreadIndex, LoadedSettings.BasicSettings.ThreadCount) - 1
                 If j <= Source.Count - 1 Then
                     File.Copy(Source(j), TempPath & "\" & Path.GetFileName(Source(j)), True)
-                    If LoadedSettings.ExpertSettings.SeamlessMode > 0 AndAlso ChainList(0).Name <> "TexConv" Then
-                        Dim SourceImage As Bitmap = Image.FromFile(TempPath & "\" & Path.GetFileName(Source(j)))
-                        Dim NewImage As New Bitmap(SourceImage)
-                        SourceImage.Dispose()
-                        NewImage = MakeSeamless(NewImage, LoadedSettings.ExpertSettings.SeamlessMode, LoadedSettings.ExpertSettings.SeamlessMargin)
-                        NewImage.Save(TempPath & "\" & Path.GetFileName(Source(j)))
-                    End If
                 End If
             Next
             For Each Model In ChainList
                 Dim NewImages As New List(Of String)
-                Dim DiffImages = GetFileNameList(ChainPaths(0), True).Except(GetFileNameList(LoadedSettings.Paths.OutputPath, True))
+                Dim DiffImages = GetMissingFiles(ChainPaths(0), LoadedSettings.Paths.OutputPath)
                 For Each NewImage As String In DiffImages
                     Dim AcceptExt As Boolean = Model.Package.FileTypes.Contains(Path.GetExtension(NewImage).ToLower)
-                    If File.Exists(ChainPaths(0) & "\" & NewImage) AndAlso AcceptExt = True Then
-                        NewImages.Add(ChainPaths(0) & "\" & NewImage)
+                    If File.Exists(NewImage) AndAlso AcceptExt = True Then
+                        NewImages.Add(NewImage)
+                        If (ChainList.IndexOf(Model) = 0 AndAlso Model.Name <> "TexConv") OrElse (ChainList(0).Name = "TexConv" AndAlso ChainList.IndexOf(Model) = 1) Then
+                            Dim SourceImage As Bitmap = Image.FromFile(NewImage)
+                            Dim SeamlessImage As New Bitmap(SourceImage)
+                            SourceImage.Dispose()
+                            SeamlessImage = MakeSeamless(SeamlessImage, LoadedSettings.ExpertSettings.SeamlessMode, LoadedSettings.ExpertSettings.SeamlessMargin)
+                            SeamlessImage.Save(NewImage)
+                        End If
                     End If
                 Next
                 If NewImages.Count > 0 Then
@@ -515,6 +523,7 @@ Public Class Form1
                             WriteLog(BatchProcess, LoadedSettings.Paths.OutputPath)
                         End If
                     Else
+                        Dim ProcessBag As New List(Of Process)
                         For j = 0 To NewImages.Count - 1
                             Dim NewImage As String = ChainPaths(1) & "\" & Path.GetFileName(NewImages(j))
                             BuildProcess = New ProcessStartInfo(Root & Model.FileLocation, MakeCommand(NewImages(j), NewImage, Model.PackageType, Model.Package))
@@ -524,42 +533,42 @@ Public Class Form1
                             BuildProcess.UseShellExecute = False
                             BuildProcess.CreateNoWindow = True
                             Dim BatchProcess As Process = Process.Start(BuildProcess)
-                            If (j + 1) Mod GetThreads(LoadedSettings.BasicSettings.ThreadIndex, LoadedSettings.BasicSettings.ThreadCount) = 0 OrElse (j = NewImages.Count - 1) Then
-                                BatchProcess.WaitForExit()
-                            End If
+                            ProcessBag.Add(BatchProcess)
                             If LoadedSettings.ExpertSettings.Logging = True Then
                                 WriteLog(BatchProcess, LoadedSettings.Paths.OutputPath)
                             End If
                         Next
+                        Do
+                            Dim CompletionStatus As New List(Of Boolean)
+                            For Each Job As Process In ProcessBag
+                                CompletionStatus.Add(Job.HasExited)
+                            Next
+                            If Not CompletionStatus.Contains(False) Then
+                                Exit Do
+                            End If
+                        Loop
                     End If
                     For Each TempImage As String In Directory.GetFiles(ChainPaths(0))
-                        Do
-                            Try
-                                File.Delete(TempImage)
-                                Exit Do
-                            Catch ex As Exception
-                                Threading.Thread.Sleep(100)
-                            End Try
-                        Loop
+                        File.Delete(TempImage)
                     Next
                 End If
                 DeletedChainPaths.Add(ChainPaths(0))
                 ChainPaths.RemoveAt(0)
-                If ChainList.IndexOf(Model) = ChainList.Count - 1 AndAlso ChainList(ChainList.Count - 1).Name <> "TexConv" Then
+                If (ChainList.IndexOf(Model) = ChainList.Count - 1 AndAlso Model.Name <> "TexConv") OrElse (ChainList(ChainList.Count - 1).Name = "TexConv" AndAlso ChainList.IndexOf(Model) = ChainList.Count - 2) Then
                     If LoadedSettings.BasicSettings.Defringe = True Then
                         For Each NewImage In NewImages
-                            If File.Exists(LoadedSettings.Paths.OutputPath & "\" & Path.GetFileName(NewImage)) Then Defringe(LoadedSettings.Paths.OutputPath & "\" & Path.GetFileName(NewImage), LoadedSettings.BasicSettings.DefringeThreshold)
+                            If File.Exists(ChainPaths(0) & "\" & Path.GetFileName(NewImage)) Then Defringe(ChainPaths(0) & "\" & Path.GetFileName(NewImage), LoadedSettings.BasicSettings.DefringeThreshold)
                         Next
                     End If
                     If LoadedSettings.ExpertSettings.SeamlessMode > 0 Then
                         For Each NewImage In NewImages
-                            If File.Exists(LoadedSettings.Paths.OutputPath & "\" & Path.GetFileName(NewImage)) Then
+                            If File.Exists(ChainPaths(0) & "\" & Path.GetFileName(NewImage)) Then
                                 Dim ScaleVal As Integer = LoadedSettings.ExpertSettings.SeamlessScale * LoadedSettings.ExpertSettings.SeamlessMargin
-                                Dim SourceImage As Bitmap = Image.FromFile(LoadedSettings.Paths.OutputPath & "\" & Path.GetFileName(NewImage))
+                                Dim SourceImage As Bitmap = Image.FromFile(ChainPaths(0) & "\" & Path.GetFileName(NewImage))
                                 Dim TrimmedImage As New Bitmap(SourceImage)
                                 SourceImage.Dispose()
                                 TrimmedImage = CropImage(TrimmedImage, ScaleVal, ScaleVal, TrimmedImage.Width - (ScaleVal * 2), TrimmedImage.Height - (ScaleVal * 2), 0)
-                                TrimmedImage.Save(LoadedSettings.Paths.OutputPath & "\" & Path.GetFileName(NewImage))
+                                TrimmedImage.Save(ChainPaths(0) & "\" & Path.GetFileName(NewImage))
                             End If
                         Next
                     End If
@@ -645,7 +654,7 @@ Public Class Form1
 #Region "Graphics"
 
     Private Function MakeSeamless(Source As Bitmap, Mirrored As Integer, Margin As Integer) As Bitmap
-        Dim Result As New Bitmap(Source.Width * 3, Source.Height * 3)
+        Dim Result As New Bitmap(Source.Width * 3, Source.Height * 3, Source.PixelFormat)
         Using g As Graphics = Graphics.FromImage(Result)
             g.PixelOffsetMode = Drawing2D.PixelOffsetMode.None
             g.SmoothingMode = Drawing2D.SmoothingMode.None
@@ -674,7 +683,7 @@ Public Class Form1
 
     Private Function CropImage(Source As Bitmap, OffsetX As Integer, OffsetY As Integer, Width As Integer, Height As Integer, Margins As Integer) As Bitmap
         Dim CropSize As New Rectangle(OffsetX - Margins, OffsetY - Margins, Width + (2 * Margins), Height + (2 * Margins))
-        Dim Result = New Bitmap(CropSize.Width, CropSize.Height)
+        Dim Result = New Bitmap(CropSize.Width, CropSize.Height, Source.PixelFormat)
         Using g As Graphics = Graphics.FromImage(Result)
             g.PixelOffsetMode = Drawing2D.PixelOffsetMode.None
             g.SmoothingMode = Drawing2D.SmoothingMode.None
@@ -702,8 +711,6 @@ Public Class Form1
         For i = 3 To rgbValues.Length - 1 Step 4
             If rgbValues(i) < Threshold Then
                 rgbValues(i) = 0
-            ElseIf rgbValues(i) < 255 Then
-                rgbValues(i) = 255
             End If
         Next
         Runtime.InteropServices.Marshal.Copy(rgbValues, 0, ptr, bytes)
@@ -763,8 +770,21 @@ Public Class Form1
 
 #Region "Utils"
 
-    Private Function NewFileExists(Source As String, Optional NewExtension As String = ".png") As Boolean
-        Return File.Exists(Source.Replace(Path.GetExtension(Path.GetFileName(Source)), NewExtension))
+    Private Function GetMissingFiles(Path1 As String, Path2 As String) As String()
+        Dim Result As New List(Of String)
+        Dim Path1MasterList = Directory.GetFiles(Path1)
+        Dim Path1List = Directory.GetFiles(Path1).ToList
+        Dim Path2List = Directory.GetFiles(Path2).ToList
+        For i = 0 To Path1List.Count - 1
+            Path1List(i) = Path.GetFileNameWithoutExtension(Path1List(i)).ToLower
+        Next
+        For i = 0 To Path2List.Count - 1
+            Path2List(i) = Path.GetFileNameWithoutExtension(Path2List(i)).ToLower
+        Next
+        For i = 0 To Path1List.Count - 1
+            If Not Path2List.Contains(Path1List(i)) Then Result.Add(Path1MasterList(i))
+        Next
+        Return Result.ToArray
     End Function
 
     Private Function GetThreads(Index As Integer, Count As Integer)
@@ -832,16 +852,16 @@ Public Class Form1
         Return ""
     End Function
 
-    Private Function GetFileNameList(Source As String, Extension As Boolean) As List(Of String)
-        Dim Result As New List(Of String)
-        For Each File As String In Directory.GetFiles(Source).ToList
-            If Extension = True Then
-                Result.Add(Path.GetFileName(File))
-            Else
-                Result.Add(Path.GetFileNameWithoutExtension(File))
-            End If
-        Next
-        Return Result
+    Private Function Quote(Source As String) As String
+        Return ControlChars.Quote & Source & ControlChars.Quote
+    End Function
+
+    Declare Auto Function GetShortPathName Lib "kernel32.dll" (lpszLongPath As String, lpszShortPath As Text.StringBuilder, cchBuffer As Integer) As Integer
+
+    Private Function GetShortPath(Source As String)
+        Dim sbShortPath As Text.StringBuilder = New Text.StringBuilder()
+        GetShortPathName(Source, sbShortPath, 255)
+        Return sbShortPath.ToString
     End Function
 
     Private Sub WriteLog(Source As Process, SaveLoc As String)
@@ -920,7 +940,7 @@ Public Class Form1
         Result.AddArguement("-f", Package.Format)
         Select Case Package.Mode
             Case "DDS Input"
-                Result.AddArguement("-ft bmp")
+                Result.AddArguement("-ft " & Package.ConversionFormat.ToLower)
             Case "DDS Output"
                 Result.AddArguement("-ft dds")
                 Result.AddArguement("-fl", Package.FeatureLevel)
@@ -944,18 +964,6 @@ Public Class Form1
             Result.AddArguement(Package.ScriptFlags(i)(0), Package.ScriptFlags(i)(1))
         Next
         Return Result.GetArguements
-    End Function
-
-    Private Function Quote(Source As String) As String
-        Return ControlChars.Quote & Source & ControlChars.Quote
-    End Function
-
-    Declare Auto Function GetShortPathName Lib "kernel32.dll" (lpszLongPath As String, lpszShortPath As Text.StringBuilder, cchBuffer As Integer) As Integer
-
-    Private Function GetShortPath(Source As String)
-        Dim sbShortPath As Text.StringBuilder = New Text.StringBuilder()
-        GetShortPathName(Source, sbShortPath, 255)
-        Return sbShortPath.ToString
     End Function
 
 #End Region

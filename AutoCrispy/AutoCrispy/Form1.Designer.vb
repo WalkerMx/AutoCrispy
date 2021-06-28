@@ -79,8 +79,6 @@ Partial Class Form1
         Me.AnimeCppPreFilters = New System.Windows.Forms.CheckedListBox()
         Me.Label20 = New System.Windows.Forms.Label()
         Me.PyGroup = New System.Windows.Forms.GroupBox()
-        Me.PyBatchSize = New System.Windows.Forms.NumericUpDown()
-        Me.Label23 = New System.Windows.Forms.Label()
         Me.PyArguements = New System.Windows.Forms.DataGridView()
         Me.PyFlag = New System.Windows.Forms.DataGridViewTextBoxColumn()
         Me.PyValue = New System.Windows.Forms.DataGridViewTextBoxColumn()
@@ -134,6 +132,8 @@ Partial Class Form1
         Me.SepAlphaCheckBox = New System.Windows.Forms.CheckBox()
         Me.Label19 = New System.Windows.Forms.Label()
         Me.DDxModeBox = New System.Windows.Forms.ComboBox()
+        Me.DDxConvFormat = New System.Windows.Forms.ComboBox()
+        Me.Label29 = New System.Windows.Forms.Label()
         Me.CaffeGroup.SuspendLayout()
         CType(Me.CaffeScale, System.ComponentModel.ISupportInitialize).BeginInit()
         CType(Me.CaffeNoise, System.ComponentModel.ISupportInitialize).BeginInit()
@@ -149,7 +149,6 @@ Partial Class Form1
         Me.AnimeCPPGroup.SuspendLayout()
         CType(Me.AnimeCPPScale, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.PyGroup.SuspendLayout()
-        CType(Me.PyBatchSize, System.ComponentModel.ISupportInitialize).BeginInit()
         CType(Me.PyArguements, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.ChainGroup.SuspendLayout()
         Me.ChainContext.SuspendLayout()
@@ -726,8 +725,6 @@ Partial Class Form1
         '
         'PyGroup
         '
-        Me.PyGroup.Controls.Add(Me.PyBatchSize)
-        Me.PyGroup.Controls.Add(Me.Label23)
         Me.PyGroup.Controls.Add(Me.PyArguements)
         Me.PyGroup.Controls.Add(Me.PyModel)
         Me.PyGroup.Controls.Add(Me.PyInputFlag)
@@ -743,25 +740,6 @@ Partial Class Form1
         Me.PyGroup.TabIndex = 12
         Me.PyGroup.TabStop = False
         Me.PyGroup.Text = "Python"
-        '
-        'PyBatchSize
-        '
-        Me.PyBatchSize.Location = New System.Drawing.Point(77, 122)
-        Me.PyBatchSize.Maximum = New Decimal(New Integer() {256, 0, 0, 0})
-        Me.PyBatchSize.Minimum = New Decimal(New Integer() {1, 0, 0, 0})
-        Me.PyBatchSize.Name = "PyBatchSize"
-        Me.PyBatchSize.Size = New System.Drawing.Size(97, 20)
-        Me.PyBatchSize.TabIndex = 5
-        Me.PyBatchSize.Value = New Decimal(New Integer() {16, 0, 0, 0})
-        '
-        'Label23
-        '
-        Me.Label23.AutoSize = True
-        Me.Label23.Location = New System.Drawing.Point(6, 124)
-        Me.Label23.Name = "Label23"
-        Me.Label23.Size = New System.Drawing.Size(61, 13)
-        Me.Label23.TabIndex = 4
-        Me.Label23.Text = "Batch Size:"
         '
         'PyArguements
         '
@@ -1147,6 +1125,8 @@ Partial Class Form1
         '
         'DDxGroup
         '
+        Me.DDxGroup.Controls.Add(Me.Label29)
+        Me.DDxGroup.Controls.Add(Me.DDxConvFormat)
         Me.DDxGroup.Controls.Add(Me.DDxFormatLabel)
         Me.DDxGroup.Controls.Add(Me.DDxFormatListBox)
         Me.DDxGroup.Controls.Add(Me.Dx10Checkbox)
@@ -1168,7 +1148,7 @@ Partial Class Form1
         'DDxFormatLabel
         '
         Me.DDxFormatLabel.AutoSize = True
-        Me.DDxFormatLabel.Location = New System.Drawing.Point(180, 49)
+        Me.DDxFormatLabel.Location = New System.Drawing.Point(180, 81)
         Me.DDxFormatLabel.Name = "DDxFormatLabel"
         Me.DDxFormatLabel.Size = New System.Drawing.Size(78, 13)
         Me.DDxFormatLabel.TabIndex = 10
@@ -1186,7 +1166,7 @@ Partial Class Form1
         'Dx10Checkbox
         '
         Me.Dx10Checkbox.AutoSize = True
-        Me.Dx10Checkbox.Location = New System.Drawing.Point(183, 176)
+        Me.Dx10Checkbox.Location = New System.Drawing.Point(301, 153)
         Me.Dx10Checkbox.Name = "Dx10Checkbox"
         Me.Dx10Checkbox.Size = New System.Drawing.Size(81, 17)
         Me.Dx10Checkbox.TabIndex = 8
@@ -1196,7 +1176,7 @@ Partial Class Form1
         'Dx9CheckBox
         '
         Me.Dx9CheckBox.AutoSize = True
-        Me.Dx9CheckBox.Location = New System.Drawing.Point(183, 153)
+        Me.Dx9CheckBox.Location = New System.Drawing.Point(301, 130)
         Me.Dx9CheckBox.Name = "Dx9CheckBox"
         Me.Dx9CheckBox.Size = New System.Drawing.Size(75, 17)
         Me.Dx9CheckBox.TabIndex = 7
@@ -1208,7 +1188,7 @@ Partial Class Form1
         Me.FlComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
         Me.FlComboBox.FormattingEnabled = True
         Me.FlComboBox.Items.AddRange(New Object() {"9.1", "9.2", "9.3", "10.0", "10.1", "11.0", "11.1", "12.0", "12.1"})
-        Me.FlComboBox.Location = New System.Drawing.Point(261, 19)
+        Me.FlComboBox.Location = New System.Drawing.Point(261, 46)
         Me.FlComboBox.Name = "FlComboBox"
         Me.FlComboBox.Size = New System.Drawing.Size(87, 21)
         Me.FlComboBox.TabIndex = 6
@@ -1216,7 +1196,7 @@ Partial Class Form1
         'Label24
         '
         Me.Label24.AutoSize = True
-        Me.Label24.Location = New System.Drawing.Point(180, 22)
+        Me.Label24.Location = New System.Drawing.Point(180, 49)
         Me.Label24.Name = "Label24"
         Me.Label24.Size = New System.Drawing.Size(75, 13)
         Me.Label24.TabIndex = 5
@@ -1225,7 +1205,7 @@ Partial Class Form1
         'AlphaCheckBox
         '
         Me.AlphaCheckBox.AutoSize = True
-        Me.AlphaCheckBox.Location = New System.Drawing.Point(183, 84)
+        Me.AlphaCheckBox.Location = New System.Drawing.Point(183, 130)
         Me.AlphaCheckBox.Name = "AlphaCheckBox"
         Me.AlphaCheckBox.Size = New System.Drawing.Size(92, 17)
         Me.AlphaCheckBox.TabIndex = 4
@@ -1235,7 +1215,7 @@ Partial Class Form1
         'PmAlphaCheckBox
         '
         Me.PmAlphaCheckBox.AutoSize = True
-        Me.PmAlphaCheckBox.Location = New System.Drawing.Point(183, 107)
+        Me.PmAlphaCheckBox.Location = New System.Drawing.Point(183, 153)
         Me.PmAlphaCheckBox.Name = "PmAlphaCheckBox"
         Me.PmAlphaCheckBox.Size = New System.Drawing.Size(106, 17)
         Me.PmAlphaCheckBox.TabIndex = 3
@@ -1245,7 +1225,7 @@ Partial Class Form1
         'SepAlphaCheckBox
         '
         Me.SepAlphaCheckBox.AutoSize = True
-        Me.SepAlphaCheckBox.Location = New System.Drawing.Point(183, 130)
+        Me.SepAlphaCheckBox.Location = New System.Drawing.Point(183, 176)
         Me.SepAlphaCheckBox.Name = "SepAlphaCheckBox"
         Me.SepAlphaCheckBox.Size = New System.Drawing.Size(99, 17)
         Me.SepAlphaCheckBox.TabIndex = 2
@@ -1271,11 +1251,30 @@ Partial Class Form1
         Me.DDxModeBox.Size = New System.Drawing.Size(114, 21)
         Me.DDxModeBox.TabIndex = 0
         '
+        'DDxConvFormat
+        '
+        Me.DDxConvFormat.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
+        Me.DDxConvFormat.FormattingEnabled = True
+        Me.DDxConvFormat.Items.AddRange(New Object() {"BMP", "JPG", "PNG", "TGA", "HDR", "TIF", "WDP", "HDP", "JXR", "PPM", "PFM"})
+        Me.DDxConvFormat.Location = New System.Drawing.Point(261, 19)
+        Me.DDxConvFormat.Name = "DDxConvFormat"
+        Me.DDxConvFormat.Size = New System.Drawing.Size(87, 21)
+        Me.DDxConvFormat.TabIndex = 11
+        '
+        'Label29
+        '
+        Me.Label29.AutoSize = True
+        Me.Label29.Location = New System.Drawing.Point(180, 22)
+        Me.Label29.Name = "Label29"
+        Me.Label29.Size = New System.Drawing.Size(59, 13)
+        Me.Label29.TabIndex = 12
+        Me.Label29.Text = "Convert to:"
+        '
         'Form1
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
-        Me.ClientSize = New System.Drawing.Size(1456, 718)
+        Me.ClientSize = New System.Drawing.Size(1456, 636)
         Me.Controls.Add(Me.DDxGroup)
         Me.Controls.Add(Me.TabGroup)
         Me.Controls.Add(Me.PyGroup)
@@ -1312,7 +1311,6 @@ Partial Class Form1
         CType(Me.AnimeCPPScale, System.ComponentModel.ISupportInitialize).EndInit()
         Me.PyGroup.ResumeLayout(False)
         Me.PyGroup.PerformLayout()
-        CType(Me.PyBatchSize, System.ComponentModel.ISupportInitialize).EndInit()
         CType(Me.PyArguements, System.ComponentModel.ISupportInitialize).EndInit()
         Me.ChainGroup.ResumeLayout(False)
         Me.ChainContext.ResumeLayout(False)
@@ -1412,8 +1410,6 @@ Partial Class Form1
     Friend WithEvents ChainContextDelete As ToolStripMenuItem
     Friend WithEvents AdvSettingsGroup As TabPage
     Friend WithEvents DebugCheckbox As CheckBox
-    Friend WithEvents PyBatchSize As NumericUpDown
-    Friend WithEvents Label23 As Label
     Friend WithEvents AnimeCppPostFilters As CheckedListBox
     Friend WithEvents AnimeCppPostFilter As CheckBox
     Friend WithEvents AnimeCppPreFilter As CheckBox
@@ -1438,4 +1434,6 @@ Partial Class Form1
     Friend WithEvents SepAlphaCheckBox As CheckBox
     Friend WithEvents Label19 As Label
     Friend WithEvents DDxModeBox As ComboBox
+    Friend WithEvents Label29 As Label
+    Friend WithEvents DDxConvFormat As ComboBox
 End Class

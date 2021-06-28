@@ -78,6 +78,7 @@
   <TexConvPak>
     <Mode>DDS Input</Mode>
     <Format>BGRA</Format>
+    <ConversionFormat>PNG</ConversionFormat>
     <FeatureLevel>11.0</FeatureLevel>
     <ForceDx9>false</ForceDx9>
     <ForceDx10>false</ForceDx10>
@@ -104,7 +105,6 @@
   <PythonPak>
     <Script></Script>
     <Model></Model>
-    <BatchSize>16</BatchSize>
     <InputFlag>--input</InputFlag>
     <OutputFlag>--output</OutputFlag>
     <ScriptFlags>

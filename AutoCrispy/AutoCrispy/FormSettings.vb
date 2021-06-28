@@ -36,6 +36,7 @@
         'Load TexConv Settings
         Source.DDxModeBox.SelectedItem = LoadedSettings.TexConvPak.Mode
         Source.DDxFormatLabel.Text = "Format: " & LoadedSettings.TexConvPak.Format
+        Source.DDxConvFormat.SelectedItem = LoadedSettings.TexConvPak.ConversionFormat
         Source.FlComboBox.SelectedItem = LoadedSettings.TexConvPak.FeatureLevel
         Source.Dx9CheckBox.Checked = LoadedSettings.TexConvPak.ForceDx9
         Source.Dx10Checkbox.Checked = LoadedSettings.TexConvPak.ForceDx10
@@ -44,7 +45,6 @@
         Source.AlphaCheckBox.Checked = LoadedSettings.TexConvPak.StraightAlpha
 
         'Load Python Settings
-        Source.PyBatchSize.Value = LoadedSettings.PythonPak.BatchSize
         Source.PyInputFlag.Text = LoadedSettings.PythonPak.InputFlag
         Source.PyOutputFlag.Text = LoadedSettings.PythonPak.OutputFlag
 
@@ -102,6 +102,7 @@
     <Xml.Serialization.XmlInclude(GetType(VulkanNcnnPackage))>
     <Xml.Serialization.XmlInclude(GetType(Waifu2xCppPackage))>
     <Xml.Serialization.XmlInclude(GetType(Anime4kPackage))>
+    <Xml.Serialization.XmlInclude(GetType(DDxPackage))>
     <Xml.Serialization.XmlInclude(GetType(PythonPackage))>
     <Xml.Serialization.XmlInclude(GetType(ProgramPaths))>
     <Xml.Serialization.XmlInclude(GetType(ProgramSettings))>
@@ -123,8 +124,8 @@
             VulkanPak = New VulkanNcnnPackage(Source.VulkanScale.Value, Source.VulkanNoise.Value, Source.VulkanFormat.Text.ToLower, Source.VulkanTAA.Checked)
             CppPak = New Waifu2xCppPackage(Source.WaifuCPPMode.Text.ToLower, Source.WaifuCPPScale.Value, Source.WaifuCPPNoise.Value, Source.WaifuCPPFormat.Text.ToLower, Source.WaifuCppGPU.Checked, Source.WaifuCPPOpenCL.Checked)
             AnimePak = New Anime4kPackage(Source.AnimeCPPScale.Value, Source.AnimeCppPre.Checked, Source.AnimeCppPost.Checked, Source.AnimeCppPreFilter.Checked, Source.AnimeCppPostFilter.Checked, GetFilters(Source.AnimeCppPreFilters), GetFilters(Source.AnimeCppPostFilters), Source.AnimeCPPGpu.Checked, Source.AnimeCPPCnn.Checked)
-            TexConvPak = New DDxPackage(Source.DDxModeBox.SelectedItem, Source.DDxFormatLabel.Text.Replace("Format: ", ""), Source.FlComboBox.SelectedItem, Source.Dx9CheckBox.Checked, Source.Dx10Checkbox.Checked, Source.SepAlphaCheckBox.Checked, Source.PmAlphaCheckBox.Checked, Source.AlphaCheckBox.Checked)
-            PythonPak = New PythonPackage(GetPyStr(Source.PyPaths, Source.PyScript.SelectedIndex), GetPyStr(Source.PyModels, Source.PyModel.SelectedIndex), Source.PyBatchSize.Value, Source.PyInputFlag.Text.Trim, Source.PyOutputFlag.Text.Trim, Source.PyArguements)
+            TexConvPak = New DDxPackage(Source.DDxModeBox.SelectedItem, Source.DDxFormatLabel.Text.Replace("Format: ", ""), Source.DDxConvFormat.SelectedItem, Source.FlComboBox.SelectedItem, Source.Dx9CheckBox.Checked, Source.Dx10Checkbox.Checked, Source.SepAlphaCheckBox.Checked, Source.PmAlphaCheckBox.Checked, Source.AlphaCheckBox.Checked)
+            PythonPak = New PythonPackage(GetPyStr(Source.PyPaths, Source.PyScript.SelectedIndex), GetPyStr(Source.PyModels, Source.PyModel.SelectedIndex), Source.PyInputFlag.Text.Trim, Source.PyOutputFlag.Text.Trim, Source.PyArguements)
             Paths = New ProgramPaths(Source.InputTextBox.Text, Source.OutputTextBox.Text)
             BasicSettings = New ProgramSettings(Source.ExeComboBox.SelectedItem, Source.ThreadComboBox.SelectedIndex, Source.NumericThreads.Value, Source.DefringeCheck.Checked, Source.DefringeThresh.Value, Source.TabGroup.SelectedIndex)
             ExpertSettings = New AdvancedSettings(Source.DebugCheckbox.Checked, Source.ExpertSettingsBox.Text, Source.CleanupCheckBox.Checked, Source.SeamsBox.SelectedIndex, Source.SeamScale.Value, Source.SeamMargin.Value, Source.PortableCheckBox.Checked)
@@ -187,6 +188,7 @@
     <Xml.Serialization.XmlInclude(GetType(VulkanNcnnPackage))>
     <Xml.Serialization.XmlInclude(GetType(Waifu2xCppPackage))>
     <Xml.Serialization.XmlInclude(GetType(Anime4kPackage))>
+    <Xml.Serialization.XmlInclude(GetType(DDxPackage))>
     <Xml.Serialization.XmlInclude(GetType(PythonPackage))>
     <Serializable()> Public Structure ChainObject
         Public Property Name As String
@@ -213,9 +215,9 @@
                 Case "Anime4k CPP"
                     Package = New Anime4kPackage(Source.AnimeCPPScale.Value, Source.AnimeCppPre.Checked, Source.AnimeCppPost.Checked, Source.AnimeCppPreFilter.Checked, Source.AnimeCppPostFilter.Checked, GetFilters(Source.AnimeCppPreFilters), GetFilters(Source.AnimeCppPostFilters), Source.AnimeCPPGpu.Checked, Source.AnimeCPPCnn.Checked)
                 Case "TexConv"
-                    Package = New DDxPackage(Source.DDxModeBox.SelectedItem, Source.DDxFormatLabel.Text.Replace("Format: ", ""), Source.FlComboBox.SelectedItem, Source.Dx9CheckBox.Checked, Source.Dx10Checkbox.Checked, Source.SepAlphaCheckBox.Checked, Source.PmAlphaCheckBox.Checked, Source.AlphaCheckBox.Checked)
+                    Package = New DDxPackage(Source.DDxModeBox.SelectedItem, Source.DDxFormatLabel.Text.Replace("Format: ", ""), Source.DDxConvFormat.SelectedItem, Source.FlComboBox.SelectedItem, Source.Dx9CheckBox.Checked, Source.Dx10Checkbox.Checked, Source.SepAlphaCheckBox.Checked, Source.PmAlphaCheckBox.Checked, Source.AlphaCheckBox.Checked)
                 Case "Python"
-                    Package = New PythonPackage(Source.PyPaths(Source.PyScript.SelectedIndex), Source.PyModels(Source.PyModel.SelectedIndex), Source.PyBatchSize.Value, Source.PyInputFlag.Text.Trim, Source.PyOutputFlag.Text.Trim, Source.PyArguements)
+                    Package = New PythonPackage(Source.PyPaths(Source.PyScript.SelectedIndex), Source.PyModels(Source.PyModel.SelectedIndex), Source.PyInputFlag.Text.Trim, Source.PyOutputFlag.Text.Trim, Source.PyArguements)
             End Select
         End Sub
     End Structure
@@ -307,6 +309,7 @@
     <Serializable()> Public Structure DDxPackage
         Public Property Mode As String
         Public Property Format As String
+        Public Property ConversionFormat As String
         Public Property FeatureLevel As String
         Public Property ForceDx9 As Boolean
         Public Property ForceDx10 As Boolean
@@ -314,9 +317,10 @@
         Public Property PremultiplyAlpha As Boolean
         Public Property StraightAlpha As Boolean
         Public Property FileTypes As List(Of String)
-        Public Sub New(_Mode As String, _Format As String, _FeatureLevel As String, _ForceDx9 As Boolean, _ForceDx10 As Boolean, _SeperateAlpha As Boolean, _PremultiplyAlpha As Boolean, _StraightAlpha As Boolean)
+        Public Sub New(_Mode As String, _Format As String, _ConversionFormat As String, _FeatureLevel As String, _ForceDx9 As Boolean, _ForceDx10 As Boolean, _SeperateAlpha As Boolean, _PremultiplyAlpha As Boolean, _StraightAlpha As Boolean)
             Mode = _Mode
             Format = _Format
+            ConversionFormat = _ConversionFormat
             FeatureLevel = _FeatureLevel
             ForceDx9 = _ForceDx9
             ForceDx10 = _ForceDx10
@@ -330,15 +334,13 @@
     <Serializable()> Public Structure PythonPackage
         Public Property Script As String
         Public Property Model As String
-        Public Property BatchSize As Integer
         Public Property InputFlag As String
         Public Property OutputFlag As String
         Public Property ScriptFlags As List(Of String())
         Public Property FileTypes As List(Of String)
-        Public Sub New(_Script As String, _Model As String, _BatchSize As String, _InputFlag As String, _OutputFlag As String, Data As DataGridView)
+        Public Sub New(_Script As String, _Model As String, _InputFlag As String, _OutputFlag As String, Data As DataGridView)
             Script = _Script
             Model = _Model
-            BatchSize = _BatchSize
             InputFlag = _InputFlag
             OutputFlag = _OutputFlag
             ScriptFlags = New List(Of String())
