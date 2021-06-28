@@ -22,6 +22,12 @@ SRMD Vulkan|2-4|✔️|✔️|✔️|❌|Average|Medium|[Link](https://github.co
 Waifu2x CPP|1-8|✔️|✔️|❌|❌|Quick|Low|[Link](https://github.com/DeadSix27/waifu2x-converter-cpp/releases)
 Anime4K CPP|1-8|❌|✔️|❌|✔️|Quick|Low|[Link](https://github.com/TianZerL/Anime4KCPP)
 
+## Texconv
+
+AutoCrispy also supports <a href="https://github.com/Microsoft/DirectXTex/wiki/Texconv" target="_blank">Microsoft's Texconv Utility</a> for processing DDS textures. Most DDS formats are supported, as well as many image formats.  When chaining, ensure that the backends you have selected support the format you have chosen (PNG is widely supported).
+
+To use texconv, place it in the folder with AutoCrispy, or in it's own folder in AutoCrispy's folder. To set up for DDS files, set the first item in your chain to Texconv, set to "DDS Input". Then, set the last item to Texconv, set to "DDS Output".
+
 ## ESRGAN
 
 It is also possible to use ESRGAN. For convenience, a prebuilt, portable installation can be found here:<br />
