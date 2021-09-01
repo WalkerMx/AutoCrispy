@@ -41,6 +41,6 @@ The Seam Margin setting determines how wide the margins about the image are.  Se
 
 ## Defringing
 
-Some backends don't have the nicest output, when fed images with Alpha.  To fix this, provided is a *basic* GDI+ defringing scheme; what it does, is look at each Alpha byte, and make it fully transparent if it isn't above a certain threshold (user set; varies). Otherwise, it makes the Alpha byte fully opaque.
+Some backends don't have the nicest output, when fed images with Alpha.  To fix this, provided is a *basic* GDI+ defringing scheme; what it does, is look at each Alpha byte, and make it fully transparent if it isn't above a certain threshold (user set; varies). Otherwise, it leaves the Alpha byte alone.
 
 There are more complex methods available, which are being looked into, however this feature was decided on due to its *speed*.  While it might take some fine tuning to get the results you want, once it is set, the process is quite fast.
