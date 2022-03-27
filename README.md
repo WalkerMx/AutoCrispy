@@ -38,6 +38,18 @@ This does not include any models. [They can be found here.](https://upscale.wiki
 Alternatively, the setup guide can be found here:<br />
 https://upscale.wiki/wiki/ESRGAN_Installation_Guide_for_Windows
 
+## GFPGAN
+
+Recently, Support was added for GFPGAN.  This feature requires the latest Embedded Python Build:<br />
+https://github.com/WalkerMx/ESRGAN_Python_Embedded/releases
+
+Also Required is the GFPGAN Model:<br />
+https://github.com/TencentARC/GFPGAN/releases/download/v1.3.0/GFPGANv1.3.pth
+
+Place the Model in the 'models' folder, inside the 'esrgan' folder.  When using AutoCrispy, Select Python as the Backend, 'inference_gfpgan.py' as the Script, and 'GFPGANv1.3.pth' as the model.
+
+Note that the 'inference_gfpgan.py' from the Embedded Python Build has been modified to work with AutoCrispy! 
+
 ## How to use:
     -Toss AutoCrispy into the folder from the backend(s) you chose, and run it.
   
