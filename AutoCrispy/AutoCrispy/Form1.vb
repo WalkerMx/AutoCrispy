@@ -17,6 +17,7 @@ Public Class Form1
     Public Property CaffePath As String
     Public Property WaifuNcnnPath As String
     Public Property RealSRNcnnPath As String
+    Public Property RealESRGNcnnPath As String
     Public Property SRMDNcnnPath As String
     Public Property WaifuCppPath As String
     Public Property Anime4kPath As String
@@ -28,8 +29,8 @@ Public Class Form1
 #Region "Structs"
 
     <Serializable()> Public Structure ArguementString
-        Dim Arguements As String
-        Public Function GetArguements()
+        Private Property Arguements As String
+        Public Function GetArguements() As String
             Return Arguements
         End Function
         Public Sub AddArguement(Flag As String)
@@ -64,6 +65,9 @@ Public Class Form1
             MsgBox("Failed to load Settings!  Loading program defaults.")
             FormSettings.LoadSettings(Me, Deserialize(Of FormSettings.Settings)(My.Resources.default_settings))
         End Try
+        If ExeTextBox.Text <> "" Then
+            Root = ExeTextBox.Text
+        End If
         StartUpCheckEXE()
         StartUpCheckPy()
         If ExeComboBox.Items.Count > 0 Then
@@ -84,6 +88,7 @@ Public Class Form1
     Private Sub StartUpCheckEXE()
         Dim RootFolders As List(Of String) = Directory.GetDirectories(Root).ToList
         RootFolders.Add(Root)
+        ExeComboBox.Items.Clear()
         For Each Folder As String In RootFolders
             If File.Exists(Folder & "\waifu2x-caffe-cui.exe") Then
                 ExeComboBox.Items.Add("Waifu2x Caffe")
@@ -96,6 +101,10 @@ Public Class Form1
             If File.Exists(Folder & "\realsr-ncnn-vulkan.exe") Then
                 ExeComboBox.Items.Add("RealSR Vulkan")
                 RealSRNcnnPath = "\" & IIf(Folder <> Root, Path.GetFileName(Folder), "") & "\realsr-ncnn-vulkan.exe"
+            End If
+            If File.Exists(Folder & "\realesrgan-ncnn-vulkan.exe") Then
+                ExeComboBox.Items.Add("RealESRGAN Vulkan")
+                RealESRGNcnnPath = "\" & IIf(Folder <> Root, Path.GetFileName(Folder), "") & "\realesrgan-ncnn-vulkan.exe"
             End If
             If File.Exists(Folder & "\srmd-ncnn-vulkan.exe") Then
                 ExeComboBox.Items.Add("SRMD Vulkan")
@@ -127,6 +136,10 @@ Public Class Form1
     Private Sub StartUpCheckPy()
         Dim RootFolders As List(Of String) = Directory.GetDirectories(Root).ToList
         RootFolders.Add(Root)
+        PyPaths.Clear()
+        PyScript.Items.Clear()
+        PyModels.Clear()
+        PyModel.Items.Clear()
         For Each Folder As String In RootFolders
             Dim PyFiles As String() = Directory.EnumerateFiles(Folder, "*.py").ToArray
             For Each PythonScript As String In PyFiles
@@ -161,6 +174,7 @@ Public Class Form1
         ChainThumbs.Images.Add(Shrink(My.Resources._5, 64, 64))
         ChainThumbs.Images.Add(Shrink(My.Resources._6, 64, 64))
         ChainThumbs.Images.Add(Shrink(My.Resources._7, 64, 64))
+        ChainThumbs.Images.Add(Shrink(My.Resources._8, 64, 64))
     End Sub
 
 #End Region
@@ -177,6 +191,24 @@ Public Class Form1
 
     Private Sub OutputBrowse_Click(sender As Object, e As EventArgs) Handles OutputBrowse.Click
         OutputTextBox.Text = GetFolder()
+    End Sub
+
+    Private Sub ExeBrowse_Click(sender As Object, e As EventArgs) Handles ExeBrowse.Click
+        ExeTextBox.Text = GetFolder()
+    End Sub
+
+    Private Sub ExeTextBox_TextChanged(sender As Object, e As EventArgs) Handles ExeTextBox.TextChanged
+        If Directory.Exists(ExeTextBox.Text) = True Then
+            Root = ExeTextBox.Text
+        Else
+            Root = Application.StartupPath
+        End If
+        StartUpCheckEXE()
+        StartUpCheckPy()
+        If ExeComboBox.Items.Count > 0 Then
+            ExeComboBox.SelectedIndex = 0
+            SetSettingsWindow()
+        End If
     End Sub
 
     Private Sub DefringeCheck_CheckedChanged(sender As Object, e As EventArgs) Handles DefringeCheck.CheckedChanged
@@ -235,18 +267,18 @@ Public Class Form1
         End If
     End Sub
 
-    Private Sub ChainPreview_ItemDrag(ByVal sender As Object, ByVal e As ItemDragEventArgs) Handles ChainPreview.ItemDrag
+    Private Sub ChainPreview_ItemDrag(sender As Object, e As ItemDragEventArgs) Handles ChainPreview.ItemDrag
         Dim lvi As ListViewItem = CType(e.Item, ListViewItem)
         ChainPreview.DoDragDrop(New DataObject("System.Windows.Forms.ListViewItem", lvi), DragDropEffects.Move)
     End Sub
 
-    Private Sub ChainPreview_DragEnter(ByVal sender As Object, ByVal e As DragEventArgs) Handles ChainPreview.DragEnter
+    Private Sub ChainPreview_DragEnter(sender As Object, e As DragEventArgs) Handles ChainPreview.DragEnter
         If e.Data.GetDataPresent("System.Windows.Forms.ListViewItem") Then
             e.Effect = DragDropEffects.Move
         End If
     End Sub
 
-    Private Sub ChainPreview_DragOver(ByVal sender As Object, ByVal e As DragEventArgs) Handles ChainPreview.DragOver
+    Private Sub ChainPreview_DragOver(sender As Object, e As DragEventArgs) Handles ChainPreview.DragOver
         Dim lvi As ListViewItem = CType(e.Data.GetData("System.Windows.Forms.ListViewItem"), ListViewItem)
         If lvi IsNot Nothing Then
             Dim Offset As Size = Size.Subtract(Cursor.Size, New Size(Cursor.HotSpot.X, Cursor.HotSpot.Y))
@@ -301,7 +333,7 @@ Public Class Form1
                         Directory.CreateDirectory(Path.GetTempPath & "Single_0")
                         File.Copy(OFD.FileName, TempPath & "\" & Path.GetFileName(SFD.FileName), True)
                         LoadedSettings = New FormSettings.Settings(Me)
-                        LoadedSettings.Paths = New FormSettings.ProgramPaths(TempPath, Directory.GetParent(SFD.FileName).FullName)
+                        LoadedSettings.Paths = New FormSettings.ProgramPaths(TempPath, Directory.GetParent(SFD.FileName).FullName, Root)
                         If ChainPreview.Items.Count = 0 Then
                             AddModelToChain(ExeComboBox.SelectedItem, False)
                         End If
@@ -377,13 +409,16 @@ Public Class Form1
             Case "Waifu2x Vulkan"
                 MoveShowGroup(VulkanGroup)
                 VulkanScale.Value = 2
-            Case "RealSR Vulkan"
+                VulkanScale.Enabled = True
+            Case "RealSR Vulkan", "RealESRGAN Vulkan"
                 MoveShowGroup(VulkanGroup)
                 VulkanScale.Value = 4
+                VulkanScale.Enabled = False
                 VulkanNoise.Enabled = False
             Case "SRMD Vulkan"
                 MoveShowGroup(VulkanGroup)
                 VulkanScale.Value = 4
+                VulkanScale.Enabled = False
             Case "Waifu2x CPP"
                 MoveShowGroup(WaifuCPPGroup)
             Case "Anime4k CPP"
@@ -416,7 +451,7 @@ Public Class Form1
 #Region "Background"
 
     Private Sub WatchDog_Tick(sender As Object, e As EventArgs) Handles WatchDog.Tick
-        Dim Source = Directory.GetFiles(InputTextBox.Text).Count
+        Dim Source = Directory.GetFiles(InputTextBox.Text, "*.*", SearchOption.AllDirectories).Count
         Dim FileCheck = GetMissingFiles(InputTextBox.Text, OutputTextBox.Text).Count
         If Source = 0 OrElse FileCheck = 0 Then
             WaitScale = Math.Min(WaitScale + 1, 100)
@@ -495,9 +530,7 @@ Public Class Form1
                     If File.Exists(NewImage) AndAlso AcceptExt = True Then
                         NewImages.Add(NewImage)
                         If (ChainList.IndexOf(Model) = 0 AndAlso Model.Name <> "TexConv") OrElse (ChainList(0).Name = "TexConv" AndAlso ChainList.IndexOf(Model) = 1) Then
-                            Dim SourceImage As Bitmap = Image.FromFile(NewImage)
-                            Dim SeamlessImage As New Bitmap(SourceImage)
-                            SourceImage.Dispose()
+                            Dim SeamlessImage As Bitmap = GetUnlockedImage(NewImage)
                             SeamlessImage = MakeSeamless(SeamlessImage, LoadedSettings.ExpertSettings.SeamlessMode, LoadedSettings.ExpertSettings.SeamlessMargin)
                             SeamlessImage.Save(NewImage)
                         End If
@@ -564,11 +597,9 @@ Public Class Form1
                         For Each NewImage In NewImages
                             If File.Exists(ChainPaths(0) & "\" & Path.GetFileName(NewImage)) Then
                                 Dim ScaleVal As Integer = LoadedSettings.ExpertSettings.SeamlessScale * LoadedSettings.ExpertSettings.SeamlessMargin
-                                Dim SourceImage As Bitmap = Image.FromFile(ChainPaths(0) & "\" & Path.GetFileName(NewImage))
-                                Dim TrimmedImage As New Bitmap(SourceImage)
-                                SourceImage.Dispose()
-                                TrimmedImage = CropImage(TrimmedImage, ScaleVal, ScaleVal, TrimmedImage.Width - (ScaleVal * 2), TrimmedImage.Height - (ScaleVal * 2), 0)
-                                TrimmedImage.Save(ChainPaths(0) & "\" & Path.GetFileName(NewImage))
+                                Dim CroppedImage As Bitmap = GetUnlockedImage(ChainPaths(0) & "\" & Path.GetFileName(NewImage))
+                                CroppedImage = CropImage(CroppedImage, ScaleVal, ScaleVal, CroppedImage.Width - (ScaleVal * 2), CroppedImage.Height - (ScaleVal * 2), 0)
+                                CroppedImage.Save(ChainPaths(0) & "\" & Path.GetFileName(NewImage))
                             End If
                         Next
                     End If
@@ -606,6 +637,8 @@ Public Class Form1
                 Return MakeVulkanCommand(Source, Dest, False, Package)
             Case "RealSR Vulkan"
                 Return MakeVulkanCommand(Source, Dest, True, Package)
+            Case "RealESRGAN Vulkan"
+                Return MakeVulkanCommand(Source, Dest, True, Package)
             Case "SRMD Vulkan"
                 Return MakeVulkanCommand(Source, Dest, False, Package)
             Case "Waifu2x CPP"
@@ -631,6 +664,9 @@ Public Class Form1
             Case "RealSR Vulkan"
                 If AddPreview = True Then ChainPreview.Items.Add(New ListViewItem("RealSR Vulkan", 2))
                 ChainList.Add(New FormSettings.ChainObject("RealSR Vulkan", 2, RealSRNcnnPath, "RealSR Vulkan", Me))
+            Case "RealESRGAN Vulkan"
+                If AddPreview = True Then ChainPreview.Items.Add(New ListViewItem("RealESRGAN Vulkan", 8))
+                ChainList.Add(New FormSettings.ChainObject("RealESRGAN Vulkan", 8, RealESRGNcnnPath, "RealESRGAN Vulkan", Me))
             Case "SRMD Vulkan"
                 If AddPreview = True Then ChainPreview.Items.Add(New ListViewItem("SRMD Vulkan", 3))
                 ChainList.Add(New FormSettings.ChainObject("SRMD Vulkan", 3, SRMDNcnnPath, "SRMD Vulkan", Me))
@@ -651,230 +687,7 @@ Public Class Form1
 
 #End Region
 
-#Region "Graphics"
-
-    Private Function MakeSeamless(Source As Bitmap, Mirrored As Integer, Margin As Integer) As Bitmap
-        Dim Result As New Bitmap(Source.Width * 3, Source.Height * 3, Source.PixelFormat)
-        Using g As Graphics = Graphics.FromImage(Result)
-            g.PixelOffsetMode = Drawing2D.PixelOffsetMode.None
-            g.SmoothingMode = Drawing2D.SmoothingMode.None
-            g.InterpolationMode = Drawing2D.InterpolationMode.NearestNeighbor
-            If Mirrored = 2 Then
-                Dim X = Source.Width
-                Dim Y = Source.Height
-                Dim fX As New Bitmap(Source) : fX.RotateFlip(RotateFlipType.RotateNoneFlipX)
-                Dim fY As New Bitmap(Source) : fY.RotateFlip(RotateFlipType.RotateNoneFlipY)
-                Dim fXY As New Bitmap(Source) : fXY.RotateFlip(RotateFlipType.RotateNoneFlipXY)
-                g.DrawImage(fXY, 0, 0, X, Y) : g.DrawImage(fY, X, 0, X, Y) : g.DrawImage(fXY, 2 * X, 0, X, Y)
-                g.DrawImage(fX, 0, Y, X, Y) : g.DrawImage(Source, X, Y, X, Y) : g.DrawImage(fX, 2 * X, Y, X, Y)
-                g.DrawImage(fXY, 0, 2 * Y, X, Y) : g.DrawImage(fY, X, 2 * Y, X, Y) : g.DrawImage(fXY, 2 * X, 2 * Y, X, Y)
-            ElseIf Mirrored = 1 Then
-                For i = 0 To Source.Width * 2 Step Source.Width
-                    For j = 0 To Source.Height * 2 Step Source.Height
-                        g.DrawImage(Source, i, j, Source.Width, Source.Height)
-                    Next
-                Next
-            Else
-                Return Source
-            End If
-        End Using
-        Return CropImage(Result, Source.Width, Source.Height, Source.Width, Source.Height, Margin)
-    End Function
-
-    Private Function CropImage(Source As Bitmap, OffsetX As Integer, OffsetY As Integer, Width As Integer, Height As Integer, Margins As Integer) As Bitmap
-        Dim CropSize As New Rectangle(OffsetX - Margins, OffsetY - Margins, Width + (2 * Margins), Height + (2 * Margins))
-        Dim Result = New Bitmap(CropSize.Width, CropSize.Height, Source.PixelFormat)
-        Using g As Graphics = Graphics.FromImage(Result)
-            g.PixelOffsetMode = Drawing2D.PixelOffsetMode.None
-            g.SmoothingMode = Drawing2D.SmoothingMode.None
-            g.InterpolationMode = Drawing2D.InterpolationMode.NearestNeighbor
-            g.DrawImage(Source, New Rectangle(0, 0, CropSize.Width, CropSize.Height), CropSize, GraphicsUnit.Pixel)
-        End Using
-        Return Result
-    End Function
-
-    Private Sub Defringe(Source As String, Threshold As Integer)
-        Dim SourceImage As Bitmap = Image.FromFile(Source)
-        Dim NewImage As New Bitmap(SourceImage)
-        SourceImage.Dispose()
-        LockbitsDefringe(NewImage, Threshold)
-        NewImage.Save(Source)
-    End Sub
-
-    Private Sub LockbitsDefringe(ByRef Source As Bitmap, Threshold As Integer)
-        Dim rect As Rectangle = New Rectangle(0, 0, Source.Width, Source.Height)
-        Dim bmpData As Imaging.BitmapData = Source.LockBits(rect, Imaging.ImageLockMode.ReadWrite, Imaging.PixelFormat.Format32bppArgb)
-        Dim ptr As IntPtr = bmpData.Scan0
-        Dim bytes As Integer = Math.Abs(bmpData.Stride) * Source.Height
-        Dim rgbValues As Byte() = New Byte(bytes - 1) {}
-        Runtime.InteropServices.Marshal.Copy(ptr, rgbValues, 0, bytes)
-        For i = 3 To rgbValues.Length - 1 Step 4
-            If rgbValues(i) < Threshold Then
-                rgbValues(i) = 0
-            End If
-        Next
-        Runtime.InteropServices.Marshal.Copy(rgbValues, 0, ptr, bytes)
-        Source.UnlockBits(bmpData)
-    End Sub
-
-    Private Function Shrink(Source As Image, Width As Integer, Height As Integer) As Image
-        Dim SmallImage As New Bitmap(Width, Height)
-        SmallImage.SetResolution(300, 300)
-        Using g As Graphics = Graphics.FromImage(SmallImage)
-            g.InterpolationMode = Drawing2D.InterpolationMode.HighQualityBicubic
-            g.DrawImage(Source, 0, 0, Width, Height)
-        End Using
-        Return SmallImage
-    End Function
-
-#End Region
-
-#Region "XML"
-
-    Public Shared Function Serialize(Of T)(ByVal Source As T) As String
-        Dim Result As String = ""
-        Using XmlStream As New MemoryStream
-            Dim XmlSerializer As New Xml.Serialization.XmlSerializer(GetType(T))
-            Dim XmlSettings As New Xml.XmlWriterSettings With {.Indent = True, .CloseOutput = True}
-            Dim XmlWriter As Xml.XmlWriter = Xml.XmlWriter.Create(XmlStream, XmlSettings)
-            XmlSerializer.Serialize(XmlWriter, Source)
-            Dim XmlReader As New StreamReader(XmlStream)
-            XmlStream.Position = 0
-            Result = XmlReader.ReadToEnd()
-            XmlWriter.Flush()
-            XmlWriter.Close()
-            XmlReader.Dispose()
-        End Using
-        Return Result
-    End Function
-
-    Public Shared Function Deserialize(Of T)(ByVal Xml As String) As T
-        Dim Result As New Object
-        Using XmlStream As New MemoryStream
-            Dim XmlSerializer As New Xml.Serialization.XmlSerializer(GetType(T))
-            Dim XmlWriter As New StreamWriter(XmlStream)
-            XmlWriter.Write(Xml)
-            XmlWriter.Flush()
-            XmlStream.Position = 0
-            Dim XmlReader As New Xml.XmlTextReader(XmlStream)
-            If XmlSerializer.CanDeserialize(XmlReader) Then
-                Result = DirectCast(XmlSerializer.Deserialize(XmlReader), T)
-            End If
-            XmlWriter.Close()
-            XmlReader.Dispose()
-        End Using
-        Return Result
-    End Function
-
-#End Region
-
-#Region "Utils"
-
-    Private Function GetMissingFiles(Path1 As String, Path2 As String) As String()
-        Dim Result As New List(Of String)
-        Dim Path1MasterList = Directory.GetFiles(Path1)
-        Dim Path1List = Directory.GetFiles(Path1).ToList
-        Dim Path2List = Directory.GetFiles(Path2).ToList
-        For i = 0 To Path1List.Count - 1
-            Path1List(i) = Path.GetFileNameWithoutExtension(Path1List(i)).ToLower
-        Next
-        For i = 0 To Path2List.Count - 1
-            Path2List(i) = Path.GetFileNameWithoutExtension(Path2List(i)).ToLower
-        Next
-        For i = 0 To Path1List.Count - 1
-            If Not Path2List.Contains(Path1List(i)) Then Result.Add(Path1MasterList(i))
-        Next
-        Return Result.ToArray
-    End Function
-
-    Private Function GetThreads(Index As Integer, Count As Integer)
-        Select Case Index
-            Case 0
-                Return 1
-            Case 1
-                Return Count
-            Case 2
-                Return Environment.ProcessorCount
-            Case Else
-                Return 512
-        End Select
-    End Function
-
-    Private Function GetPythonPath() As String
-        Dim Result As String = ""
-        Dim PathVar As String = Environment.GetEnvironmentVariable("PATH")
-        If PathVar IsNot Nothing Then
-            For Each PathString In PathVar.Split(";"c)
-                If File.Exists(PathString & "\python.exe") Then
-                    Result = PathString & "\python.exe"
-                    Exit For
-                End If
-            Next
-        End If
-        Return Result
-    End Function
-
-    Private Sub GetPyArgs(Source As String)
-        PyArguements.Rows.Clear()
-        Dim Result As New List(Of String)
-        Dim matches As Text.RegularExpressions.MatchCollection = System.Text.RegularExpressions.Regex.Matches(Source, "parser\.add_argument\((.*?)\)")
-        For Each m As Text.RegularExpressions.Match In matches
-            For Each c As Text.RegularExpressions.Capture In m.Captures
-                Result.Add(c.Value.Remove(0, 20).Replace(")", ""))
-            Next
-        Next
-        If Result.Count > 0 Then
-            Dim CurrentRow As Integer = 0
-            For i = 0 To Result.Count - 1
-                Dim ArgCheck = Split(Result(i), ",")
-                If Not ArgCheck(0).Contains("model") AndAlso Not ArgCheck(0).Contains("-i") AndAlso Not ArgCheck(0).Contains("-o") Then
-                    PyArguements.Rows.Add()
-                    PyArguements.Rows(CurrentRow).Cells(0).Value = ArgCheck(0).Replace("'", "")
-                    If ArgCheck(1).Split("=")(0).Trim = "default" Then
-                        PyArguements.Rows(CurrentRow).Cells(1).Value = ArgCheck(1).Split("=")(1)
-                    End If
-                    CurrentRow += 1
-                End If
-            Next
-        End If
-    End Sub
-
-    Private Function GetListIndex(ListItem As ListViewItem) As Integer
-        Return ((ListItem.Position.X - 21) / 107) + (4 * Math.Floor(ListItem.Position.Y / 107))
-    End Function
-
-    Private Function GetFolder() As String
-        Using FBD As New FolderBrowserDialog
-            If FBD.ShowDialog = DialogResult.OK Then
-                Return FBD.SelectedPath
-            End If
-        End Using
-        Return ""
-    End Function
-
-    Private Function Quote(Source As String) As String
-        Return ControlChars.Quote & Source & ControlChars.Quote
-    End Function
-
-    Declare Auto Function GetShortPathName Lib "kernel32.dll" (lpszLongPath As String, lpszShortPath As Text.StringBuilder, cchBuffer As Integer) As Integer
-
-    Private Function GetShortPath(Source As String)
-        Dim sbShortPath As Text.StringBuilder = New Text.StringBuilder()
-        GetShortPathName(Source, sbShortPath, 255)
-        Return sbShortPath.ToString
-    End Function
-
-    Private Sub WriteLog(Source As Process, SaveLoc As String)
-        Dim Filename As String = SaveLoc & "\Log_" & Now.ToString("yyyy-MM-dd_HH-mm-ss") & ".txt"
-        Dim Output As String = ""
-        Output += Source.StartInfo.FileName & " "
-        Output += Source.StartInfo.Arguments
-        Output += vbNewLine & vbNewLine
-        Output += Source.StandardOutput.ReadToEnd
-        Output += vbNewLine & vbNewLine
-        Output += Source.StandardError.ReadToEnd
-        File.WriteAllText(Filename, Output)
-    End Sub
+#Region "Commands"
 
     Private Function MakeCaffeCommand(SourceImage As String, NewImage As String, Package As FormSettings.Waifu2xCaffePackage) As String
         Dim Result As New ArguementString
@@ -965,6 +778,236 @@ Public Class Form1
         Next
         Return Result.GetArguements
     End Function
+
+#End Region
+
+#Region "Graphics"
+
+    Private Function MakeSeamless(Source As Bitmap, Mirrored As Integer, Margin As Integer) As Bitmap
+        Dim Result As New Bitmap(Source.Width * 3, Source.Height * 3, Source.PixelFormat)
+        Using g As Graphics = Graphics.FromImage(Result)
+            g.CompositingMode = Drawing2D.CompositingMode.SourceCopy
+            g.PixelOffsetMode = Drawing2D.PixelOffsetMode.None
+            g.SmoothingMode = Drawing2D.SmoothingMode.None
+            g.InterpolationMode = Drawing2D.InterpolationMode.NearestNeighbor
+            If Mirrored = 2 Then
+                Dim X = Source.Width
+                Dim Y = Source.Height
+                Dim fX As New Bitmap(Source) : fX.RotateFlip(RotateFlipType.RotateNoneFlipX)
+                Dim fY As New Bitmap(Source) : fY.RotateFlip(RotateFlipType.RotateNoneFlipY)
+                Dim fXY As New Bitmap(Source) : fXY.RotateFlip(RotateFlipType.RotateNoneFlipXY)
+                g.DrawImage(fXY, 0, 0, X, Y) : g.DrawImage(fY, X, 0, X, Y) : g.DrawImage(fXY, 2 * X, 0, X, Y)
+                g.DrawImage(fX, 0, Y, X, Y) : g.DrawImage(Source, X, Y, X, Y) : g.DrawImage(fX, 2 * X, Y, X, Y)
+                g.DrawImage(fXY, 0, 2 * Y, X, Y) : g.DrawImage(fY, X, 2 * Y, X, Y) : g.DrawImage(fXY, 2 * X, 2 * Y, X, Y)
+            ElseIf Mirrored = 1 Then
+                For i = 0 To Source.Width * 2 Step Source.Width
+                    For j = 0 To Source.Height * 2 Step Source.Height
+                        g.DrawImage(Source, i, j, Source.Width, Source.Height)
+                    Next
+                Next
+            Else
+                Return Source
+            End If
+        End Using
+        Return CropImage(Result, Source.Width, Source.Height, Source.Width, Source.Height, Margin)
+    End Function
+
+    Private Function CropImage(Source As Bitmap, OffsetX As Integer, OffsetY As Integer, Width As Integer, Height As Integer, Margins As Integer) As Bitmap
+        Dim CropSize As New Rectangle(OffsetX - Margins, OffsetY - Margins, Width + (2 * Margins), Height + (2 * Margins))
+        Dim Result = New Bitmap(CropSize.Width, CropSize.Height, Source.PixelFormat)
+        Using g As Graphics = Graphics.FromImage(Result)
+            g.CompositingMode = Drawing2D.CompositingMode.SourceCopy
+            g.PixelOffsetMode = Drawing2D.PixelOffsetMode.None
+            g.SmoothingMode = Drawing2D.SmoothingMode.None
+            g.InterpolationMode = Drawing2D.InterpolationMode.NearestNeighbor
+            g.DrawImage(Source, New Rectangle(0, 0, CropSize.Width, CropSize.Height), CropSize, GraphicsUnit.Pixel)
+        End Using
+        Return Result
+    End Function
+
+    Private Sub Defringe(Source As String, Threshold As Integer)
+        Dim NewImage As Bitmap = GetUnlockedImage(Source)
+        Dim rect As Rectangle = New Rectangle(0, 0, NewImage.Width, NewImage.Height)
+        Dim bmpData As Imaging.BitmapData = NewImage.LockBits(rect, Imaging.ImageLockMode.ReadWrite, Imaging.PixelFormat.Format32bppArgb)
+        Dim ptr As IntPtr = bmpData.Scan0
+        Dim bytes As Integer = Math.Abs(bmpData.Stride) * NewImage.Height
+        Dim rgbValues As Byte() = New Byte(bytes - 1) {}
+        Runtime.InteropServices.Marshal.Copy(ptr, rgbValues, 0, bytes)
+        For i = 3 To rgbValues.Length - 1 Step 4
+            If rgbValues(i) < Threshold Then
+                rgbValues(i) = 0
+            End If
+        Next
+        Runtime.InteropServices.Marshal.Copy(rgbValues, 0, ptr, bytes)
+        NewImage.UnlockBits(bmpData)
+        NewImage.Save(Source)
+    End Sub
+
+    Private Function Shrink(Source As Image, Width As Integer, Height As Integer) As Image
+        Dim SmallImage As New Bitmap(Width, Height)
+        SmallImage.SetResolution(300, 300)
+        Using g As Graphics = Graphics.FromImage(SmallImage)
+            g.InterpolationMode = Drawing2D.InterpolationMode.HighQualityBicubic
+            g.DrawImage(Source, 0, 0, Width, Height)
+        End Using
+        Return SmallImage
+    End Function
+
+#End Region
+
+#Region "XML"
+
+    Public Shared Function Serialize(Of T)(Source As T) As String
+        Dim Result As String = ""
+        Using XmlStream As New MemoryStream
+            Dim XmlSerializer As New Xml.Serialization.XmlSerializer(GetType(T))
+            Dim XmlSettings As New Xml.XmlWriterSettings With {.Indent = True, .CloseOutput = True}
+            Dim XmlWriter As Xml.XmlWriter = Xml.XmlWriter.Create(XmlStream, XmlSettings)
+            XmlSerializer.Serialize(XmlWriter, Source)
+            Dim XmlReader As New StreamReader(XmlStream)
+            XmlStream.Position = 0
+            Result = XmlReader.ReadToEnd()
+            XmlWriter.Flush()
+            XmlWriter.Close()
+            XmlReader.Dispose()
+        End Using
+        Return Result
+    End Function
+
+    Public Shared Function Deserialize(Of T)(Xml As String) As T
+        Dim Result As New Object
+        Using XmlStream As New MemoryStream
+            Dim XmlSerializer As New Xml.Serialization.XmlSerializer(GetType(T))
+            Dim XmlWriter As New StreamWriter(XmlStream)
+            XmlWriter.Write(Xml)
+            XmlWriter.Flush()
+            XmlStream.Position = 0
+            Dim XmlReader As New Xml.XmlTextReader(XmlStream)
+            If XmlSerializer.CanDeserialize(XmlReader) Then
+                Result = DirectCast(XmlSerializer.Deserialize(XmlReader), T)
+            End If
+            XmlWriter.Close()
+            XmlReader.Dispose()
+        End Using
+        Return Result
+    End Function
+
+#End Region
+
+#Region "Utils"
+
+    Private Function GetMissingFiles(Path1 As String, Path2 As String) As String()
+        Dim Result As New List(Of String)
+        Dim Path1MasterList = Directory.GetFiles(Path1, "*.*", SearchOption.AllDirectories)
+        Dim Path1List = Directory.GetFiles(Path1, "*.*", SearchOption.AllDirectories).ToList
+        Dim Path2List = Directory.GetFiles(Path2, "*.*", SearchOption.AllDirectories).ToList
+        For i = 0 To Path1List.Count - 1
+            Path1List(i) = Path.GetFileNameWithoutExtension(Path1List(i)).ToLower
+        Next
+        For i = 0 To Path2List.Count - 1
+            Path2List(i) = Path.GetFileNameWithoutExtension(Path2List(i)).ToLower
+        Next
+        For i = 0 To Path1List.Count - 1
+            If Not Path2List.Contains(Path1List(i)) Then Result.Add(Path1MasterList(i))
+        Next
+        Return Result.ToArray
+    End Function
+
+    Private Function GetThreads(Index As Integer, Count As Integer)
+        Select Case Index
+            Case 0
+                Return 1
+            Case 1
+                Return Count
+            Case 2
+                Return Environment.ProcessorCount
+        End Select
+        Return 512
+    End Function
+
+    Private Function GetPythonPath() As String
+        Dim Result As String = ""
+        Dim PathVar As String = Environment.GetEnvironmentVariable("PATH")
+        If PathVar IsNot Nothing Then
+            For Each PathString In PathVar.Split(";"c)
+                If File.Exists(PathString & "\python.exe") Then
+                    Result = PathString & "\python.exe"
+                    Exit For
+                End If
+            Next
+        End If
+        Return Result
+    End Function
+
+    Private Sub GetPyArgs(Source As String)
+        PyArguements.Rows.Clear()
+        Dim Result As New List(Of String)
+        Dim matches As Text.RegularExpressions.MatchCollection = System.Text.RegularExpressions.Regex.Matches(Source, "parser\.add_argument\((.*?)\)")
+        For Each m As Text.RegularExpressions.Match In matches
+            For Each c As Text.RegularExpressions.Capture In m.Captures
+                Result.Add(c.Value.Remove(0, 20).Replace(")", ""))
+            Next
+        Next
+        If Result.Count > 0 Then
+            Dim CurrentRow As Integer = 0
+            For i = 0 To Result.Count - 1
+                Dim ArgCheck = Split(Result(i), ",")
+                If Not ArgCheck(0).Contains("model") AndAlso Not ArgCheck(0).Contains("-i") AndAlso Not ArgCheck(0).Contains("-o") Then
+                    PyArguements.Rows.Add()
+                    PyArguements.Rows(CurrentRow).Cells(0).Value = ArgCheck(0).Replace("'", "")
+                    For j = 0 To ArgCheck.Count - 1
+                        If ArgCheck(j).Split("=")(0).Trim = "default" Then
+                            PyArguements.Rows(CurrentRow).Cells(1).Value = ArgCheck(1).Split("=")(1).Replace("'", "")
+                            Exit For
+                        End If
+                    Next
+                    CurrentRow += 1
+                End If
+            Next
+        End If
+    End Sub
+
+    Private Function GetUnlockedImage(Source As String) As Bitmap
+        Dim SourceImage As Bitmap = Image.FromFile(Source)
+        Dim UnlockedImage As New Bitmap(SourceImage)
+        SourceImage.Dispose()
+        Return UnlockedImage
+    End Function
+
+    Private Function GetListIndex(ListItem As ListViewItem) As Integer
+        Return ((ListItem.Position.X - 21) / 107) + (4 * Math.Floor(ListItem.Position.Y / 107))
+    End Function
+
+    Private Function GetFolder() As String
+        Using FBD As New FolderBrowserDialog
+            If FBD.ShowDialog = DialogResult.OK Then
+                Return FBD.SelectedPath
+            End If
+        End Using
+        Return ""
+    End Function
+
+    Private Function Quote(Source As String) As String
+        Return ControlChars.Quote & Source & ControlChars.Quote
+    End Function
+
+    Private Function GetShortPath(Source As String) As String
+        If File.Exists(Source) Then Return CreateObject("Scripting.FileSystemObject").GetFile(Source).ShortPath
+        If Directory.Exists(Source) Then Return CreateObject("Scripting.FileSystemObject").GetFolder(Source).ShortPath
+        Return Nothing
+    End Function
+
+    Private Sub WriteLog(Source As Process, SaveLoc As String)
+        Dim Filename As String = SaveLoc & "\Log_" & Now.ToString("yyyy-MM-dd_HH-mm-ss") & ".txt"
+        Dim Output As String = ""
+        Output += Source.StartInfo.FileName & " "
+        Output += Source.StartInfo.Arguments
+        Output += vbNewLine & vbNewLine
+        Output += Source.StandardOutput.ReadToEnd
+        Output += vbNewLine & vbNewLine
+        Output += Source.StandardError.ReadToEnd
+        File.WriteAllText(Filename, Output)
+    End Sub
 
 #End Region
 

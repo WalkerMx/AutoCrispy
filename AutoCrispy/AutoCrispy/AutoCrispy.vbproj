@@ -154,6 +154,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="crisp2.ico" />
+    <None Include="Resources\8.png" />
     <None Include="Resources\7.png" />
     <None Include="Resources\default.txt" />
     <None Include="Resources\Licenseing and Modifications.txt" />

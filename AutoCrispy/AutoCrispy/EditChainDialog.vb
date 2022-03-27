@@ -15,13 +15,13 @@ Public Class EditChainDialog
         Colorize(EditTextBox, Color.DarkBlue, Color.Maroon)
     End Sub
 
-    Private Sub OK_Button_Click(ByVal sender As Object, ByVal e As EventArgs) Handles OK_Button.Click
+    Private Sub OK_Button_Click(sender As Object, e As EventArgs) Handles OK_Button.Click
         Me.DialogResult = DialogResult.OK
         ResultText = EditTextBox.Text
         Me.Close()
     End Sub
 
-    Private Sub Cancel_Button_Click(ByVal sender As Object, ByVal e As EventArgs) Handles Cancel_Button.Click
+    Private Sub Cancel_Button_Click(sender As Object, e As EventArgs) Handles Cancel_Button.Click
         Me.DialogResult = DialogResult.Cancel
         Me.Close()
     End Sub

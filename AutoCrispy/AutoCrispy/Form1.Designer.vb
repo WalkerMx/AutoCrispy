@@ -102,11 +102,14 @@ Partial Class Form1
         Me.ChainContextEdit = New System.Windows.Forms.ToolStripMenuItem()
         Me.ChainContextDelete = New System.Windows.Forms.ToolStripMenuItem()
         Me.PathGroup = New System.Windows.Forms.TabPage()
+        Me.ExeBrowse = New System.Windows.Forms.Button()
         Me.OutputBrowse = New System.Windows.Forms.Button()
         Me.InputTextBox = New System.Windows.Forms.TextBox()
+        Me.ExeTextBox = New System.Windows.Forms.TextBox()
         Me.OutputTextBox = New System.Windows.Forms.TextBox()
         Me.InputBrowse = New System.Windows.Forms.Button()
         Me.Label1 = New System.Windows.Forms.Label()
+        Me.Label23 = New System.Windows.Forms.Label()
         Me.Label2 = New System.Windows.Forms.Label()
         Me.TabGroup = New System.Windows.Forms.TabControl()
         Me.AdvSettingsGroup = New System.Windows.Forms.TabPage()
@@ -121,6 +124,8 @@ Partial Class Form1
         Me.ExpertSettingsBox = New System.Windows.Forms.TextBox()
         Me.DebugCheckbox = New System.Windows.Forms.CheckBox()
         Me.DDxGroup = New System.Windows.Forms.GroupBox()
+        Me.Label29 = New System.Windows.Forms.Label()
+        Me.DDxConvFormat = New System.Windows.Forms.ComboBox()
         Me.DDxFormatLabel = New System.Windows.Forms.Label()
         Me.DDxFormatListBox = New System.Windows.Forms.ListBox()
         Me.Dx10Checkbox = New System.Windows.Forms.CheckBox()
@@ -132,8 +137,6 @@ Partial Class Form1
         Me.SepAlphaCheckBox = New System.Windows.Forms.CheckBox()
         Me.Label19 = New System.Windows.Forms.Label()
         Me.DDxModeBox = New System.Windows.Forms.ComboBox()
-        Me.DDxConvFormat = New System.Windows.Forms.ComboBox()
-        Me.Label29 = New System.Windows.Forms.Label()
         Me.CaffeGroup.SuspendLayout()
         CType(Me.CaffeScale, System.ComponentModel.ISupportInitialize).BeginInit()
         CType(Me.CaffeNoise, System.ComponentModel.ISupportInitialize).BeginInit()
@@ -899,7 +902,7 @@ Partial Class Form1
         '
         'ChainPreview
         '
-        Me.ChainPreview.Alignment = System.Windows.Forms.ListViewAlignment.SnapToGrid
+        Me.ChainPreview.Alignment = System.Windows.Forms.ListViewAlignment.Left
         Me.ChainPreview.AllowDrop = True
         Me.ChainPreview.AutoArrange = False
         Me.ChainPreview.ContextMenuStrip = Me.ChainContext
@@ -934,11 +937,14 @@ Partial Class Form1
         '
         'PathGroup
         '
+        Me.PathGroup.Controls.Add(Me.ExeBrowse)
         Me.PathGroup.Controls.Add(Me.OutputBrowse)
         Me.PathGroup.Controls.Add(Me.InputTextBox)
+        Me.PathGroup.Controls.Add(Me.ExeTextBox)
         Me.PathGroup.Controls.Add(Me.OutputTextBox)
         Me.PathGroup.Controls.Add(Me.InputBrowse)
         Me.PathGroup.Controls.Add(Me.Label1)
+        Me.PathGroup.Controls.Add(Me.Label23)
         Me.PathGroup.Controls.Add(Me.Label2)
         Me.PathGroup.Location = New System.Drawing.Point(4, 22)
         Me.PathGroup.Name = "PathGroup"
@@ -947,6 +953,15 @@ Partial Class Form1
         Me.PathGroup.TabIndex = 0
         Me.PathGroup.Text = "Paths"
         Me.PathGroup.UseVisualStyleBackColor = True
+        '
+        'ExeBrowse
+        '
+        Me.ExeBrowse.Location = New System.Drawing.Point(580, 58)
+        Me.ExeBrowse.Name = "ExeBrowse"
+        Me.ExeBrowse.Size = New System.Drawing.Size(30, 20)
+        Me.ExeBrowse.TabIndex = 5
+        Me.ExeBrowse.Text = "..."
+        Me.ExeBrowse.UseVisualStyleBackColor = True
         '
         'OutputBrowse
         '
@@ -959,16 +974,23 @@ Partial Class Form1
         '
         'InputTextBox
         '
-        Me.InputTextBox.Location = New System.Drawing.Point(88, 6)
+        Me.InputTextBox.Location = New System.Drawing.Point(97, 6)
         Me.InputTextBox.Name = "InputTextBox"
-        Me.InputTextBox.Size = New System.Drawing.Size(486, 20)
+        Me.InputTextBox.Size = New System.Drawing.Size(477, 20)
         Me.InputTextBox.TabIndex = 0
+        '
+        'ExeTextBox
+        '
+        Me.ExeTextBox.Location = New System.Drawing.Point(97, 58)
+        Me.ExeTextBox.Name = "ExeTextBox"
+        Me.ExeTextBox.Size = New System.Drawing.Size(477, 20)
+        Me.ExeTextBox.TabIndex = 4
         '
         'OutputTextBox
         '
-        Me.OutputTextBox.Location = New System.Drawing.Point(88, 32)
+        Me.OutputTextBox.Location = New System.Drawing.Point(97, 32)
         Me.OutputTextBox.Name = "OutputTextBox"
-        Me.OutputTextBox.Size = New System.Drawing.Size(486, 20)
+        Me.OutputTextBox.Size = New System.Drawing.Size(477, 20)
         Me.OutputTextBox.TabIndex = 2
         '
         'InputBrowse
@@ -988,6 +1010,15 @@ Partial Class Form1
         Me.Label1.Size = New System.Drawing.Size(66, 13)
         Me.Label1.TabIndex = 0
         Me.Label1.Text = "Input Folder:"
+        '
+        'Label23
+        '
+        Me.Label23.AutoSize = True
+        Me.Label23.Location = New System.Drawing.Point(6, 62)
+        Me.Label23.Name = "Label23"
+        Me.Label23.Size = New System.Drawing.Size(85, 13)
+        Me.Label23.TabIndex = 0
+        Me.Label23.Text = "Backend Folder:"
         '
         'Label2
         '
@@ -1145,6 +1176,25 @@ Partial Class Form1
         Me.DDxGroup.TabStop = False
         Me.DDxGroup.Text = "TexConv Settings"
         '
+        'Label29
+        '
+        Me.Label29.AutoSize = True
+        Me.Label29.Location = New System.Drawing.Point(180, 22)
+        Me.Label29.Name = "Label29"
+        Me.Label29.Size = New System.Drawing.Size(59, 13)
+        Me.Label29.TabIndex = 12
+        Me.Label29.Text = "Convert to:"
+        '
+        'DDxConvFormat
+        '
+        Me.DDxConvFormat.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
+        Me.DDxConvFormat.FormattingEnabled = True
+        Me.DDxConvFormat.Items.AddRange(New Object() {"BMP", "JPG", "PNG", "TGA", "HDR", "TIF", "WDP", "HDP", "JXR", "PPM", "PFM"})
+        Me.DDxConvFormat.Location = New System.Drawing.Point(261, 19)
+        Me.DDxConvFormat.Name = "DDxConvFormat"
+        Me.DDxConvFormat.Size = New System.Drawing.Size(87, 21)
+        Me.DDxConvFormat.TabIndex = 11
+        '
         'DDxFormatLabel
         '
         Me.DDxFormatLabel.AutoSize = True
@@ -1250,25 +1300,6 @@ Partial Class Form1
         Me.DDxModeBox.Name = "DDxModeBox"
         Me.DDxModeBox.Size = New System.Drawing.Size(114, 21)
         Me.DDxModeBox.TabIndex = 0
-        '
-        'DDxConvFormat
-        '
-        Me.DDxConvFormat.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
-        Me.DDxConvFormat.FormattingEnabled = True
-        Me.DDxConvFormat.Items.AddRange(New Object() {"BMP", "JPG", "PNG", "TGA", "HDR", "TIF", "WDP", "HDP", "JXR", "PPM", "PFM"})
-        Me.DDxConvFormat.Location = New System.Drawing.Point(261, 19)
-        Me.DDxConvFormat.Name = "DDxConvFormat"
-        Me.DDxConvFormat.Size = New System.Drawing.Size(87, 21)
-        Me.DDxConvFormat.TabIndex = 11
-        '
-        'Label29
-        '
-        Me.Label29.AutoSize = True
-        Me.Label29.Location = New System.Drawing.Point(180, 22)
-        Me.Label29.Name = "Label29"
-        Me.Label29.Size = New System.Drawing.Size(59, 13)
-        Me.Label29.TabIndex = 12
-        Me.Label29.Text = "Convert to:"
         '
         'Form1
         '
@@ -1436,4 +1467,7 @@ Partial Class Form1
     Friend WithEvents DDxModeBox As ComboBox
     Friend WithEvents Label29 As Label
     Friend WithEvents DDxConvFormat As ComboBox
+    Friend WithEvents ExeBrowse As Button
+    Friend WithEvents ExeTextBox As TextBox
+    Friend WithEvents Label23 As Label
 End Class
