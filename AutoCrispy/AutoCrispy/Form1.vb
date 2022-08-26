@@ -31,7 +31,7 @@ Public Class Form1
     <Serializable()> Public Structure ArguementString
         Private Property Arguements As String
         Public Function GetArguements() As String
-            Return Arguements
+            Return System.Text.RegularExpressions.Regex.Replace(Arguements, " {2,}", " ").Trim
         End Function
         Public Sub AddArguement(Flag As String)
             Arguements += " " & Flag
@@ -529,10 +529,12 @@ Public Class Form1
                     Dim AcceptExt As Boolean = Model.Package.FileTypes.Contains(Path.GetExtension(NewImage).ToLower)
                     If File.Exists(NewImage) AndAlso AcceptExt = True Then
                         NewImages.Add(NewImage)
-                        If (ChainList.IndexOf(Model) = 0 AndAlso Model.Name <> "TexConv") OrElse (ChainList(0).Name = "TexConv" AndAlso ChainList.IndexOf(Model) = 1) Then
-                            Dim SeamlessImage As Bitmap = GetUnlockedImage(NewImage)
-                            SeamlessImage = MakeSeamless(SeamlessImage, LoadedSettings.ExpertSettings.SeamlessMode, LoadedSettings.ExpertSettings.SeamlessMargin)
-                            SeamlessImage.Save(NewImage)
+                        If LoadedSettings.ExpertSettings.SeamlessMode > 0 Then
+                            If (ChainList.IndexOf(Model) = 0 AndAlso Model.Name <> "TexConv") OrElse (ChainList(0).Name = "TexConv" AndAlso ChainList.IndexOf(Model) = 1) Then
+                                Dim SeamlessImage As Bitmap = GetUnlockedImage(NewImage)
+                                SeamlessImage = MakeSeamless(SeamlessImage, LoadedSettings.ExpertSettings.SeamlessMode, LoadedSettings.ExpertSettings.SeamlessMargin)
+                                SeamlessImage.Save(NewImage)
+                            End If
                         End If
                     End If
                 Next
@@ -751,20 +753,20 @@ Public Class Form1
     Private Function MakeTexConvCommand(SourceImage As String, NewImage As String, Package As FormSettings.DDxPackage) As String
         Dim Result As New ArguementString
         Result.AddArguement("-f", Package.Format)
+        Result.AddArguement("-nologo")
         Select Case Package.Mode
             Case "DDS Input"
                 Result.AddArguement("-ft " & Package.ConversionFormat.ToLower)
             Case "DDS Output"
-                Result.AddArguement("-ft dds")
-                Result.AddArguement("-fl", Package.FeatureLevel)
+                Result.AddArguement(IIf(Package.FeatureLevel = "11.0", "", "-fl " & Package.FeatureLevel))
                 Result.AddArguement(IIf(Package.ForceDx9 = True, "-dx9", ""))
                 Result.AddArguement(IIf(Package.ForceDx10 = True, "-dx10", ""))
         End Select
         Result.AddArguement(IIf(Package.SeperateAlpha = True, "-sepalpha", ""))
         Result.AddArguement(IIf(Package.PremultiplyAlpha = True, "-pmalpha", ""))
         Result.AddArguement(IIf(Package.StraightAlpha = True, "-alpha", ""))
-        Result.AddArguement("-o", GetShortPath(Path.GetDirectoryName(NewImage)))
-        Result.AddArguement(GetShortPath(SourceImage))
+        Result.AddArguement("-o", Quote(RemoveSlash(Path.GetDirectoryName(NewImage))))
+        Result.AddArguement(Quote(SourceImage))
         Return Result.GetArguements
     End Function
 
@@ -991,10 +993,13 @@ Public Class Form1
         Return ControlChars.Quote & Source & ControlChars.Quote
     End Function
 
-    Private Function GetShortPath(Source As String) As String
-        If File.Exists(Source) Then Return CreateObject("Scripting.FileSystemObject").GetFile(Source).ShortPath
-        If Directory.Exists(Source) Then Return CreateObject("Scripting.FileSystemObject").GetFolder(Source).ShortPath
-        Return Nothing
+    Private Function RemoveSlash(Source As String) As String
+        Dim Result As String = Source
+        Dim ResultCount As Integer = Result.Length
+        If Result(ResultCount - 1) = "\"c Then
+            Result = Result.Remove(ResultCount - 1)
+        End If
+        Return Result
     End Function
 
     Private Sub WriteLog(Source As Process, SaveLoc As String)
