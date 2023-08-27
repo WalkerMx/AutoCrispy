@@ -95,6 +95,8 @@
     <Import Include="System.Threading.Tasks" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DirectBitmap.vb" />
+    <Compile Include="DragDropList.vb" />
     <Compile Include="EditChainDialog.Designer.vb">
       <DependentUpon>EditChainDialog.vb</DependentUpon>
     </Compile>

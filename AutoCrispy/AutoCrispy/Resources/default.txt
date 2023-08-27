@@ -102,6 +102,12 @@
       <string>.pfm</string>
     </FileTypes>
   </TexConvPak>
+  <xBRZPak>
+    <Scale>2</Scale>
+    <FileTypes>
+      <string>.png</string>
+    </FileTypes>
+  </xBRZPak>
   <PythonPak>
     <Script></Script>
     <Model></Model>

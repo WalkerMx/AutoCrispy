@@ -44,9 +44,8 @@
         Source.PmAlphaCheckBox.Checked = LoadedSettings.TexConvPak.PremultiplyAlpha
         Source.AlphaCheckBox.Checked = LoadedSettings.TexConvPak.StraightAlpha
 
-        'Load Python Settings
-        Source.PyInputFlag.Text = LoadedSettings.PythonPak.InputFlag
-        Source.PyOutputFlag.Text = LoadedSettings.PythonPak.OutputFlag
+        'Load xBRZ Settings
+        Source.xBRZScale.Value = LoadedSettings.xBRZPak.Scale
 
         'Load UI Paths
         Source.InputTextBox.Text = LoadedSettings.Paths.InputPath
@@ -57,6 +56,7 @@
         Source.ThreadComboBox.SelectedIndex = LoadedSettings.BasicSettings.ThreadIndex
         Source.NumericThreads.Value = LoadedSettings.BasicSettings.ThreadCount
         Source.DefringeCheck.Checked = LoadedSettings.BasicSettings.Defringe
+        Source.PS2Check.Checked = LoadedSettings.BasicSettings.FixPS2
         Source.DefringeThresh.Value = LoadedSettings.BasicSettings.DefringeThreshold
         Source.TabGroup.SelectedIndex = LoadedSettings.BasicSettings.SelectedTab
 
@@ -72,7 +72,7 @@
         'Load Internal Settings
         Source.ChainList = LoadedSettings.Chain
         For Each ChainItem As ChainObject In Source.ChainList
-            Source.ChainPreview.Items.Add(New ListViewItem(ChainItem.Name, ChainItem.IconIndex))
+            Source.ChainControl.ListItems.Add(New DragDropList.DragDropItem(Source.ChainList.IndexOf(ChainItem), ChainItem.Name, Source.ChainThumbs.Item(ChainItem.IconIndex)))
         Next
     End Sub
 
@@ -104,6 +104,7 @@
     <Xml.Serialization.XmlInclude(GetType(Waifu2xCppPackage))>
     <Xml.Serialization.XmlInclude(GetType(Anime4kPackage))>
     <Xml.Serialization.XmlInclude(GetType(DDxPackage))>
+    <Xml.Serialization.XmlInclude(GetType(xBRZPackage))>
     <Xml.Serialization.XmlInclude(GetType(PythonPackage))>
     <Xml.Serialization.XmlInclude(GetType(ProgramPaths))>
     <Xml.Serialization.XmlInclude(GetType(ProgramSettings))>
@@ -115,6 +116,7 @@
         Public Property CppPak As Waifu2xCppPackage
         Public Property AnimePak As Anime4kPackage
         Public Property TexConvPak As DDxPackage
+        Public Property xBRZPak As xBRZPackage
         Public Property PythonPak As PythonPackage
         Public Property Paths As ProgramPaths
         Public Property BasicSettings As ProgramSettings
@@ -126,9 +128,10 @@
             CppPak = New Waifu2xCppPackage(Source.WaifuCPPMode.Text.ToLower, Source.WaifuCPPScale.Value, Source.WaifuCPPNoise.Value, Source.WaifuCPPFormat.Text.ToLower, Source.WaifuCppGPU.Checked, Source.WaifuCPPOpenCL.Checked)
             AnimePak = New Anime4kPackage(Source.AnimeCPPScale.Value, Source.AnimeCppPre.Checked, Source.AnimeCppPost.Checked, Source.AnimeCppPreFilter.Checked, Source.AnimeCppPostFilter.Checked, GetFilters(Source.AnimeCppPreFilters), GetFilters(Source.AnimeCppPostFilters), Source.AnimeCPPGpu.Checked, Source.AnimeCPPCnn.Checked)
             TexConvPak = New DDxPackage(Source.DDxModeBox.SelectedItem, Source.DDxFormatLabel.Text.Replace("Format: ", ""), Source.DDxConvFormat.SelectedItem, Source.FlComboBox.SelectedItem, Source.Dx9CheckBox.Checked, Source.Dx10Checkbox.Checked, Source.SepAlphaCheckBox.Checked, Source.PmAlphaCheckBox.Checked, Source.AlphaCheckBox.Checked)
-            PythonPak = New PythonPackage(GetPyStr(Source.PyPaths, Source.PyScript.SelectedIndex), GetPyStr(Source.PyModels, Source.PyModel.SelectedIndex), Source.PyInputFlag.Text.Trim, Source.PyOutputFlag.Text.Trim, Source.PyArguements)
+            xBRZPak = New xBRZPackage(Source.xBRZScale.Value)
+            PythonPak = New PythonPackage(GetPyStr(Source.PyModels, Source.PyModel.SelectedIndex), Source.PyArguements)
             Paths = New ProgramPaths(Source.InputTextBox.Text, Source.OutputTextBox.Text, Source.ExeTextBox.Text)
-            BasicSettings = New ProgramSettings(Source.ExeComboBox.SelectedItem, Source.ThreadComboBox.SelectedIndex, Source.NumericThreads.Value, Source.DefringeCheck.Checked, Source.DefringeThresh.Value, Source.TabGroup.SelectedIndex)
+            BasicSettings = New ProgramSettings(Source.ExeComboBox.SelectedItem, Source.ThreadComboBox.SelectedIndex, Source.NumericThreads.Value, Source.DefringeCheck.Checked, Source.PS2Check.Checked, Source.DefringeThresh.Value, Source.TabGroup.SelectedIndex)
             ExpertSettings = New AdvancedSettings(Source.DebugCheckbox.Checked, Source.ExpertSettingsBox.Text, Source.CleanupCheckBox.Checked, Source.SeamsBox.SelectedIndex, Source.SeamScale.Value, Source.SeamMargin.Value, Source.PortableCheckBox.Checked)
             Chain = Source.ChainList
         End Sub
@@ -156,13 +159,15 @@
         Public Property ThreadIndex As Integer
         Public Property ThreadCount As Integer
         Public Property Defringe As Boolean
+        Public Property FixPS2 As Boolean
         Public Property DefringeThreshold As Integer
         Public Property SelectedTab As Integer
-        Public Sub New(_Backend As String, _ThreadIndex As Integer, _ThreadCount As Integer, _Defringe As Boolean, _DefringeThreshold As Integer, _SelectedTab As Integer)
+        Public Sub New(_Backend As String, _ThreadIndex As Integer, _ThreadCount As Integer, _Defringe As Boolean, _FixPS2 As Boolean, _DefringeThreshold As Integer, _SelectedTab As Integer)
             Backend = _Backend
             ThreadIndex = _ThreadIndex
             ThreadCount = _ThreadCount
             Defringe = _Defringe
+            FixPS2 = _FixPS2
             DefringeThreshold = _DefringeThreshold
             SelectedTab = _SelectedTab
         End Sub
@@ -192,6 +197,7 @@
     <Xml.Serialization.XmlInclude(GetType(Waifu2xCppPackage))>
     <Xml.Serialization.XmlInclude(GetType(Anime4kPackage))>
     <Xml.Serialization.XmlInclude(GetType(DDxPackage))>
+    <Xml.Serialization.XmlInclude(GetType(xBRZPackage))>
     <Xml.Serialization.XmlInclude(GetType(PythonPackage))>
     <Serializable()> Public Structure ChainObject
         Public Property Name As String
@@ -221,8 +227,10 @@
                     Package = New Anime4kPackage(Source.AnimeCPPScale.Value, Source.AnimeCppPre.Checked, Source.AnimeCppPost.Checked, Source.AnimeCppPreFilter.Checked, Source.AnimeCppPostFilter.Checked, GetFilters(Source.AnimeCppPreFilters), GetFilters(Source.AnimeCppPostFilters), Source.AnimeCPPGpu.Checked, Source.AnimeCPPCnn.Checked)
                 Case "TexConv"
                     Package = New DDxPackage(Source.DDxModeBox.SelectedItem, Source.DDxFormatLabel.Text.Replace("Format: ", ""), Source.DDxConvFormat.SelectedItem, Source.FlComboBox.SelectedItem, Source.Dx9CheckBox.Checked, Source.Dx10Checkbox.Checked, Source.SepAlphaCheckBox.Checked, Source.PmAlphaCheckBox.Checked, Source.AlphaCheckBox.Checked)
-                Case "Python"
-                    Package = New PythonPackage(Source.PyPaths(Source.PyScript.SelectedIndex), Source.PyModels(Source.PyModel.SelectedIndex), Source.PyInputFlag.Text.Trim, Source.PyOutputFlag.Text.Trim, Source.PyArguements)
+                Case "xBRZ"
+                    Package = New xBRZPackage(Source.xBRZScale.Value)
+                Case "ESRGAN"
+                    Package = New PythonPackage(Source.PyModels(Source.PyModel.SelectedIndex), Source.PyArguements)
             End Select
         End Sub
     End Structure
@@ -336,18 +344,21 @@
         End Sub
     End Structure
 
+    <Serializable()> Public Structure xBRZPackage
+        Public Property Scale As Decimal
+        Public Property FileTypes As List(Of String)
+        Public Sub New(_Scale As Decimal)
+            Scale = _Scale
+            FileTypes = {".png"}.ToList
+        End Sub
+    End Structure
+
     <Serializable()> Public Structure PythonPackage
-        Public Property Script As String
         Public Property Model As String
-        Public Property InputFlag As String
-        Public Property OutputFlag As String
         Public Property ScriptFlags As List(Of String())
         Public Property FileTypes As List(Of String)
-        Public Sub New(_Script As String, _Model As String, _InputFlag As String, _OutputFlag As String, Data As DataGridView)
-            Script = _Script
+        Public Sub New(_Model As String, Data As DataGridView)
             Model = _Model
-            InputFlag = _InputFlag
-            OutputFlag = _OutputFlag
             ScriptFlags = New List(Of String())
             For i = 0 To Data.Rows.Count - 2
                 If Not Data.Rows(i).Cells(0).Value = Nothing Then

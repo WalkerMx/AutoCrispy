@@ -8,12 +8,11 @@ Public Class Form1
     Dim AppData As String = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData)
     Dim WaitScale As Integer = 0
     Dim SettingsLoc As Point = New Point(240, 166)
-    Dim PyDetected As Boolean
     Dim LoadedSettings As FormSettings.Settings
 
+    Public Property ChainControl As DragDropList
     Public Property ChainList As New List(Of FormSettings.ChainObject)
-    Public Property PyPaths As New List(Of String)
-    Public Property PyModels As New List(Of String)
+    Public Property ChainThumbs As New List(Of Image)
     Public Property CaffePath As String
     Public Property WaifuNcnnPath As String
     Public Property RealSRNcnnPath As String
@@ -22,7 +21,9 @@ Public Class Form1
     Public Property WaifuCppPath As String
     Public Property Anime4kPath As String
     Public Property TexConvPath As String
-    Public Property DetectedPyPath As String
+    Public Property xBRZPath As String
+    Public Property PyPath As String
+    Public Property PyModels As New List(Of String)
 
 #End Region
 
@@ -50,6 +51,7 @@ Public Class Form1
         Me.SetStyle(ControlStyles.OptimizedDoubleBuffer, True)
         Application.CurrentCulture = New Globalization.CultureInfo("EN-US")
         PreloadImageList()
+        ChainControl = New DragDropList(ChainPreview, 7)
         Try
             If File.Exists(Root & "\portable.xml") Then
                 FormSettings.LoadSettings(Me, Deserialize(Of FormSettings.Settings)(File.ReadAllText(Root & "\portable.xml")))
@@ -69,11 +71,11 @@ Public Class Form1
             Root = ExeTextBox.Text
         End If
         StartUpCheckEXE()
-        StartUpCheckPy()
         If ExeComboBox.Items.Count > 0 Then
             ExeComboBox.SelectedIndex = 0
             SetSettingsWindow()
         End If
+        ChainControl.DrawList(ChainControl.ListItems)
         WatchDogButton.Select()
     End Sub
 
@@ -122,59 +124,44 @@ Public Class Form1
                 ExeComboBox.Items.Add("TexConv")
                 TexConvPath = "\" & IIf(Folder <> Root, Path.GetFileName(Folder), "") & "\texconv.exe"
             End If
-            If File.Exists(Folder & "\python\python.exe") Then
-                PyDetected = True
-                DetectedPyPath = "\" & IIf(Folder <> Root, Path.GetFileName(Folder), "") & "\python\python.exe"
+            If File.Exists(Folder & "\ScalerTest_Windows.exe") Then
+                ExeComboBox.Items.Add("xBRZ")
+                xBRZPath = "\" & IIf(Folder <> Root, Path.GetFileName(Folder), "") & "\ScalerTest_Windows.exe"
             End If
-        Next
-        If PyDetected = False AndAlso GetPythonPath() <> "" Then
-            PyDetected = True
-            DetectedPyPath = GetPythonPath()
-        End If
-    End Sub
-
-    Private Sub StartUpCheckPy()
-        Dim RootFolders As List(Of String) = Directory.GetDirectories(Root).ToList
-        RootFolders.Add(Root)
-        PyPaths.Clear()
-        PyScript.Items.Clear()
-        PyModels.Clear()
-        PyModel.Items.Clear()
-        For Each Folder As String In RootFolders
-            Dim PyFiles As String() = Directory.EnumerateFiles(Folder, "*.py").ToArray
-            For Each PythonScript As String In PyFiles
-                PyPaths.Add(PythonScript)
-                PyScript.Items.Add(Path.GetFileName(PythonScript))
-            Next
-            For Each SubFolder As String In Directory.GetDirectories(Folder)
-                Dim Models As String() = Directory.EnumerateFiles(SubFolder, "*.pth").ToArray
-                For Each PythonModel As String In Models
-                    PyModels.Add(PythonModel)
-                    PyModel.Items.Add(Path.GetFileName(PythonModel))
+            If File.Exists(Folder & "\esrgan.exe") Then
+                PyModels.Clear()
+                PyModel.Items.Clear()
+                ExeComboBox.Items.Add("ESRGAN")
+                PyArguements.Rows.Clear()
+                PyArguements.Rows.Add(New String() {"--tile_size", "512"})
+                PyArguements.Rows.Add(New String() {"--cpu", "False"})
+                PyPath = "\" & IIf(Folder <> Root, Path.GetFileName(Folder), "") & "\esrgan.exe"
+                For Each SubFolder As String In Directory.GetDirectories(Folder)
+                    Dim Models As String() = Directory.EnumerateFiles(SubFolder, "*.pth").ToArray
+                    For Each PythonModel As String In Models
+                        PyModels.Add(PythonModel)
+                        PyModel.Items.Add(Path.GetFileName(PythonModel))
+                    Next
                 Next
-            Next
-        Next
-        If PyPaths.Count > 0 Then
-            ExeComboBox.Items.Add("Python")
-            PyScript.SelectedIndex = 0
-            If PyModels.Count > 0 Then
-                PyModel.SelectedIndex = 0
-            Else
-                MsgBox("No ESRGAN Models Found!", MsgBoxStyle.Critical)
+                If PyModels.Count > 0 Then
+                    PyModel.SelectedIndex = 0
+                Else
+                    MsgBox("No ESRGAN Models Found!", MsgBoxStyle.Critical)
+                End If
             End If
-        End If
+        Next
     End Sub
 
     Private Sub PreloadImageList()
-        ChainThumbs.Images.Add(Shrink(My.Resources._0, 64, 64))
-        ChainThumbs.Images.Add(Shrink(My.Resources._1, 64, 64))
-        ChainThumbs.Images.Add(Shrink(My.Resources._2, 64, 64))
-        ChainThumbs.Images.Add(Shrink(My.Resources._3, 64, 64))
-        ChainThumbs.Images.Add(Shrink(My.Resources._4, 64, 64))
-        ChainThumbs.Images.Add(Shrink(My.Resources._5, 64, 64))
-        ChainThumbs.Images.Add(Shrink(My.Resources._6, 64, 64))
-        ChainThumbs.Images.Add(Shrink(My.Resources._7, 64, 64))
-        ChainThumbs.Images.Add(Shrink(My.Resources._8, 64, 64))
+        ChainThumbs.Add(My.Resources._0)
+        ChainThumbs.Add(My.Resources._1)
+        ChainThumbs.Add(My.Resources._2)
+        ChainThumbs.Add(My.Resources._3)
+        ChainThumbs.Add(My.Resources._4)
+        ChainThumbs.Add(My.Resources._5)
+        ChainThumbs.Add(My.Resources._6)
+        ChainThumbs.Add(My.Resources._7)
+        ChainThumbs.Add(My.Resources._8)
     End Sub
 
 #End Region
@@ -204,7 +191,6 @@ Public Class Form1
             Root = Application.StartupPath
         End If
         StartUpCheckEXE()
-        StartUpCheckPy()
         If ExeComboBox.Items.Count > 0 Then
             ExeComboBox.SelectedIndex = 0
             SetSettingsWindow()
@@ -226,12 +212,13 @@ Public Class Form1
     Private Sub ChainLoad_Click(sender As Object, e As EventArgs) Handles ChainLoad.Click
         Using OFD As New OpenFileDialog With {.Filter = "XML Files|*.xml|All Files|*.*"}
             If OFD.ShowDialog = DialogResult.OK Then
-                ChainPreview.Clear()
+                ChainControl.ListItems.Clear()
                 ChainList.Clear()
                 ChainList = Deserialize(Of List(Of FormSettings.ChainObject))(File.ReadAllText(OFD.FileName))
                 For Each ChainItem As FormSettings.ChainObject In ChainList
-                    ChainPreview.Items.Add(New ListViewItem(ChainItem.Name, ChainItem.IconIndex))
+                    ChainControl.ListItems.Add(New DragDropList.DragDropItem(ChainList.IndexOf(ChainItem), ChainItem.Name, ChainThumbs.Item(ChainItem.IconIndex)))
                 Next
+                ChainControl.DrawList(ChainControl.ListItems)
             End If
         End Using
     End Sub
@@ -240,75 +227,39 @@ Public Class Form1
         AddModelToChain(ExeComboBox.SelectedItem)
     End Sub
 
-    Private Sub RemoveItemFromChain(sender As Object, e As EventArgs) Handles ChainRemove.Click, ChainContextDelete.Click
-        If ChainPreview.SelectedIndices.Count > 0 Then
-            Dim Remove As Integer = ChainPreview.SelectedIndices(0)
-            ChainPreview.Items.RemoveAt(Remove)
-            ChainList.RemoveAt(Remove)
-            ChainPreview.AutoArrange = True
-            ChainPreview.AutoArrange = False
-        End If
+    Private Sub RemoveItemFromChain(sender As Object, e As EventArgs) Handles ChainContextDelete.Click
+        Dim Remove As Integer = ChainControl.GetCurrentIndex
+        ChainList.RemoveAt(Remove)
+        ChainControl.ListItems.RemoveAt(Remove)
+        ChainControl.ReorderList()
+        ChainControl.DrawList(ChainControl.ListItems)
     End Sub
 
     Private Sub ChainContextEdit_Click(sender As Object, e As EventArgs) Handles ChainContextEdit.Click
-        If ChainPreview.SelectedItems.Count > 0 Then
-            Dim ItemIndex As Integer = GetListIndex(ChainPreview.SelectedItems(0))
-            Using ECD As New EditChainDialog(Serialize(ChainList(ItemIndex)))
-                If ECD.ShowDialog = DialogResult.OK Then
-                    Try
-                        Dim NewChainItem As FormSettings.ChainObject = Deserialize(Of FormSettings.ChainObject)(ECD.ResultText)
-                        ChainList(ItemIndex) = NewChainItem
-                        ChainPreview.Items(ChainPreview.Items.IndexOf(ChainPreview.SelectedItems(0))) = New ListViewItem(NewChainItem.Name, NewChainItem.IconIndex)
-                    Catch ex As Exception
-                        MsgBox("Error: New settings could not be parsed.")
-                    End Try
-                End If
-            End Using
-        End If
-    End Sub
-
-    Private Sub ChainPreview_ItemDrag(sender As Object, e As ItemDragEventArgs) Handles ChainPreview.ItemDrag
-        Dim lvi As ListViewItem = CType(e.Item, ListViewItem)
-        ChainPreview.DoDragDrop(New DataObject("System.Windows.Forms.ListViewItem", lvi), DragDropEffects.Move)
-    End Sub
-
-    Private Sub ChainPreview_DragEnter(sender As Object, e As DragEventArgs) Handles ChainPreview.DragEnter
-        If e.Data.GetDataPresent("System.Windows.Forms.ListViewItem") Then
-            e.Effect = DragDropEffects.Move
-        End If
-    End Sub
-
-    Private Sub ChainPreview_DragOver(sender As Object, e As DragEventArgs) Handles ChainPreview.DragOver
-        Dim lvi As ListViewItem = CType(e.Data.GetData("System.Windows.Forms.ListViewItem"), ListViewItem)
-        If lvi IsNot Nothing Then
-            Dim Offset As Size = Size.Subtract(Cursor.Size, New Size(Cursor.HotSpot.X, Cursor.HotSpot.Y))
-            lvi.Position = Point.Subtract(ChainPreview.PointToClient(New Point(e.X, e.Y)), Offset)
-            e.Effect = DragDropEffects.Move
-        End If
+        Dim ItemIndex As Integer = ChainControl.GetCurrentIndex
+        Using ECD As New EditChainDialog(Serialize(ChainList(ItemIndex)))
+            If ECD.ShowDialog = DialogResult.OK Then
+                Try
+                    Dim NewChainItem As FormSettings.ChainObject = Deserialize(Of FormSettings.ChainObject)(ECD.ResultText)
+                    ChainList(ItemIndex) = NewChainItem
+                Catch ex As Exception
+                    MsgBox("Error: New settings could not be parsed.")
+                End Try
+            End If
+        End Using
     End Sub
 
     Private Sub ChainPreview_MouseUp(sender As Object, e As MouseEventArgs) Handles ChainPreview.MouseUp
-        ChainPreview.AutoArrange = True
-        ChainPreview.AutoArrange = False
-        Dim Result As New List(Of String)
-        For Each Model As ListViewItem In ChainPreview.Items
-            Result.Add(GetListIndex(Model) & "|" & Model.Index)
-        Next
-        Result.Sort()
-        For Each Item As String In Result
-            If Item.Split("|")(0) <> Item.Split("|")(1) Then
-                Dim NewChainOrder As New List(Of FormSettings.ChainObject)
-                For Each ReOrder As String In Result
-                    NewChainOrder.Add(ChainList(ReOrder.Split("|")(1)))
-                Next
-                ChainList = NewChainOrder
-                ChainPreview.Clear()
-                For Each ChainItem As FormSettings.ChainObject In ChainList
-                    ChainPreview.Items.Add(New ListViewItem(ChainItem.Name, ChainItem.IconIndex))
-                Next
-                Exit For
-            End If
-        Next
+
+        If e.Button = MouseButtons.Left Then
+            Dim TempList As New List(Of FormSettings.ChainObject)
+            For Each Item As DragDropList.DragDropItem In ChainControl.ListItems
+                TempList.Add(ChainList(Item.Index))
+            Next
+            ChainList = TempList
+            ChainControl.ReorderList()
+        End If
+
     End Sub
 
     Private Sub DDxFormatListBox_SelectedIndexChanged(sender As Object, e As EventArgs) Handles DDxFormatListBox.SelectedIndexChanged
@@ -334,7 +285,7 @@ Public Class Form1
                         File.Copy(OFD.FileName, TempPath & "\" & Path.GetFileName(SFD.FileName), True)
                         LoadedSettings = New FormSettings.Settings(Me)
                         LoadedSettings.Paths = New FormSettings.ProgramPaths(TempPath, Directory.GetParent(SFD.FileName).FullName, Root)
-                        If ChainPreview.Items.Count = 0 Then
+                        If ChainControl.ListItems.Count = 0 Then
                             AddModelToChain(ExeComboBox.SelectedItem, False)
                         End If
                         SwitchGroups(False)
@@ -355,12 +306,6 @@ Public Class Form1
             WatchDog.Enabled = Not WatchDog.Enabled
             WatchDogButton.Text = "Running: " & WatchDog.Enabled
             SwitchGroups(Not WatchDog.Enabled)
-        End If
-    End Sub
-
-    Private Sub PyScript_SelectedIndexChanged(sender As Object, e As EventArgs) Handles PyScript.SelectedIndexChanged
-        If PyScript.Items.Count > 0 Then
-            GetPyArgs(File.ReadAllText(PyPaths(PyScript.SelectedIndex)).Replace(vbCr, " ").Replace(vbLf, " ").Replace(vbCrLf, " "))
         End If
     End Sub
 
@@ -401,6 +346,7 @@ Public Class Form1
         WaifuCPPGroup.Visible = False
         AnimeCPPGroup.Visible = False
         DDxGroup.Visible = False
+        xBRZGroup.Visible = False
         PyGroup.Visible = False
         VulkanNoise.Enabled = True
         Select Case ExeComboBox.SelectedItem
@@ -425,7 +371,9 @@ Public Class Form1
                 MoveShowGroup(AnimeCPPGroup)
             Case "TexConv"
                 MoveShowGroup(DDxGroup)
-            Case "Python"
+            Case "xBRZ"
+                MoveShowGroup(xBRZGroup)
+            Case "ESRGAN"
                 MoveShowGroup(PyGroup)
         End Select
     End Sub
@@ -460,7 +408,7 @@ Public Class Form1
             WaitScale = 0
             WatchDog.Interval = 1000
             LoadedSettings = New FormSettings.Settings(Me)
-            If ChainPreview.Items.Count = 0 Then
+            If ChainControl.ListItems.Count = 0 Then
                 AddModelToChain(ExeComboBox.SelectedItem, False)
             End If
             WorkHorse.RunWorkerAsync()
@@ -481,7 +429,7 @@ Public Class Form1
 
     Private Sub WorkHorse_RunWorkerCompleted(sender As Object, e As System.ComponentModel.RunWorkerCompletedEventArgs) Handles WorkHorse.RunWorkerCompleted
         UpscaleProgress.Value = 0
-        If ChainPreview.Items.Count = 0 Then
+        If ChainControl.ListItems.Count = 0 Then
             ChainList.Clear()
         End If
         If e.Cancelled = True Then
@@ -529,6 +477,11 @@ Public Class Form1
                     Dim AcceptExt As Boolean = Model.Package.FileTypes.Contains(Path.GetExtension(NewImage).ToLower)
                     If File.Exists(NewImage) AndAlso AcceptExt = True Then
                         NewImages.Add(NewImage)
+                        If LoadedSettings.BasicSettings.FixPS2 = True Then
+                            If (ChainList.IndexOf(Model) = 0 AndAlso Model.Name <> "TexConv") OrElse (ChainList(0).Name = "TexConv" AndAlso ChainList.IndexOf(Model) = 1) Then
+                                RemovePS2Alpha(NewImage)
+                            End If
+                        End If
                         If LoadedSettings.ExpertSettings.SeamlessMode > 0 Then
                             If (ChainList.IndexOf(Model) = 0 AndAlso Model.Name <> "TexConv") OrElse (ChainList(0).Name = "TexConv" AndAlso ChainList.IndexOf(Model) = 1) Then
                                 Dim SeamlessImage As Bitmap = GetUnlockedImage(NewImage)
@@ -540,21 +493,16 @@ Public Class Form1
                 Next
                 If NewImages.Count > 0 Then
                     Dim BuildProcess As ProcessStartInfo
-                    If Model.PackageType = "Python" Then
-                        If PyDetected = True Then
-                            BuildProcess = New ProcessStartInfo(IIf(DetectedPyPath(0) = "\"c, Root & Model.FileLocation, Model.FileLocation), Quote(Model.Package.Script) & " " & MakeCommand(ChainPaths(0), ChainPaths(1), Model.PackageType, Model.Package))
-                            BuildProcess.RedirectStandardOutput = True
-                            BuildProcess.RedirectStandardError = True
-                            BuildProcess.UseShellExecute = False
-                            BuildProcess.CreateNoWindow = True
-                        Else
-                            BuildProcess = New ProcessStartInfo(Model.Package.Script, MakeCommand(ChainPaths(0), ChainPaths(1), Model.PackageType, Model.Package))
-                            BuildProcess.UseShellExecute = True
-                            BuildProcess.WindowStyle = ProcessWindowStyle.Minimized
-                        End If
+                    If Model.PackageType = "ESRGAN" OrElse Model.PackageType = "Waifu2x Vulkan" Then
+                        BuildProcess = New ProcessStartInfo(Root & Model.FileLocation, MakeCommand(ChainPaths(0), ChainPaths(1), Model.PackageType, Model.Package))
+                        BuildProcess.WorkingDirectory = Directory.GetParent(Root & Model.FileLocation).FullName
+                        BuildProcess.RedirectStandardOutput = True
+                        BuildProcess.RedirectStandardError = True
+                        BuildProcess.UseShellExecute = False
+                        BuildProcess.CreateNoWindow = True
                         Dim BatchProcess As Process = Process.Start(BuildProcess)
                         BatchProcess.WaitForExit()
-                        If LoadedSettings.ExpertSettings.Logging = True AndAlso PyDetected = True Then
+                        If LoadedSettings.ExpertSettings.Logging = True Then
                             WriteLog(BatchProcess, LoadedSettings.Paths.OutputPath)
                         End If
                     Else
@@ -605,6 +553,13 @@ Public Class Form1
                             End If
                         Next
                     End If
+                    If LoadedSettings.BasicSettings.FixPS2 = True Then
+                        For Each NewImage In NewImages
+                            If File.Exists(ChainPaths(0) & "\" & Path.GetFileName(NewImage)) Then
+                                AddPS2Alpha(ChainPaths(0) & "\" & Path.GetFileName(NewImage))
+                            End If
+                        Next
+                    End If
                 End If
                 If WorkHorse.CancellationPending = True Then
                     Directory.Delete(TempPath, True)
@@ -649,7 +604,9 @@ Public Class Form1
                 Return MakeA4KCommand(Source, Dest, Package)
             Case "TexConv"
                 Return MakeTexConvCommand(Source, Dest, Package)
-            Case "Python"
+            Case "xBRZ"
+                Return MakeXBRZCommand(Source, Dest, Package)
+            Case "ESRGAN"
                 Return MakePyCommand(Source, Dest, Package)
         End Select
         Return ""
@@ -658,33 +615,37 @@ Public Class Form1
     Private Sub AddModelToChain(Mode As String, Optional AddPreview As Boolean = True)
         Select Case Mode
             Case "Waifu2x Caffe"
-                If AddPreview = True Then ChainPreview.Items.Add(New ListViewItem("Caffe", 0))
+                ChainControl.ListItems.Add(New DragDropList.DragDropItem(ChainList.Count, "Caffe", ChainThumbs.Item(0)))
                 ChainList.Add(New FormSettings.ChainObject("Caffe", 0, CaffePath, "Waifu2x Caffe", Me))
             Case "Waifu2x Vulkan"
-                If AddPreview = True Then ChainPreview.Items.Add(New ListViewItem("Waifu Vulkan", 1))
+                ChainControl.ListItems.Add(New DragDropList.DragDropItem(ChainList.Count, "Waifu Vulkan", ChainThumbs.Item(1)))
                 ChainList.Add(New FormSettings.ChainObject("Waifu Vulkan", 1, WaifuNcnnPath, "Waifu2x Vulkan", Me))
             Case "RealSR Vulkan"
-                If AddPreview = True Then ChainPreview.Items.Add(New ListViewItem("RealSR Vulkan", 2))
+                ChainControl.ListItems.Add(New DragDropList.DragDropItem(ChainList.Count, "RealSR Vulkan", ChainThumbs.Item(2)))
                 ChainList.Add(New FormSettings.ChainObject("RealSR Vulkan", 2, RealSRNcnnPath, "RealSR Vulkan", Me))
             Case "RealESRGAN Vulkan"
-                If AddPreview = True Then ChainPreview.Items.Add(New ListViewItem("RealESRGAN Vulkan", 8))
+                ChainControl.ListItems.Add(New DragDropList.DragDropItem(ChainList.Count, "RealESRGAN Vulkan", ChainThumbs.Item(8)))
                 ChainList.Add(New FormSettings.ChainObject("RealESRGAN Vulkan", 8, RealESRGNcnnPath, "RealESRGAN Vulkan", Me))
             Case "SRMD Vulkan"
-                If AddPreview = True Then ChainPreview.Items.Add(New ListViewItem("SRMD Vulkan", 3))
+                ChainControl.ListItems.Add(New DragDropList.DragDropItem(ChainList.Count, "SRMD Vulkan", ChainThumbs.Item(3)))
                 ChainList.Add(New FormSettings.ChainObject("SRMD Vulkan", 3, SRMDNcnnPath, "SRMD Vulkan", Me))
             Case "Waifu2x CPP"
-                If AddPreview = True Then ChainPreview.Items.Add(New ListViewItem("Waifu CPP", 4))
+                ChainControl.ListItems.Add(New DragDropList.DragDropItem(ChainList.Count, "Waifu CPP", ChainThumbs.Item(4)))
                 ChainList.Add(New FormSettings.ChainObject("Waifu CPP", 4, WaifuCppPath, "Waifu2x CPP", Me))
             Case "Anime4k CPP"
-                If AddPreview = True Then ChainPreview.Items.Add(New ListViewItem("Anime4K", 5))
+                ChainControl.ListItems.Add(New DragDropList.DragDropItem(ChainList.Count, "Anime4k", ChainThumbs.Item(5)))
                 ChainList.Add(New FormSettings.ChainObject("Anime4k", 5, Anime4kPath, "Anime4k CPP", Me))
             Case "TexConv"
-                If AddPreview = True Then ChainPreview.Items.Add(New ListViewItem("TexConv", 7))
+                ChainControl.ListItems.Add(New DragDropList.DragDropItem(ChainList.Count, "TexConv", ChainThumbs.Item(7)))
                 ChainList.Add(New FormSettings.ChainObject("TexConv", 7, TexConvPath, "TexConv", Me))
-            Case "Python"
-                If AddPreview = True Then ChainPreview.Items.Add(New ListViewItem(PyModel.SelectedItem.ToString, 6))
-                ChainList.Add(New FormSettings.ChainObject(PyModel.SelectedItem.ToString, 6, DetectedPyPath, "Python", Me))
+            Case "xBRZ"
+                ChainControl.ListItems.Add(New DragDropList.DragDropItem(ChainList.Count, "xBRZ", ChainThumbs.Item(0)))
+                ChainList.Add(New FormSettings.ChainObject("xBRZ", 0, xBRZPath, "xBRZ", Me))
+            Case "ESRGAN"
+                ChainControl.ListItems.Add(New DragDropList.DragDropItem(ChainList.Count, "ESRGAN", ChainThumbs.Item(6)))
+                ChainList.Add(New FormSettings.ChainObject("ESRGAN", 6, PyPath, "ESRGAN", Me))
         End Select
+        ChainControl.DrawList(ChainControl.ListItems)
     End Sub
 
 #End Region
@@ -707,7 +668,7 @@ Public Class Form1
     Private Function MakeVulkanCommand(SourceImage As String, NewImage As String, NoNoise As Boolean, Package As FormSettings.VulkanNcnnPackage) As String
         Dim Result As New ArguementString
         Result.AddArguement("-i", Quote(SourceImage))
-        Result.AddArguement("-o", Quote(Path.ChangeExtension(NewImage, Package.Format)))
+        Result.AddArguement("-o", Quote(NewImage))
         Result.AddArguement(LoadedSettings.ExpertSettings.ExpertFlags)
         Result.AddArguement("-s", Package.Scale)
         If NoNoise = False Then Result.AddArguement("-n", Package.Noise)
@@ -770,11 +731,19 @@ Public Class Form1
         Return Result.GetArguements
     End Function
 
+    Private Function MakeXBRZCommand(SourceImage As String, NewImage As String, Package As FormSettings.xBRZPackage) As String
+        Dim Result As New ArguementString
+        Result.AddArguement("", "-" & CInt(Package.Scale) & "xBRZ")
+        Result.AddArguement("", Quote(SourceImage))
+        Result.AddArguement("", Quote(NewImage))
+        Return Result.GetArguements
+    End Function
+
     Private Function MakePyCommand(SourceFolder As String, DestFolder As String, Package As FormSettings.PythonPackage) As String
         Dim Result As New ArguementString
         Result.AddArguement(Quote(Package.Model))
-        Result.AddArguement(Package.InputFlag, Quote(SourceFolder))
-        Result.AddArguement(Package.OutputFlag, Quote(DestFolder))
+        Result.AddArguement("--input", Quote(SourceFolder))
+        Result.AddArguement("--output", Quote(DestFolder))
         For i = 0 To Package.ScriptFlags.Count - 1
             Result.AddArguement(Package.ScriptFlags(i)(0), Package.ScriptFlags(i)(1))
         Next
@@ -828,32 +797,50 @@ Public Class Form1
     End Function
 
     Private Sub Defringe(Source As String, Threshold As Integer)
-        Dim NewImage As Bitmap = GetUnlockedImage(Source)
-        Dim rect As Rectangle = New Rectangle(0, 0, NewImage.Width, NewImage.Height)
-        Dim bmpData As Imaging.BitmapData = NewImage.LockBits(rect, Imaging.ImageLockMode.ReadWrite, Imaging.PixelFormat.Format32bppArgb)
-        Dim ptr As IntPtr = bmpData.Scan0
-        Dim bytes As Integer = Math.Abs(bmpData.Stride) * NewImage.Height
-        Dim rgbValues As Byte() = New Byte(bytes - 1) {}
-        Runtime.InteropServices.Marshal.Copy(ptr, rgbValues, 0, bytes)
-        For i = 3 To rgbValues.Length - 1 Step 4
-            If rgbValues(i) < Threshold Then
-                rgbValues(i) = 0
-            End If
+        Dim NewImage As New DirectBitmap(GetUnlockedImage(Source))
+        For X = 0 To NewImage.Width - 1
+            For Y = 0 To NewImage.Height - 1
+                If NewImage.GetPixel(X, Y).A < Threshold Then
+                    NewImage.SetPixel(X, Y, Color.Transparent)
+                End If
+            Next
         Next
-        Runtime.InteropServices.Marshal.Copy(rgbValues, 0, ptr, bytes)
-        NewImage.UnlockBits(bmpData)
-        NewImage.Save(Source)
+        NewImage.Bitmap.Save(Source)
     End Sub
 
-    Private Function Shrink(Source As Image, Width As Integer, Height As Integer) As Image
-        Dim SmallImage As New Bitmap(Width, Height)
-        SmallImage.SetResolution(300, 300)
-        Using g As Graphics = Graphics.FromImage(SmallImage)
-            g.InterpolationMode = Drawing2D.InterpolationMode.HighQualityBicubic
-            g.DrawImage(Source, 0, 0, Width, Height)
-        End Using
-        Return SmallImage
-    End Function
+    Private Sub RemovePS2Alpha(Source As String)
+        Dim NewImage As New DirectBitmap(GetUnlockedImage(Source))
+        Dim AlphaMax As Integer = 0
+        For X = 0 To NewImage.Width - 1
+            For Y = 0 To NewImage.Height - 1
+                Dim TempColor As Color = NewImage.GetPixel(X, Y)
+                If TempColor.A > AlphaMax Then
+                    AlphaMax = TempColor.A
+                End If
+                If Not AlphaMax <= 128 Then
+                    NewImage.Dispose()
+                    Exit Sub
+                End If
+                If TempColor.A <> 0 Then
+                    NewImage.SetPixel(X, Y, Color.FromArgb((TempColor.A * 2) - 1, TempColor.R, TempColor.G, TempColor.B))
+                End If
+            Next
+        Next
+        NewImage.Bitmap.Save(Source)
+    End Sub
+
+    Private Sub AddPS2Alpha(Source As String)
+        Dim NewImage As New DirectBitmap(GetUnlockedImage(Source))
+        For X = 0 To NewImage.Width - 1
+            For Y = 0 To NewImage.Height - 1
+                Dim TempColor As Color = NewImage.GetPixel(X, Y)
+                If TempColor.A <> 0 Then
+                    NewImage.SetPixel(X, Y, Color.FromArgb((TempColor.A + 1) / 2, TempColor.R, TempColor.G, TempColor.B))
+                End If
+            Next
+        Next
+        NewImage.Bitmap.Save(Source)
+    End Sub
 
 #End Region
 
@@ -927,20 +914,6 @@ Public Class Form1
         Return 512
     End Function
 
-    Private Function GetPythonPath() As String
-        Dim Result As String = ""
-        Dim PathVar As String = Environment.GetEnvironmentVariable("PATH")
-        If PathVar IsNot Nothing Then
-            For Each PathString In PathVar.Split(";"c)
-                If File.Exists(PathString & "\python.exe") Then
-                    Result = PathString & "\python.exe"
-                    Exit For
-                End If
-            Next
-        End If
-        Return Result
-    End Function
-
     Private Sub GetPyArgs(Source As String)
         PyArguements.Rows.Clear()
         Dim Result As New List(Of String)
@@ -974,10 +947,6 @@ Public Class Form1
         Dim UnlockedImage As New Bitmap(SourceImage)
         SourceImage.Dispose()
         Return UnlockedImage
-    End Function
-
-    Private Function GetListIndex(ListItem As ListViewItem) As Integer
-        Return ((ListItem.Position.X - 21) / 107) + (4 * Math.Floor(ListItem.Position.Y / 107))
     End Function
 
     Private Function GetFolder() As String
