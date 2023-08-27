@@ -21,34 +21,20 @@ RealSR Vulkan|4-4|❌|✔️|✔️|❌|*Slow*|High|[Link](https://github.com/ni
 SRMD Vulkan|2-4|✔️|✔️|✔️|❌|Average|Medium|[Link](https://github.com/nihui/srmd-ncnn-vulkan/releases)
 Waifu2x CPP|1-8|✔️|✔️|❌|❌|Quick|Low|[Link](https://github.com/DeadSix27/waifu2x-converter-cpp/releases)
 Anime4K CPP|1-8|❌|✔️|❌|✔️|Quick|Low|[Link](https://github.com/TianZerL/Anime4KCPP)
+xBRZ|2-6|❌|✔️|❌|❌|*Quick*|Low|[Link](https://sourceforge.net/projects/xbrz)
 
 ## Texconv
 
-AutoCrispy also supports <a href="https://github.com/Microsoft/DirectXTex/wiki/Texconv" target="_blank">Microsoft's Texconv Utility</a> for processing DDS textures. Most DDS formats are supported, as well as many image formats.  When chaining, ensure that the backends you have selected support the format you have chosen (PNG is widely supported).
+AutoCrispy supports <a href="https://github.com/Microsoft/DirectXTex/wiki/Texconv" target="_blank">Microsoft's Texconv Utility</a> for processing DDS textures. Most DDS formats are supported, as well as many image formats.  When chaining, ensure that the backends you have selected support the format you have chosen (PNG is widely supported).
 
 To use texconv, place it in the folder with AutoCrispy, or in it's own folder in AutoCrispy's folder. To set up for DDS files, set the first item in your chain to Texconv, set to "DDS Input". Then, set the last item to Texconv, set to "DDS Output".
 
 ## ESRGAN
 
-It is also possible to use ESRGAN. For convenience, a prebuilt, portable installation can be found here:<br />
+It is possible to use ESRGAN. A PyInstalled version is provided here for use with AutoCrispy:<br />
 https://github.com/WalkerMx/ESRGAN_Python_Embedded/releases
 
-This does not include any models. [They can be found here.](https://upscale.wiki/wiki/Model_Database)
-
-Alternatively, the setup guide can be found here:<br />
-https://upscale.wiki/wiki/ESRGAN_Installation_Guide_for_Windows
-
-## GFPGAN
-
-Recently, Support was added for GFPGAN.  This feature requires the latest Embedded Python Build:<br />
-https://github.com/WalkerMx/ESRGAN_Python_Embedded/releases
-
-Also Required is the GFPGAN Model:<br />
-https://github.com/TencentARC/GFPGAN/releases/download/v1.3.0/GFPGANv1.3.pth
-
-Place the Model in the 'models' folder, inside the 'esrgan' folder.  When using AutoCrispy, Select Python as the Backend, 'inference_gfpgan.py' as the Script, and 'GFPGANv1.3.pth' as the model.
-
-Note that the 'inference_gfpgan.py' from the Embedded Python Build has been modified to work with AutoCrispy! 
+This does not include any models. [They can be found here.](https://openmodeldb.info/)
 
 ## How to use:
     -Toss AutoCrispy into the folder from the backend(s) you chose, and run it.
