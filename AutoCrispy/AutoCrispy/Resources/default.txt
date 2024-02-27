@@ -113,32 +113,8 @@
     <Model></Model>
     <InputFlag>--input</InputFlag>
     <OutputFlag>--output</OutputFlag>
-    <ScriptFlags>
-      <ArrayOfString>
-        <string>--tile_size</string>
-        <string>512</string>
-      </ArrayOfString>
-      <ArrayOfString>
-        <string>--seamless</string>
-        <string>False</string>
-      </ArrayOfString>
-      <ArrayOfString>
-        <string>--cpu</string>
-        <string>False</string>
-      </ArrayOfString>
-      <ArrayOfString>
-        <string>--binary_alpha</string>
-        <string>False</string>
-      </ArrayOfString>
-      <ArrayOfString>
-        <string>--alpha_threshold</string>
-        <string>.5</string>
-      </ArrayOfString>
-      <ArrayOfString>
-        <string>--alpha_boundary_offset</string>
-        <string>.2</string>
-      </ArrayOfString>
-    </ScriptFlags>
+    <TileSize>512</TileSize>
+    <CPUOnly>false</CPUOnly>
     <FileTypes>
       <string>.png</string>
       <string>.jpg</string>

@@ -1,5 +1,4 @@
-﻿Imports System.Reflection
-
+﻿
 Public Class DragDropList
 
     Private ListImage As Bitmap

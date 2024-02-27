@@ -80,10 +80,10 @@ Partial Class Form1
         Me.AnimeCppPreFilters = New System.Windows.Forms.CheckedListBox()
         Me.Label20 = New System.Windows.Forms.Label()
         Me.PyGroup = New System.Windows.Forms.GroupBox()
-        Me.PyArguements = New System.Windows.Forms.DataGridView()
-        Me.PyFlag = New System.Windows.Forms.DataGridViewTextBoxColumn()
-        Me.PyValue = New System.Windows.Forms.DataGridViewTextBoxColumn()
+        Me.PyCPU = New System.Windows.Forms.CheckBox()
+        Me.PyTileSize = New System.Windows.Forms.NumericUpDown()
         Me.PyModel = New System.Windows.Forms.ComboBox()
+        Me.Label25 = New System.Windows.Forms.Label()
         Me.Label26 = New System.Windows.Forms.Label()
         Me.WorkHorse = New System.ComponentModel.BackgroundWorker()
         Me.ChainGroup = New System.Windows.Forms.TabPage()
@@ -134,6 +134,7 @@ Partial Class Form1
         Me.xBRZGroup = New System.Windows.Forms.GroupBox()
         Me.Label30 = New System.Windows.Forms.Label()
         Me.xBRZScale = New System.Windows.Forms.NumericUpDown()
+        Me.HotKeyCheckbox = New System.Windows.Forms.CheckBox()
         Me.CaffeGroup.SuspendLayout()
         CType(Me.CaffeScale, System.ComponentModel.ISupportInitialize).BeginInit()
         CType(Me.CaffeNoise, System.ComponentModel.ISupportInitialize).BeginInit()
@@ -149,7 +150,7 @@ Partial Class Form1
         Me.AnimeCPPGroup.SuspendLayout()
         CType(Me.AnimeCPPScale, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.PyGroup.SuspendLayout()
-        CType(Me.PyArguements, System.ComponentModel.ISupportInitialize).BeginInit()
+        CType(Me.PyTileSize, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.ChainGroup.SuspendLayout()
         CType(Me.ChainPreview, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.ChainContext.SuspendLayout()
@@ -797,8 +798,10 @@ Partial Class Form1
         '
         'PyGroup
         '
-        Me.PyGroup.Controls.Add(Me.PyArguements)
+        Me.PyGroup.Controls.Add(Me.PyCPU)
+        Me.PyGroup.Controls.Add(Me.PyTileSize)
         Me.PyGroup.Controls.Add(Me.PyModel)
+        Me.PyGroup.Controls.Add(Me.Label25)
         Me.PyGroup.Controls.Add(Me.Label26)
         Me.PyGroup.Location = New System.Drawing.Point(964, 652)
         Me.PyGroup.Margin = New System.Windows.Forms.Padding(4, 5, 4, 5)
@@ -807,34 +810,27 @@ Partial Class Form1
         Me.PyGroup.Size = New System.Drawing.Size(594, 308)
         Me.PyGroup.TabIndex = 12
         Me.PyGroup.TabStop = False
-        Me.PyGroup.Text = "Python"
+        Me.PyGroup.Text = "ESRGAN"
         '
-        'PyArguements
+        'PyCPU
         '
-        Me.PyArguements.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.AllCells
-        Me.PyArguements.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize
-        Me.PyArguements.Columns.AddRange(New System.Windows.Forms.DataGridViewColumn() {Me.PyFlag, Me.PyValue})
-        Me.PyArguements.Location = New System.Drawing.Point(274, 29)
-        Me.PyArguements.Margin = New System.Windows.Forms.Padding(4, 5, 4, 5)
-        Me.PyArguements.Name = "PyArguements"
-        Me.PyArguements.RowHeadersWidth = 5
-        Me.PyArguements.ScrollBars = System.Windows.Forms.ScrollBars.Vertical
-        Me.PyArguements.Size = New System.Drawing.Size(310, 269)
-        Me.PyArguements.TabIndex = 3
+        Me.PyCPU.AutoSize = True
+        Me.PyCPU.Location = New System.Drawing.Point(452, 75)
+        Me.PyCPU.Name = "PyCPU"
+        Me.PyCPU.Size = New System.Drawing.Size(68, 24)
+        Me.PyCPU.TabIndex = 5
+        Me.PyCPU.Text = "CPU"
+        Me.PyCPU.UseVisualStyleBackColor = True
         '
-        'PyFlag
+        'PyTileSize
         '
-        Me.PyFlag.HeaderText = "Flag"
-        Me.PyFlag.MinimumWidth = 8
-        Me.PyFlag.Name = "PyFlag"
-        Me.PyFlag.Width = 76
-        '
-        'PyValue
-        '
-        Me.PyValue.HeaderText = "Value"
-        Me.PyValue.MinimumWidth = 8
-        Me.PyValue.Name = "PyValue"
-        Me.PyValue.Width = 86
+        Me.PyTileSize.Location = New System.Drawing.Point(351, 31)
+        Me.PyTileSize.Maximum = New Decimal(New Integer() {1024, 0, 0, 0})
+        Me.PyTileSize.Minimum = New Decimal(New Integer() {64, 0, 0, 0})
+        Me.PyTileSize.Name = "PyTileSize"
+        Me.PyTileSize.Size = New System.Drawing.Size(169, 26)
+        Me.PyTileSize.TabIndex = 4
+        Me.PyTileSize.Value = New Decimal(New Integer() {512, 0, 0, 0})
         '
         'PyModel
         '
@@ -845,6 +841,16 @@ Partial Class Form1
         Me.PyModel.Name = "PyModel"
         Me.PyModel.Size = New System.Drawing.Size(169, 28)
         Me.PyModel.TabIndex = 2
+        '
+        'Label25
+        '
+        Me.Label25.AutoSize = True
+        Me.Label25.Location = New System.Drawing.Point(270, 35)
+        Me.Label25.Margin = New System.Windows.Forms.Padding(4, 0, 4, 0)
+        Me.Label25.Name = "Label25"
+        Me.Label25.Size = New System.Drawing.Size(72, 20)
+        Me.Label25.TabIndex = 1
+        Me.Label25.Text = "Tile Size:"
         '
         'Label26
         '
@@ -1063,6 +1069,7 @@ Partial Class Form1
         '
         'AdvSettingsGroup
         '
+        Me.AdvSettingsGroup.Controls.Add(Me.HotKeyCheckbox)
         Me.AdvSettingsGroup.Controls.Add(Me.SeamMargin)
         Me.AdvSettingsGroup.Controls.Add(Me.SeamScale)
         Me.AdvSettingsGroup.Controls.Add(Me.SeamsBox)
@@ -1382,6 +1389,16 @@ Partial Class Form1
         Me.xBRZScale.TabIndex = 13
         Me.xBRZScale.Value = New Decimal(New Integer() {2, 0, 0, 0})
         '
+        'HotKeyCheckbox
+        '
+        Me.HotKeyCheckbox.AutoSize = True
+        Me.HotKeyCheckbox.Location = New System.Drawing.Point(208, 48)
+        Me.HotKeyCheckbox.Name = "HotKeyCheckbox"
+        Me.HotKeyCheckbox.Size = New System.Drawing.Size(127, 24)
+        Me.HotKeyCheckbox.TabIndex = 17
+        Me.HotKeyCheckbox.Text = "Send Hotkey"
+        Me.HotKeyCheckbox.UseVisualStyleBackColor = True
+        '
         'Form1
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(9.0!, 20.0!)
@@ -1425,7 +1442,7 @@ Partial Class Form1
         CType(Me.AnimeCPPScale, System.ComponentModel.ISupportInitialize).EndInit()
         Me.PyGroup.ResumeLayout(False)
         Me.PyGroup.PerformLayout()
-        CType(Me.PyArguements, System.ComponentModel.ISupportInitialize).EndInit()
+        CType(Me.PyTileSize, System.ComponentModel.ISupportInitialize).EndInit()
         Me.ChainGroup.ResumeLayout(False)
         CType(Me.ChainPreview, System.ComponentModel.ISupportInitialize).EndInit()
         Me.ChainContext.ResumeLayout(False)
@@ -1494,9 +1511,6 @@ Partial Class Form1
     Friend WithEvents PyGroup As GroupBox
     Friend WithEvents PyModel As ComboBox
     Friend WithEvents Label26 As Label
-    Friend WithEvents PyArguements As DataGridView
-    Friend WithEvents PyFlag As DataGridViewTextBoxColumn
-    Friend WithEvents PyValue As DataGridViewTextBoxColumn
     Friend WithEvents UpscaleProgress As ProgressBar
     Friend WithEvents WorkHorse As System.ComponentModel.BackgroundWorker
     Friend WithEvents DefringeThresh As NumericUpDown
@@ -1554,4 +1568,8 @@ Partial Class Form1
     Friend WithEvents xBRZScale As NumericUpDown
     Friend WithEvents PS2Check As CheckBox
     Friend WithEvents ChainPreview As PictureBox
+    Friend WithEvents PyCPU As CheckBox
+    Friend WithEvents PyTileSize As NumericUpDown
+    Friend WithEvents Label25 As Label
+    Friend WithEvents HotKeyCheckbox As CheckBox
 End Class

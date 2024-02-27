@@ -47,6 +47,10 @@
         'Load xBRZ Settings
         Source.xBRZScale.Value = LoadedSettings.xBRZPak.Scale
 
+        'Load ESRGAN Settings
+        Source.PyTileSize.Value = LoadedSettings.PythonPak.TileSize
+        Source.PyCPU.Checked = LoadedSettings.PythonPak.CPUOnly
+
         'Load UI Paths
         Source.InputTextBox.Text = LoadedSettings.Paths.InputPath
         Source.OutputTextBox.Text = LoadedSettings.Paths.OutputPath
@@ -129,7 +133,7 @@
             AnimePak = New Anime4kPackage(Source.AnimeCPPScale.Value, Source.AnimeCppPre.Checked, Source.AnimeCppPost.Checked, Source.AnimeCppPreFilter.Checked, Source.AnimeCppPostFilter.Checked, GetFilters(Source.AnimeCppPreFilters), GetFilters(Source.AnimeCppPostFilters), Source.AnimeCPPGpu.Checked, Source.AnimeCPPCnn.Checked)
             TexConvPak = New DDxPackage(Source.DDxModeBox.SelectedItem, Source.DDxFormatLabel.Text.Replace("Format: ", ""), Source.DDxConvFormat.SelectedItem, Source.FlComboBox.SelectedItem, Source.Dx9CheckBox.Checked, Source.Dx10Checkbox.Checked, Source.SepAlphaCheckBox.Checked, Source.PmAlphaCheckBox.Checked, Source.AlphaCheckBox.Checked)
             xBRZPak = New xBRZPackage(Source.xBRZScale.Value)
-            PythonPak = New PythonPackage(GetPyStr(Source.PyModels, Source.PyModel.SelectedIndex), Source.PyArguements)
+            PythonPak = New PythonPackage(GetPyStr(Source.PyModels, Source.PyModel.SelectedIndex), Source.PyTileSize.Value, Source.PyCPU.Checked)
             Paths = New ProgramPaths(Source.InputTextBox.Text, Source.OutputTextBox.Text, Source.ExeTextBox.Text)
             BasicSettings = New ProgramSettings(Source.ExeComboBox.SelectedItem, Source.ThreadComboBox.SelectedIndex, Source.NumericThreads.Value, Source.DefringeCheck.Checked, Source.PS2Check.Checked, Source.DefringeThresh.Value, Source.TabGroup.SelectedIndex)
             ExpertSettings = New AdvancedSettings(Source.DebugCheckbox.Checked, Source.ExpertSettingsBox.Text, Source.CleanupCheckBox.Checked, Source.SeamsBox.SelectedIndex, Source.SeamScale.Value, Source.SeamMargin.Value, Source.PortableCheckBox.Checked)
@@ -230,7 +234,7 @@
                 Case "xBRZ"
                     Package = New xBRZPackage(Source.xBRZScale.Value)
                 Case "ESRGAN"
-                    Package = New PythonPackage(Source.PyModels(Source.PyModel.SelectedIndex), Source.PyArguements)
+                    Package = New PythonPackage(Source.PyModels(Source.PyModel.SelectedIndex), Source.PyTileSize.Value, Source.PyCPU.Checked)
             End Select
         End Sub
     End Structure
@@ -355,20 +359,13 @@
 
     <Serializable()> Public Structure PythonPackage
         Public Property Model As String
-        Public Property ScriptFlags As List(Of String())
+        Public Property TileSize As Integer
+        Public Property CPUOnly As Boolean
         Public Property FileTypes As List(Of String)
-        Public Sub New(_Model As String, Data As DataGridView)
+        Public Sub New(_Model As String, _TileSize As Integer, _CPUOnly As Boolean)
             Model = _Model
-            ScriptFlags = New List(Of String())
-            For i = 0 To Data.Rows.Count - 2
-                If Not Data.Rows(i).Cells(0).Value = Nothing Then
-                    If Data.Rows(i).Cells(1).Value = Nothing Then
-                        ScriptFlags.Add({Data.Rows(i).Cells(0).Value.ToString, ""})
-                    Else
-                        ScriptFlags.Add({Data.Rows(i).Cells(0).Value.ToString, Data.Rows(i).Cells(1).Value.ToString})
-                    End If
-                End If
-            Next
+            TileSize = _TileSize
+            CPUOnly = _CPUOnly
             FileTypes = {".png", ".jpg", ".bmp"}.ToList
         End Sub
     End Structure

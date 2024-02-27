@@ -40,6 +40,9 @@ Public Class Form1
         Public Sub AddArguement(Flag As String, Value As String)
             Arguements += " " & Flag & " " & Value
         End Sub
+        Public Sub AddArguement(Flag As String, Enabled As Boolean)
+            If Enabled Then Arguements += " " & Flag
+        End Sub
     End Structure
 
 #End Region
@@ -77,6 +80,9 @@ Public Class Form1
         End If
         ChainControl.DrawList(ChainControl.ListItems)
         WatchDogButton.Select()
+        If Environment.GetCommandLineArgs.Count > 1 Then
+            WatchDogButton_Click(sender, e)
+        End If
     End Sub
 
     Private Sub Form1_Closing(sender As Object, e As EventArgs) Handles MyBase.Closing
@@ -132,9 +138,6 @@ Public Class Form1
                 PyModels.Clear()
                 PyModel.Items.Clear()
                 ExeComboBox.Items.Add("ESRGAN")
-                PyArguements.Rows.Clear()
-                PyArguements.Rows.Add(New String() {"--tile_size", "512"})
-                PyArguements.Rows.Add(New String() {"--cpu", "False"})
                 PyPath = "\" & IIf(Folder <> Root, Path.GetFileName(Folder), "") & "\esrgan.exe"
                 For Each SubFolder As String In Directory.GetDirectories(Folder)
                     Dim Models As String() = Directory.EnumerateFiles(SubFolder, "*.pth").ToArray
@@ -425,6 +428,7 @@ Public Class Form1
 
     Private Sub WorkHorse_ProgressChanged(sender As Object, e As System.ComponentModel.ProgressChangedEventArgs) Handles WorkHorse.ProgressChanged
         UpscaleProgress.Value = e.ProgressPercentage
+        If (HotKeyCheckbox.Checked = True) AndAlso (GetActiveWindow <> Me.Handle) Then SendKeys.Send("%`") : Threading.Thread.Sleep(200) : SendKeys.Send("%`")
     End Sub
 
     Private Sub WorkHorse_RunWorkerCompleted(sender As Object, e As System.ComponentModel.RunWorkerCompletedEventArgs) Handles WorkHorse.RunWorkerCompleted
@@ -493,7 +497,7 @@ Public Class Form1
                 Next
                 If NewImages.Count > 0 Then
                     Dim BuildProcess As ProcessStartInfo
-                    If Model.PackageType = "ESRGAN" OrElse Model.PackageType = "Waifu2x Vulkan" Then
+                    If Model.PackageType = "ESRGAN" OrElse Model.PackageType.Contains("Vulkan") Then
                         BuildProcess = New ProcessStartInfo(Root & Model.FileLocation, MakeCommand(ChainPaths(0), ChainPaths(1), Model.PackageType, Model.Package))
                         BuildProcess.WorkingDirectory = Directory.GetParent(Root & Model.FileLocation).FullName
                         BuildProcess.RedirectStandardOutput = True
@@ -658,8 +662,8 @@ Public Class Form1
         Result.AddArguement("-o", Quote(NewImage))
         Result.AddArguement(LoadedSettings.ExpertSettings.ExpertFlags)
         Result.AddArguement("-m", Package.Mode)
-        Result.AddArguement("-s", Package.Scale)
-        Result.AddArguement("-n", Package.Noise)
+        Result.AddArguement("-s", Package.Scale.ToString)
+        Result.AddArguement("-n", Package.Noise.ToString)
         Result.AddArguement("-p", Package.Process)
         Result.AddArguement("-t", IIf(Package.TAA = True, 1, 0))
         Return Result.GetArguements
@@ -670,8 +674,8 @@ Public Class Form1
         Result.AddArguement("-i", Quote(SourceImage))
         Result.AddArguement("-o", Quote(NewImage))
         Result.AddArguement(LoadedSettings.ExpertSettings.ExpertFlags)
-        Result.AddArguement("-s", Package.Scale)
-        If NoNoise = False Then Result.AddArguement("-n", Package.Noise)
+        Result.AddArguement("-s", Package.Scale.ToString)
+        If NoNoise = False Then Result.AddArguement("-n", Package.Noise.ToString)
         Result.AddArguement("-f", Package.Format)
         Result.AddArguement(IIf(Package.TAA = True, "-x", ""))
         Return Result.GetArguements
@@ -683,11 +687,11 @@ Public Class Form1
         Result.AddArguement("-o", Quote(Path.ChangeExtension(NewImage, Package.Format)))
         Result.AddArguement(LoadedSettings.ExpertSettings.ExpertFlags)
         Result.AddArguement("-m", Package.Mode)
-        Result.AddArguement("--scale-ratio", Package.Scale)
-        Result.AddArguement("--noise-level", Package.Noise)
+        Result.AddArguement("--scale-ratio", Package.Scale.ToString)
+        Result.AddArguement("--noise-level", Package.Noise.ToString)
         Result.AddArguement("-f", Package.Format)
-        Result.AddArguement(IIf(Package.GPU = False, "--disable-gpu", ""))
-        Result.AddArguement(IIf(Package.ForceOpenCL = True, "--force-OpenCL", ""))
+        Result.AddArguement("--disable-gpu", Package.GPU)
+        Result.AddArguement("--force-OpenCL", Package.ForceOpenCL)
         Return Result.GetArguements
     End Function
 
@@ -696,17 +700,17 @@ Public Class Form1
         Result.AddArguement("-i", Quote(SourceImage))
         Result.AddArguement("-o", Quote(NewImage))
         Result.AddArguement(LoadedSettings.ExpertSettings.ExpertFlags)
-        Result.AddArguement("-p", Package.Passes)
-        Result.AddArguement("-n", Package.PushColors)
-        Result.AddArguement("-c", Package.PushColorStrength)
-        Result.AddArguement("-g", Package.PushGradStrength)
-        Result.AddArguement("-z", Package.Scale)
-        Result.AddArguement(IIf(Package.PreProcess = True, "-b", ""))
-        Result.AddArguement(IIf(Package.PreFilter = True, "-r " & Package.PreFilterType, ""))
-        Result.AddArguement(IIf(Package.PostProcess = True, "-a", ""))
-        Result.AddArguement(IIf(Package.PostFilter = True, "-e " & Package.PostFilterType, ""))
-        Result.AddArguement(IIf(Package.GPU = True, "-q", ""))
-        Result.AddArguement(IIf(Package.CNN = True, "-w", ""))
+        Result.AddArguement("-p", Package.Passes.ToString)
+        Result.AddArguement("-n", Package.PushColors.ToString)
+        Result.AddArguement("-c", Package.PushColorStrength.ToString)
+        Result.AddArguement("-g", Package.PushGradStrength.ToString)
+        Result.AddArguement("-z", Package.Scale.ToString)
+        Result.AddArguement("-b", Package.PreProcess)
+        Result.AddArguement("-r " & Package.PreFilterType, Package.PreFilter)
+        Result.AddArguement("-a", Package.PostProcess)
+        Result.AddArguement("-e " & Package.PostFilterType, Package.PostFilter)
+        Result.AddArguement("-q", Package.GPU)
+        Result.AddArguement("-w", Package.CNN)
         Result.AddArguement("-A")
         Return Result.GetArguements
     End Function
@@ -719,14 +723,14 @@ Public Class Form1
             Case "DDS Input"
                 Result.AddArguement("-ft " & Package.ConversionFormat.ToLower)
             Case "DDS Output"
-                Result.AddArguement(IIf(Package.FeatureLevel = "11.0", "", "-fl " & Package.FeatureLevel))
-                Result.AddArguement(IIf(Package.ForceDx9 = True, "-dx9", ""))
-                Result.AddArguement(IIf(Package.ForceDx10 = True, "-dx10", ""))
+                Result.AddArguement("-fl " & Package.FeatureLevel, Package.FeatureLevel <> "11.0")
+                Result.AddArguement("-dx9", Package.ForceDx9)
+                Result.AddArguement("-dx10", Package.ForceDx10)
         End Select
-        Result.AddArguement(IIf(Package.SeperateAlpha = True, "-sepalpha", ""))
-        Result.AddArguement(IIf(Package.PremultiplyAlpha = True, "-pmalpha", ""))
-        Result.AddArguement(IIf(Package.StraightAlpha = True, "-alpha", ""))
-        Result.AddArguement("-o", Quote(RemoveSlash(Path.GetDirectoryName(NewImage))))
+        Result.AddArguement("-sepalpha", Package.SeperateAlpha)
+        Result.AddArguement("-pmalpha", Package.PremultiplyAlpha)
+        Result.AddArguement("-alpha", Package.StraightAlpha)
+        Result.AddArguement("-o", Quote(Path.GetDirectoryName(NewImage).TrimEnd({"\"c, "/"c})))
         Result.AddArguement(Quote(SourceImage))
         Return Result.GetArguements
     End Function
@@ -744,9 +748,8 @@ Public Class Form1
         Result.AddArguement(Quote(Package.Model))
         Result.AddArguement("--input", Quote(SourceFolder))
         Result.AddArguement("--output", Quote(DestFolder))
-        For i = 0 To Package.ScriptFlags.Count - 1
-            Result.AddArguement(Package.ScriptFlags(i)(0), Package.ScriptFlags(i)(1))
-        Next
+        Result.AddArguement("--tile_size", Package.TileSize.ToString)
+        Result.AddArguement("--cpu", Package.CPUOnly.ToString)
         Return Result.GetArguements
     End Function
 
@@ -800,7 +803,7 @@ Public Class Form1
         Dim NewImage As New DirectBitmap(GetUnlockedImage(Source))
         For X = 0 To NewImage.Width - 1
             For Y = 0 To NewImage.Height - 1
-                If NewImage.GetPixel(X, Y).A < Threshold Then
+                If NewImage.GetPixel(X, Y).A <Threshold Then
                     NewImage.SetPixel(X, Y, Color.Transparent)
                 End If
             Next
@@ -885,6 +888,8 @@ Public Class Form1
 
 #Region "Utils"
 
+    Private Declare Function GetActiveWindow Lib "user32" Alias "GetActiveWindow" () As IntPtr
+
     Private Function GetMissingFiles(Path1 As String, Path2 As String) As String()
         Dim Result As New List(Of String)
         Dim Path1MasterList = Directory.GetFiles(Path1, "*.*", SearchOption.AllDirectories)
@@ -914,34 +919,6 @@ Public Class Form1
         Return 512
     End Function
 
-    Private Sub GetPyArgs(Source As String)
-        PyArguements.Rows.Clear()
-        Dim Result As New List(Of String)
-        Dim matches As Text.RegularExpressions.MatchCollection = System.Text.RegularExpressions.Regex.Matches(Source, "parser\.add_argument\((.*?)\)")
-        For Each m As Text.RegularExpressions.Match In matches
-            For Each c As Text.RegularExpressions.Capture In m.Captures
-                Result.Add(c.Value.Remove(0, 20).Replace(")", ""))
-            Next
-        Next
-        If Result.Count > 0 Then
-            Dim CurrentRow As Integer = 0
-            For i = 0 To Result.Count - 1
-                Dim ArgCheck = Split(Result(i), ",")
-                If Not ArgCheck(0).Contains("model") AndAlso Not ArgCheck(0).Contains("-i") AndAlso Not ArgCheck(0).Contains("-o") Then
-                    PyArguements.Rows.Add()
-                    PyArguements.Rows(CurrentRow).Cells(0).Value = ArgCheck(0).Replace("'", "")
-                    For j = 0 To ArgCheck.Count - 1
-                        If ArgCheck(j).Split("=")(0).Trim = "default" Then
-                            PyArguements.Rows(CurrentRow).Cells(1).Value = ArgCheck(1).Split("=")(1).Replace("'", "")
-                            Exit For
-                        End If
-                    Next
-                    CurrentRow += 1
-                End If
-            Next
-        End If
-    End Sub
-
     Private Function GetUnlockedImage(Source As String) As Bitmap
         Dim SourceImage As Bitmap = Image.FromFile(Source)
         Dim UnlockedImage As New Bitmap(SourceImage)
@@ -960,15 +937,6 @@ Public Class Form1
 
     Private Function Quote(Source As String) As String
         Return ControlChars.Quote & Source & ControlChars.Quote
-    End Function
-
-    Private Function RemoveSlash(Source As String) As String
-        Dim Result As String = Source
-        Dim ResultCount As Integer = Result.Length
-        If Result(ResultCount - 1) = "\"c Then
-            Result = Result.Remove(ResultCount - 1)
-        End If
-        Return Result
     End Function
 
     Private Sub WriteLog(Source As Process, SaveLoc As String)
