@@ -107,6 +107,7 @@ Partial Class Form1
         Me.Label2 = New System.Windows.Forms.Label()
         Me.TabGroup = New System.Windows.Forms.TabControl()
         Me.AdvSettingsGroup = New System.Windows.Forms.TabPage()
+        Me.HotKeyCheckbox = New System.Windows.Forms.CheckBox()
         Me.SeamMargin = New System.Windows.Forms.NumericUpDown()
         Me.SeamScale = New System.Windows.Forms.NumericUpDown()
         Me.SeamsBox = New System.Windows.Forms.ComboBox()
@@ -134,7 +135,7 @@ Partial Class Form1
         Me.xBRZGroup = New System.Windows.Forms.GroupBox()
         Me.Label30 = New System.Windows.Forms.Label()
         Me.xBRZScale = New System.Windows.Forms.NumericUpDown()
-        Me.HotKeyCheckbox = New System.Windows.Forms.CheckBox()
+        Me.AlphaComboBox = New System.Windows.Forms.ComboBox()
         Me.CaffeGroup.SuspendLayout()
         CType(Me.CaffeScale, System.ComponentModel.ISupportInitialize).BeginInit()
         CType(Me.CaffeNoise, System.ComponentModel.ISupportInitialize).BeginInit()
@@ -1069,6 +1070,7 @@ Partial Class Form1
         '
         'AdvSettingsGroup
         '
+        Me.AdvSettingsGroup.Controls.Add(Me.AlphaComboBox)
         Me.AdvSettingsGroup.Controls.Add(Me.HotKeyCheckbox)
         Me.AdvSettingsGroup.Controls.Add(Me.SeamMargin)
         Me.AdvSettingsGroup.Controls.Add(Me.SeamScale)
@@ -1089,6 +1091,16 @@ Partial Class Form1
         Me.AdvSettingsGroup.TabIndex = 2
         Me.AdvSettingsGroup.Text = "Advanced"
         Me.AdvSettingsGroup.UseVisualStyleBackColor = True
+        '
+        'HotKeyCheckbox
+        '
+        Me.HotKeyCheckbox.AutoSize = True
+        Me.HotKeyCheckbox.Location = New System.Drawing.Point(208, 48)
+        Me.HotKeyCheckbox.Name = "HotKeyCheckbox"
+        Me.HotKeyCheckbox.Size = New System.Drawing.Size(127, 24)
+        Me.HotKeyCheckbox.TabIndex = 17
+        Me.HotKeyCheckbox.Text = "Send Hotkey"
+        Me.HotKeyCheckbox.UseVisualStyleBackColor = True
         '
         'SeamMargin
         '
@@ -1389,15 +1401,14 @@ Partial Class Form1
         Me.xBRZScale.TabIndex = 13
         Me.xBRZScale.Value = New Decimal(New Integer() {2, 0, 0, 0})
         '
-        'HotKeyCheckbox
+        'AlphaComboBox
         '
-        Me.HotKeyCheckbox.AutoSize = True
-        Me.HotKeyCheckbox.Location = New System.Drawing.Point(208, 48)
-        Me.HotKeyCheckbox.Name = "HotKeyCheckbox"
-        Me.HotKeyCheckbox.Size = New System.Drawing.Size(127, 24)
-        Me.HotKeyCheckbox.TabIndex = 17
-        Me.HotKeyCheckbox.Text = "Send Hotkey"
-        Me.HotKeyCheckbox.UseVisualStyleBackColor = True
+        Me.AlphaComboBox.FormattingEnabled = True
+        Me.AlphaComboBox.Items.AddRange(New Object() {"Off", "Skip Alpha", "Alpha Only"})
+        Me.AlphaComboBox.Location = New System.Drawing.Point(208, 86)
+        Me.AlphaComboBox.Name = "AlphaComboBox"
+        Me.AlphaComboBox.Size = New System.Drawing.Size(121, 28)
+        Me.AlphaComboBox.TabIndex = 18
         '
         'Form1
         '
@@ -1572,4 +1583,5 @@ Partial Class Form1
     Friend WithEvents PyTileSize As NumericUpDown
     Friend WithEvents Label25 As Label
     Friend WithEvents HotKeyCheckbox As CheckBox
+    Friend WithEvents AlphaComboBox As ComboBox
 End Class

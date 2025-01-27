@@ -1,4 +1,5 @@
 ﻿Imports System.IO
+Imports System.Reflection
 
 Public Class Form1
 
@@ -9,6 +10,9 @@ Public Class Form1
     Dim WaitScale As Integer = 0
     Dim SettingsLoc As Point = New Point(240, 166)
     Dim LoadedSettings As FormSettings.Settings
+    Dim SkipList As New List(Of String)
+
+    Const HotToggle As String = "%`"
 
     Public Property ChainControl As DragDropList
     Public Property ChainList As New List(Of FormSettings.ChainObject)
@@ -98,42 +102,15 @@ Public Class Form1
         RootFolders.Add(Root)
         ExeComboBox.Items.Clear()
         For Each Folder As String In RootFolders
-            If File.Exists(Folder & "\waifu2x-caffe-cui.exe") Then
-                ExeComboBox.Items.Add("Waifu2x Caffe")
-                CaffePath = "\" & IIf(Folder <> Root, Path.GetFileName(Folder), "") & "\waifu2x-caffe-cui.exe"
-            End If
-            If File.Exists(Folder & "\waifu2x-ncnn-vulkan.exe") Then
-                ExeComboBox.Items.Add("Waifu2x Vulkan")
-                WaifuNcnnPath = "\" & IIf(Folder <> Root, Path.GetFileName(Folder), "") & "\waifu2x-ncnn-vulkan.exe"
-            End If
-            If File.Exists(Folder & "\realsr-ncnn-vulkan.exe") Then
-                ExeComboBox.Items.Add("RealSR Vulkan")
-                RealSRNcnnPath = "\" & IIf(Folder <> Root, Path.GetFileName(Folder), "") & "\realsr-ncnn-vulkan.exe"
-            End If
-            If File.Exists(Folder & "\realesrgan-ncnn-vulkan.exe") Then
-                ExeComboBox.Items.Add("RealESRGAN Vulkan")
-                RealESRGNcnnPath = "\" & IIf(Folder <> Root, Path.GetFileName(Folder), "") & "\realesrgan-ncnn-vulkan.exe"
-            End If
-            If File.Exists(Folder & "\srmd-ncnn-vulkan.exe") Then
-                ExeComboBox.Items.Add("SRMD Vulkan")
-                SRMDNcnnPath = "\" & IIf(Folder <> Root, Path.GetFileName(Folder), "") & "\srmd-ncnn-vulkan.exe"
-            End If
-            If File.Exists(Folder & "\waifu2x-converter-cpp.exe") Then
-                ExeComboBox.Items.Add("Waifu2x CPP")
-                WaifuCppPath = "\" & IIf(Folder <> Root, Path.GetFileName(Folder), "") & "\waifu2x-converter-cpp.exe"
-            End If
-            If File.Exists(Folder & "\Anime4KCPP_CLI.exe") Then
-                ExeComboBox.Items.Add("Anime4k CPP")
-                Anime4kPath = "\" & IIf(Folder <> Root, Path.GetFileName(Folder), "") & "\Anime4KCPP_CLI.exe"
-            End If
-            If File.Exists(Folder & "\texconv.exe") Then
-                ExeComboBox.Items.Add("TexConv")
-                TexConvPath = "\" & IIf(Folder <> Root, Path.GetFileName(Folder), "") & "\texconv.exe"
-            End If
-            If File.Exists(Folder & "\ScalerTest_Windows.exe") Then
-                ExeComboBox.Items.Add("xBRZ")
-                xBRZPath = "\" & IIf(Folder <> Root, Path.GetFileName(Folder), "") & "\ScalerTest_Windows.exe"
-            End If
+            AddEXE(Folder, "\waifu2x-caffe-cui.exe", "Waifu2x Caffe", CaffePath)
+            AddEXE(Folder, "\waifu2x-ncnn-vulkan.exe", "Waifu2x Vulkan", WaifuNcnnPath)
+            AddEXE(Folder, "\realsr-ncnn-vulkan.exe", "RealSR Vulkan", RealSRNcnnPath)
+            AddEXE(Folder, "\realesrgan-ncnn-vulkan.exe", "RealESRGAN Vulkan", RealESRGNcnnPath)
+            AddEXE(Folder, "\srmd-ncnn-vulkan.exe", "SRMD Vulkan", SRMDNcnnPath)
+            AddEXE(Folder, "\waifu2x-converter-cpp.exe", "Waifu2x CPP", WaifuCppPath)
+            AddEXE(Folder, "\Anime4KCPP_CLI.exe", "Anime4k CPP", Anime4kPath)
+            AddEXE(Folder, "\texconv.exe", "TexConv", TexConvPath)
+            AddEXE(Folder, "\ScalerTest_Windows.exe", "xBRZ", xBRZPath)
             If File.Exists(Folder & "\esrgan.exe") Then
                 PyModels.Clear()
                 PyModel.Items.Clear()
@@ -153,6 +130,13 @@ Public Class Form1
                 End If
             End If
         Next
+    End Sub
+
+    Private Sub AddEXE(Source As String, ExeName As String, ModelName As String, ByRef ModelPath As String)
+        If File.Exists(Source & ExeName) Then
+            ExeComboBox.Items.Add(ModelName)
+            ModelPath = "\" & IIf(Source <> Root, Path.GetFileName(Source), "") & ExeName
+        End If
     End Sub
 
     Private Sub PreloadImageList()
@@ -253,7 +237,6 @@ Public Class Form1
     End Sub
 
     Private Sub ChainPreview_MouseUp(sender As Object, e As MouseEventArgs) Handles ChainPreview.MouseUp
-
         If e.Button = MouseButtons.Left Then
             Dim TempList As New List(Of FormSettings.ChainObject)
             For Each Item As DragDropList.DragDropItem In ChainControl.ListItems
@@ -262,7 +245,6 @@ Public Class Form1
             ChainList = TempList
             ChainControl.ReorderList()
         End If
-
     End Sub
 
     Private Sub DDxFormatListBox_SelectedIndexChanged(sender As Object, e As EventArgs) Handles DDxFormatListBox.SelectedIndexChanged
@@ -305,6 +287,7 @@ Public Class Form1
         ElseIf WorkHorse.IsBusy = True Then
             WatchDogButton.Enabled = False
             WorkHorse.CancelAsync()
+            SkipList.Clear()
         Else
             WatchDog.Enabled = Not WatchDog.Enabled
             WatchDogButton.Text = "Running: " & WatchDog.Enabled
@@ -428,7 +411,11 @@ Public Class Form1
 
     Private Sub WorkHorse_ProgressChanged(sender As Object, e As System.ComponentModel.ProgressChangedEventArgs) Handles WorkHorse.ProgressChanged
         UpscaleProgress.Value = e.ProgressPercentage
-        If (HotKeyCheckbox.Checked = True) AndAlso (GetActiveWindow <> Me.Handle) Then SendKeys.Send("%`") : Threading.Thread.Sleep(200) : SendKeys.Send("%`")
+        If (HotKeyCheckbox.Checked = True) AndAlso (GetActiveWindow <> Me.Handle) Then
+            SendKeys.Send(HotToggle)
+            Threading.Thread.Sleep(200)
+            SendKeys.Send(HotToggle)
+        End If
     End Sub
 
     Private Sub WorkHorse_RunWorkerCompleted(sender As Object, e As System.ComponentModel.RunWorkerCompletedEventArgs) Handles WorkHorse.RunWorkerCompleted
@@ -456,24 +443,21 @@ Public Class Form1
 #Region "Upscale Routine"
 
     Private Sub MakeUpscale()
-        Dim TempPath As String = Path.GetTempPath & "Temp_0"
-        Dim Source = GetMissingFiles(LoadedSettings.Paths.InputPath, LoadedSettings.Paths.OutputPath)
-        For i = 0 To Source.Count - 1 Step GetThreads(LoadedSettings.BasicSettings.ThreadIndex, LoadedSettings.BasicSettings.ThreadCount)
+        Dim TempPath As String = GetChainPath("Temp", 0)
+        Dim ThreadCount As Integer = GetThreads(LoadedSettings.BasicSettings.ThreadIndex, LoadedSettings.BasicSettings.ThreadCount)
+        Dim Source As String() = GetMissingFiles(LoadedSettings.Paths.InputPath, LoadedSettings.Paths.OutputPath)
+        For i = 0 To Source.Count - 1 Step ThreadCount
             Dim ChainPaths As New List(Of String)
             Dim DeletedChainPaths As New List(Of String)
             ChainPaths.Add(TempPath)
             For j = 0 To ChainList.Count - 2
-                Dim TempName As String = Path.GetTempPath & "Chain_" & j
+                Dim TempName As String = GetChainPath("Chain", j)
                 ChainPaths.Add(TempName)
                 Directory.CreateDirectory(TempName)
             Next
             ChainPaths.Add(LoadedSettings.Paths.OutputPath)
             Directory.CreateDirectory(TempPath)
-            For j = i To i + GetThreads(LoadedSettings.BasicSettings.ThreadIndex, LoadedSettings.BasicSettings.ThreadCount) - 1
-                If j <= Source.Count - 1 Then
-                    File.Copy(Source(j), TempPath & "\" & Path.GetFileName(Source(j)), True)
-                End If
-            Next
+            CopyFiles(Source, SkipList, TempPath, i, ThreadCount)
             For Each Model In ChainList
                 Dim NewImages As New List(Of String)
                 Dim DiffImages = GetMissingFiles(ChainPaths(0), LoadedSettings.Paths.OutputPath)
@@ -495,50 +479,7 @@ Public Class Form1
                         End If
                     End If
                 Next
-                If NewImages.Count > 0 Then
-                    Dim BuildProcess As ProcessStartInfo
-                    If Model.PackageType = "ESRGAN" OrElse Model.PackageType.Contains("Vulkan") Then
-                        BuildProcess = New ProcessStartInfo(Root & Model.FileLocation, MakeCommand(ChainPaths(0), ChainPaths(1), Model.PackageType, Model.Package))
-                        BuildProcess.WorkingDirectory = Directory.GetParent(Root & Model.FileLocation).FullName
-                        BuildProcess.RedirectStandardOutput = True
-                        BuildProcess.RedirectStandardError = True
-                        BuildProcess.UseShellExecute = False
-                        BuildProcess.CreateNoWindow = True
-                        Dim BatchProcess As Process = Process.Start(BuildProcess)
-                        BatchProcess.WaitForExit()
-                        If LoadedSettings.ExpertSettings.Logging = True Then
-                            WriteLog(BatchProcess, LoadedSettings.Paths.OutputPath)
-                        End If
-                    Else
-                        Dim ProcessBag As New List(Of Process)
-                        For j = 0 To NewImages.Count - 1
-                            Dim NewImage As String = ChainPaths(1) & "\" & Path.GetFileName(NewImages(j))
-                            BuildProcess = New ProcessStartInfo(Root & Model.FileLocation, MakeCommand(NewImages(j), NewImage, Model.PackageType, Model.Package))
-                            BuildProcess.WorkingDirectory = Directory.GetParent(Root & Model.FileLocation).FullName
-                            BuildProcess.RedirectStandardOutput = True
-                            BuildProcess.RedirectStandardError = True
-                            BuildProcess.UseShellExecute = False
-                            BuildProcess.CreateNoWindow = True
-                            Dim BatchProcess As Process = Process.Start(BuildProcess)
-                            ProcessBag.Add(BatchProcess)
-                            If LoadedSettings.ExpertSettings.Logging = True Then
-                                WriteLog(BatchProcess, LoadedSettings.Paths.OutputPath)
-                            End If
-                        Next
-                        Do
-                            Dim CompletionStatus As New List(Of Boolean)
-                            For Each Job As Process In ProcessBag
-                                CompletionStatus.Add(Job.HasExited)
-                            Next
-                            If Not CompletionStatus.Contains(False) Then
-                                Exit Do
-                            End If
-                        Loop
-                    End If
-                    For Each TempImage As String In Directory.GetFiles(ChainPaths(0))
-                        File.Delete(TempImage)
-                    Next
-                End If
+                StartBuilder(ChainPaths(0), ChainPaths(1), NewImages, Model)
                 DeletedChainPaths.Add(ChainPaths(0))
                 ChainPaths.RemoveAt(0)
                 If (ChainList.IndexOf(Model) = ChainList.Count - 1 AndAlso Model.Name <> "TexConv") OrElse (ChainList(ChainList.Count - 1).Name = "TexConv" AndAlso ChainList.IndexOf(Model) = ChainList.Count - 2) Then
@@ -568,7 +509,7 @@ Public Class Form1
                 If WorkHorse.CancellationPending = True Then
                     Directory.Delete(TempPath, True)
                     For j = 0 To ChainList.Count - 2
-                        Dim TempName As String = Path.GetTempPath & "Chain_" & j
+                        Dim TempName As String = GetChainPath("Chain", j)
                         Directory.Delete(TempName, True)
                     Next
                     Exit Sub
@@ -577,7 +518,7 @@ Public Class Form1
             For Each ChainDir As String In DeletedChainPaths
                 Directory.Delete(ChainDir, True)
             Next
-            WorkHorse.ReportProgress(Math.Round(((i * 100) + 1) / Source.Count, 0))
+            WorkHorse.ReportProgress(Math.Floor(((i * 100) + 1) / Source.Count))
         Next
         If CleanupCheckBox.Checked = True Then
             For Each SourceImage As String In Source
@@ -585,6 +526,91 @@ Public Class Form1
             Next
         End If
     End Sub
+
+#End Region
+
+#Region "Upscale Subroutines"
+
+    Private Sub CopyFiles(FileList As String(), ByRef SkipList As List(Of String), RootPath As String, ByRef CurrentIndex As Integer, BatchSize As Integer)
+        Dim CopyCounter As Integer = 0
+        Do While CopyCounter < BatchSize
+            Dim FilePath As String = FileList(CurrentIndex)
+            If Not SkipList.Contains(FilePath) Then
+                Select Case LoadedSettings.ExpertSettings.AlphaMode
+                    Case 0
+                        File.Copy(FilePath, RootPath & "\" & Path.GetFileName(FilePath), True)
+                        CopyCounter += 1
+                    Case 1
+                        If Not GetHasTransparency(FilePath) Then
+                            File.Copy(FilePath, RootPath & "\" & Path.GetFileName(FilePath), True)
+                            CopyCounter += 1
+                        Else
+                            SkipList.Add(FilePath)
+                        End If
+                    Case 2
+                        If GetHasTransparency(FilePath) Then
+                            File.Copy(FilePath, RootPath & "\" & Path.GetFileName(FilePath), True)
+                            CopyCounter += 1
+                        Else
+                            Skiplist.Add(filepath)
+                        End If
+                End Select
+            End If
+            If CurrentIndex >= FileList.Count - 1 Then Exit Do
+            CurrentIndex += 1
+        Loop
+    End Sub
+
+    Private Sub StartBuilder(SourcePath As String, DestPath As String, ImageList As List(Of String), Model As FormSettings.ChainObject)
+        If ImageList.Count > 0 Then
+            Dim BuildProcess As ProcessStartInfo
+            If Model.PackageType = "ESRGAN" OrElse Model.PackageType.Contains("Vulkan") Then
+                BuildProcess = New ProcessStartInfo(Root & Model.FileLocation, MakeCommand(SourcePath, DestPath, Model.PackageType, Model.Package))
+                BuildProcess.WorkingDirectory = Directory.GetParent(Root & Model.FileLocation).FullName
+                BuildProcess.RedirectStandardOutput = True
+                BuildProcess.RedirectStandardError = True
+                BuildProcess.UseShellExecute = False
+                BuildProcess.CreateNoWindow = True
+                Dim BatchProcess As Process = Process.Start(BuildProcess)
+                BatchProcess.WaitForExit()
+                If LoadedSettings.ExpertSettings.Logging = True Then
+                    WriteLog(BatchProcess, LoadedSettings.Paths.OutputPath)
+                End If
+            Else
+                Dim ProcessBag As New List(Of Process)
+                For j = 0 To ImageList.Count - 1
+                    Dim NewImage As String = DestPath & "\" & Path.GetFileName(ImageList(j))
+                    BuildProcess = New ProcessStartInfo(Root & Model.FileLocation, MakeCommand(ImageList(j), NewImage, Model.PackageType, Model.Package))
+                    BuildProcess.WorkingDirectory = Directory.GetParent(Root & Model.FileLocation).FullName
+                    BuildProcess.RedirectStandardOutput = True
+                    BuildProcess.RedirectStandardError = True
+                    BuildProcess.UseShellExecute = False
+                    BuildProcess.CreateNoWindow = True
+                    Dim BatchProcess As Process = Process.Start(BuildProcess)
+                    ProcessBag.Add(BatchProcess)
+                    If LoadedSettings.ExpertSettings.Logging = True Then
+                        WriteLog(BatchProcess, LoadedSettings.Paths.OutputPath)
+                    End If
+                Next
+                Do
+                    Dim CompletionStatus As New List(Of Boolean)
+                    For Each Job As Process In ProcessBag
+                        CompletionStatus.Add(Job.HasExited)
+                    Next
+                    If Not CompletionStatus.Contains(False) Then
+                        Exit Do
+                    End If
+                Loop
+            End If
+            For Each TempImage As String In Directory.GetFiles(SourcePath)
+                File.Delete(TempImage)
+            Next
+        End If
+    End Sub
+
+    Private Function GetChainPath(PathType As String, PathIndex As Integer) As String
+        Return Path.GetTempPath & PathType & "_" & PathIndex & "_" & LoadedSettings.ExpertSettings.AlphaMode
+    End Function
 
 #End Region
 
@@ -786,6 +812,22 @@ Public Class Form1
         Return CropImage(Result, Source.Width, Source.Height, Source.Width, Source.Height, Margin)
     End Function
 
+    Private Function GetHasTransparency(Source As String) As Boolean
+        Dim SourceImage As Bitmap = GetUnlockedImage(Source)
+        Dim SourceRect As Rectangle = New Rectangle(0, 0, SourceImage.Width, SourceImage.Height)
+        Dim SourceData As Imaging.BitmapData = SourceImage.LockBits(SourceRect, Imaging.ImageLockMode.ReadWrite, SourceImage.PixelFormat)
+        Dim SourcePtr As IntPtr = SourceData.Scan0
+        Dim SourceByteCount As Integer = Math.Abs(SourceData.Stride) * SourceImage.Height
+        Dim SourceBytes As Byte() = New Byte(SourceByteCount - 1) {}
+        Runtime.InteropServices.Marshal.Copy(SourcePtr, SourceBytes, 0, SourceByteCount)
+        For i = 3 To SourceBytes.Length - 1 Step 4
+            If SourceBytes(i) = 0 Then Return True
+        Next
+        SourceImage.UnlockBits(SourceData)
+        SourceImage.Dispose()
+        Return False
+    End Function
+
     Private Function CropImage(Source As Bitmap, OffsetX As Integer, OffsetY As Integer, Width As Integer, Height As Integer, Margins As Integer) As Bitmap
         Dim CropSize As New Rectangle(OffsetX - Margins, OffsetY - Margins, Width + (2 * Margins), Height + (2 * Margins))
         Dim Result = New Bitmap(CropSize.Width, CropSize.Height, Source.PixelFormat)
@@ -803,7 +845,7 @@ Public Class Form1
         Dim NewImage As New DirectBitmap(GetUnlockedImage(Source))
         For X = 0 To NewImage.Width - 1
             For Y = 0 To NewImage.Height - 1
-                If NewImage.GetPixel(X, Y).A <Threshold Then
+                If NewImage.GetPixel(X, Y).A < Threshold Then
                     NewImage.SetPixel(X, Y, Color.Transparent)
                 End If
             Next

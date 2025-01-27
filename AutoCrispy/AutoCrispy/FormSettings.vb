@@ -71,6 +71,8 @@
         Source.SeamsBox.SelectedIndex = LoadedSettings.ExpertSettings.SeamlessMode
         Source.SeamScale.Value = ResetDefault(LoadedSettings.ExpertSettings.SeamlessScale, 1, 2)
         Source.SeamMargin.Value = ResetDefault(LoadedSettings.ExpertSettings.SeamlessMargin, 1, 16)
+        Source.AlphaComboBox.SelectedIndex = LoadedSettings.ExpertSettings.AlphaMode
+        Source.HotKeyCheckbox.Checked = LoadedSettings.ExpertSettings.SendHotkey
         Source.PortableCheckBox.Checked = LoadedSettings.ExpertSettings.Portable
 
         'Load Internal Settings
@@ -136,7 +138,7 @@
             PythonPak = New PythonPackage(GetPyStr(Source.PyModels, Source.PyModel.SelectedIndex), Source.PyTileSize.Value, Source.PyCPU.Checked)
             Paths = New ProgramPaths(Source.InputTextBox.Text, Source.OutputTextBox.Text, Source.ExeTextBox.Text)
             BasicSettings = New ProgramSettings(Source.ExeComboBox.SelectedItem, Source.ThreadComboBox.SelectedIndex, Source.NumericThreads.Value, Source.DefringeCheck.Checked, Source.PS2Check.Checked, Source.DefringeThresh.Value, Source.TabGroup.SelectedIndex)
-            ExpertSettings = New AdvancedSettings(Source.DebugCheckbox.Checked, Source.ExpertSettingsBox.Text, Source.CleanupCheckBox.Checked, Source.SeamsBox.SelectedIndex, Source.SeamScale.Value, Source.SeamMargin.Value, Source.PortableCheckBox.Checked)
+            ExpertSettings = New AdvancedSettings(Source.DebugCheckbox.Checked, Source.ExpertSettingsBox.Text, Source.CleanupCheckBox.Checked, Source.SeamsBox.SelectedIndex, Source.SeamScale.Value, Source.SeamMargin.Value, Source.AlphaComboBox.SelectedIndex, Source.HotKeyCheckbox.Checked, Source.PortableCheckBox.Checked)
             Chain = Source.ChainList
         End Sub
         Public Function GetPyStr(PyList As List(Of String), Index As Integer) As String
@@ -184,14 +186,18 @@
         Public Property SeamlessMode As Integer
         Public Property SeamlessScale As Integer
         Public Property SeamlessMargin As Integer
+        Public Property AlphaMode As Integer
+        Public Property SendHotkey As Boolean
         Public Property Portable As Boolean
-        Public Sub New(_Logging As Boolean, _ExpertFlags As String, _ClearInput As Boolean, _SeamlessMode As Integer, _SeamlessScale As Integer, _SeamlessMargin As Integer, _Portable As Boolean)
+        Public Sub New(_Logging As Boolean, _ExpertFlags As String, _ClearInput As Boolean, _SeamlessMode As Integer, _SeamlessScale As Integer, _SeamlessMargin As Integer, _AlphaMode As Integer, _SendHotkey As Boolean, _Portable As Boolean)
             Logging = _Logging
             ExpertFlags = _ExpertFlags
             ClearInput = _ClearInput
             SeamlessMode = _SeamlessMode
             SeamlessScale = _SeamlessScale
             SeamlessMargin = _SeamlessMargin
+            AlphaMode = _AlphaMode
+            SendHotkey = _SendHotkey
             Portable = _Portable
         End Sub
     End Structure

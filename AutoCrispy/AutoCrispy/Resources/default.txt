@@ -140,6 +140,8 @@
     <SeamlessMode>0</SeamlessMode>
     <SeamlessScale>2</SeamlessScale>
     <SeamlessMargin>16</SeamlessMargin>
+    <AlphaMode>0</AlphaMode>
+    <SendHotkey>false</SendHotkey>
     <Portable>false</Portable>
   </ExpertSettings>
   <Chain />
