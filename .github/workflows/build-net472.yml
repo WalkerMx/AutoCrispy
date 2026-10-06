@@ -1,0 +1,86 @@
+name: Build net472 (baseline)
+
+# Baseline: builds the ORIGINAL, unmodified source against .NET Framework 4.7.2.
+# Purpose is to prove the upstream code compiles at all before any porting work.
+# Deliberately permissive - warnings are not errors.
+
+on:
+  push:
+    branches:
+      - 'ci/**'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+defaults:
+  run:
+    shell: pwsh
+
+jobs:
+  build:
+    name: AutoCrispy Release (.NET Framework 4.7.2)
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup MSBuild
+        uses: microsoft/setup-msbuild@v2
+
+      - name: Report toolchain
+        run: |
+          Write-Host "=== Toolchain ==="
+          $msb = Get-Command msbuild -ErrorAction SilentlyContinue
+          Write-Host "MSBuild : $($msb.Source)"
+          $vbc = Get-ChildItem 'C:\Program Files*\Microsoft Visual Studio\*\*\MSBuild\Current\Bin\Roslyn\vbc.exe' `
+                 -ErrorAction SilentlyContinue | Select-Object -First 1
+          Write-Host "vbc     : $($vbc.FullName)"
+          $pack = 'C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.7.2'
+          if (Test-Path $pack) {
+            Write-Host "v4.7.2 targeting pack: PRESENT ($((Get-ChildItem $pack | Measure-Object).Count) assemblies)"
+          } else {
+            Write-Host "v4.7.2 targeting pack: MISSING"
+          }
+          Write-Host "=== End toolchain ==="
+
+      - name: Build
+        run: |
+          $ErrorActionPreference = 'Continue'
+          $sln = 'AutoCrispy\AutoCrispy.sln'
+          Write-Host "Building $sln (Release|Any CPU)"
+          msbuild $sln `
+            /p:Configuration=Release `
+            /p:Platform='Any CPU' `
+            /m `
+            /nologo `
+            /verbosity:normal `
+            /fl '/flp:logfile=build.log;verbosity=normal;encoding=UTF-8' `
+            *>&1 | Tee-Object -FilePath console.log
+          $code = $LASTEXITCODE
+          Write-Host "=== msbuild exit code: $code ==="
+          exit $code
+
+      - name: Summarise build log
+        if: always()
+        run: |
+          Write-Host "=== Error summary (from build.log) ==="
+          if (Test-Path build.log) {
+            Select-String -Path build.log -Pattern ': error ' -SimpleMatch |
+              ForEach-Object { $_.Line } | Select-Object -Unique
+            Write-Host "=== Warning count: $((Select-String -Path build.log -Pattern ': warning ' -SimpleMatch | Measure-Object).Count) ==="
+          } else {
+            Write-Host "no build.log produced"
+          }
+
+      - name: Upload logs and binaries
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: autocrispy-net472
+          if-no-files-found: warn
+          path: |
+            build.log
+            console.log
+            AutoCrispy/AutoCrispy/bin/Release/
