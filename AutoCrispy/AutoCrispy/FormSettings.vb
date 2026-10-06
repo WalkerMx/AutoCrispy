@@ -1,4 +1,4 @@
-﻿<Serializable()> Public Class FormSettings
+<Serializable()> Public Class FormSettings
 
     Public Shared Sub LoadSettings(Source As Form1, LoadedSettings As Settings)
         'Load Caffe Settings
@@ -77,8 +77,14 @@
 
         'Load Internal Settings
         Source.ChainList = LoadedSettings.Chain
-        For Each ChainItem As ChainObject In Source.ChainList
-            Source.ChainControl.ListItems.Add(New DragDropList.DragDropItem(Source.ChainList.IndexOf(ChainItem), ChainItem.Name, Source.ChainThumbs.Item(ChainItem.IconIndex)))
+        If Source.ChainList Is Nothing Then Source.ChainList = New List(Of ChainObject)
+        For ChainIndex As Integer = 0 To Source.ChainList.Count - 1
+            Dim ChainItem As ChainObject = Source.ChainList(ChainIndex)
+            If ChainItem.IconIndex < 0 OrElse ChainItem.IconIndex >= Source.ChainThumbs.Count Then
+                ChainItem.IconIndex = 0
+                Source.ChainList(ChainIndex) = ChainItem
+            End If
+            Source.ChainControl.ListItems.Add(New DragDropList.DragDropItem(ChainIndex, ChainItem.Name, Source.ChainThumbs.Item(ChainItem.IconIndex)))
         Next
     End Sub
 
@@ -135,7 +141,7 @@
             AnimePak = New Anime4kPackage(Source.AnimeCPPScale.Value, Source.AnimeCppPre.Checked, Source.AnimeCppPost.Checked, Source.AnimeCppPreFilter.Checked, Source.AnimeCppPostFilter.Checked, GetFilters(Source.AnimeCppPreFilters), GetFilters(Source.AnimeCppPostFilters), Source.AnimeCPPGpu.Checked, Source.AnimeCPPCnn.Checked)
             TexConvPak = New DDxPackage(Source.DDxModeBox.SelectedItem, Source.DDxFormatLabel.Text.Replace("Format: ", ""), Source.DDxConvFormat.SelectedItem, Source.FlComboBox.SelectedItem, Source.Dx9CheckBox.Checked, Source.Dx10Checkbox.Checked, Source.SepAlphaCheckBox.Checked, Source.PmAlphaCheckBox.Checked, Source.AlphaCheckBox.Checked)
             xBRZPak = New xBRZPackage(Source.xBRZScale.Value)
-            PythonPak = New PythonPackage(GetPyStr(Source.PyModels, Source.PyModel.SelectedIndex), Source.PyTileSize.Value, Source.PyCPU.Checked)
+            PythonPak = New PythonPackage(Source.GetSelectedUpscaleModel(), Source.PyTileSize.Value, Source.PyCPU.Checked)
             Paths = New ProgramPaths(Source.InputTextBox.Text, Source.OutputTextBox.Text, Source.ExeTextBox.Text)
             BasicSettings = New ProgramSettings(Source.ExeComboBox.SelectedItem, Source.ThreadComboBox.SelectedIndex, Source.NumericThreads.Value, Source.DefringeCheck.Checked, Source.PS2Check.Checked, Source.DefringeThresh.Value, Source.TabGroup.SelectedIndex)
             ExpertSettings = New AdvancedSettings(Source.DebugCheckbox.Checked, Source.ExpertSettingsBox.Text, Source.CleanupCheckBox.Checked, Source.SeamsBox.SelectedIndex, Source.SeamScale.Value, Source.SeamMargin.Value, Source.AlphaComboBox.SelectedIndex, Source.HotKeyCheckbox.Checked, Source.PortableCheckBox.Checked)
@@ -240,7 +246,13 @@
                 Case "xBRZ"
                     Package = New xBRZPackage(Source.xBRZScale.Value)
                 Case "ESRGAN"
-                    Package = New PythonPackage(Source.PyModels(Source.PyModel.SelectedIndex), Source.PyTileSize.Value, Source.PyCPU.Checked)
+                    Package = New PythonPackage(Source.GetSelectedUpscaleModel(), Source.PyTileSize.Value, Source.PyCPU.Checked)
+                Case "RealPLKSR"
+                    Package = New PythonPackage(Source.GetSelectedUpscaleModel(), Source.PyTileSize.Value, Source.PyCPU.Checked, True)
+                Case "DAT2"
+                    Package = New PythonPackage(Source.GetSelectedUpscaleModel(), Source.PyTileSize.Value, Source.PyCPU.Checked, True)
+                Case "Spandrel"
+                    Package = New PythonPackage(Source.GetSelectedUpscaleModel(), Source.PyTileSize.Value, Source.PyCPU.Checked, True)
             End Select
         End Sub
     End Structure
@@ -368,11 +380,15 @@
         Public Property TileSize As Integer
         Public Property CPUOnly As Boolean
         Public Property FileTypes As List(Of String)
-        Public Sub New(_Model As String, _TileSize As Integer, _CPUOnly As Boolean)
+        Public Sub New(_Model As String, _TileSize As Integer, _CPUOnly As Boolean, Optional _UseSpandrelFormats As Boolean = False)
             Model = _Model
             TileSize = _TileSize
             CPUOnly = _CPUOnly
-            FileTypes = {".png", ".jpg", ".bmp"}.ToList
+            If _UseSpandrelFormats Then
+                FileTypes = {".png", ".jpg", ".jpeg", ".bmp", ".tif", ".tiff", ".webp", ".tga"}.ToList
+            Else
+                FileTypes = {".png", ".jpg", ".bmp"}.ToList
+            End If
         End Sub
     End Structure
 

@@ -1,0 +1,51 @@
+name: Build AutoCrispy
+
+on:
+  push:
+    branches:
+      - master
+      - "arena/**"
+  pull_request:
+    branches:
+      - master
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: windows-2022
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v4
+
+      - name: Set up Python for runner tests
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Run Spandrel runner tests
+        run: python -m unittest discover -s AutoCrispy/AutoCrispy/tests -v
+
+      - name: Add MSBuild to PATH
+        uses: microsoft/setup-msbuild@v2
+
+      - name: Build Release
+        run: msbuild AutoCrispy\AutoCrispy.sln /t:Rebuild /m /p:Configuration=Release /p:Platform="Any CPU" /verbosity:minimal
+
+      - name: Verify Spandrel runner was copied
+        shell: pwsh
+        run: |
+          $runner = "AutoCrispy\AutoCrispy\bin\Release\spandrel_upscale.py"
+          if (-not (Test-Path $runner)) {
+            throw "Expected build output to contain $runner"
+          }
+
+      - name: Upload Release build
+        uses: actions/upload-artifact@v4
+        with:
+          name: AutoCrispy-Windows-Release
+          path: AutoCrispy/AutoCrispy/bin/Release/**
+          if-no-files-found: error
+          retention-days: 7

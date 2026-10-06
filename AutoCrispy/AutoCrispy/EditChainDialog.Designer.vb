@@ -1,4 +1,4 @@
-﻿<Global.Microsoft.VisualBasic.CompilerServices.DesignerGenerated()> _
+<Global.Microsoft.VisualBasic.CompilerServices.DesignerGenerated()> _
 Partial Class EditChainDialog
     Inherits System.Windows.Forms.Form
 
@@ -45,7 +45,7 @@ Partial Class EditChainDialog
         Me.TableLayoutPanel1.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50.0!))
         Me.TableLayoutPanel1.Controls.Add(Me.OK_Button, 0, 0)
         Me.TableLayoutPanel1.Controls.Add(Me.Cancel_Button, 1, 0)
-        Me.TableLayoutPanel1.Location = New System.Drawing.Point(585, -2)
+        Me.TableLayoutPanel1.Location = New System.Drawing.Point(585, 8)
         Me.TableLayoutPanel1.Name = "TableLayoutPanel1"
         Me.TableLayoutPanel1.RowCount = 1
         Me.TableLayoutPanel1.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50.0!))
@@ -87,7 +87,7 @@ Partial Class EditChainDialog
         Me.TableLayoutPanel2.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50.0!))
         Me.TableLayoutPanel2.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50.0!))
         Me.TableLayoutPanel2.Controls.Add(Me.Reset_Button, 0, 0)
-        Me.TableLayoutPanel2.Location = New System.Drawing.Point(3, -2)
+        Me.TableLayoutPanel2.Location = New System.Drawing.Point(3, 8)
         Me.TableLayoutPanel2.Name = "TableLayoutPanel2"
         Me.TableLayoutPanel2.RowCount = 1
         Me.TableLayoutPanel2.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50.0!))
@@ -123,7 +123,7 @@ Partial Class EditChainDialog
         Me.SplitContainer1.Panel2.Controls.Add(Me.TableLayoutPanel2)
         Me.SplitContainer1.Panel2.Controls.Add(Me.TableLayoutPanel1)
         Me.SplitContainer1.Size = New System.Drawing.Size(734, 411)
-        Me.SplitContainer1.SplitterDistance = 377
+        Me.SplitContainer1.SplitterDistance = 355
         Me.SplitContainer1.TabIndex = 5
         '
         'EditChainDialog
@@ -134,6 +134,7 @@ Partial Class EditChainDialog
         Me.ClientSize = New System.Drawing.Size(734, 411)
         Me.Controls.Add(Me.SplitContainer1)
         Me.DoubleBuffered = True
+        Me.MinimumSize = New System.Drawing.Size(520, 320)
         Me.Name = "EditChainDialog"
         Me.ShowInTaskbar = False
         Me.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent

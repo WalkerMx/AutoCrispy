@@ -156,6 +156,9 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="crisp2.ico" />
+    <Content Include="spandrel_upscale.py">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <None Include="Resources\8.png" />
     <None Include="Resources\7.png" />
     <None Include="Resources\default.txt" />

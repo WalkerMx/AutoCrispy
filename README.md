@@ -36,6 +36,10 @@ https://github.com/WalkerMx/ESRGAN_Python_Embedded/releases
 
 This does not include any models. [They can be found here.](https://openmodeldb.info/)
 
+## Spandrel upscalers
+
+AutoCrispy provides one **Spandrel** backend with a model selector; PLKSR V3 and DAT2 V4 are models in that selector, not separate backend choices. Put all checkpoints in one `models` folder. The selector lists Spandrel-recognized 1× RGB restoration or 4× RGB super-resolution models, including 1× DXT artifact-removal models. Spandrel uses its own runner, separate from legacy ESRGAN; neither the full PBRify workflow nor map generation is included. Checkpoints and the Python/PyTorch runtime must be installed separately. See the [setup guide](PLKSR_SETUP.md).
+
 ## How to use:
     -Toss AutoCrispy into the folder from the backend(s) you chose, and run it.
   
