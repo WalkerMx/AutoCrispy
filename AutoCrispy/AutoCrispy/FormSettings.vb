@@ -48,7 +48,7 @@
         Source.xBRZScale.Value = LoadedSettings.xBRZPak.Scale
 
         'Load ESRGAN Settings
-        Source.PyTileSize.Value = LoadedSettings.PythonPak.TileSize
+        SetNumeric(Source.PyTileSize, LoadedSettings.PythonPak.TileSize)
         Source.PyCPU.Checked = LoadedSettings.PythonPak.CPUOnly
 
         'Load UI Paths
@@ -58,10 +58,10 @@
 
         'Load Basic UI Settings
         Source.ThreadComboBox.SelectedIndex = LoadedSettings.BasicSettings.ThreadIndex
-        Source.NumericThreads.Value = LoadedSettings.BasicSettings.ThreadCount
+        SetNumeric(Source.NumericThreads, LoadedSettings.BasicSettings.ThreadCount)
         Source.DefringeCheck.Checked = LoadedSettings.BasicSettings.Defringe
         Source.PS2Check.Checked = LoadedSettings.BasicSettings.FixPS2
-        Source.DefringeThresh.Value = LoadedSettings.BasicSettings.DefringeThreshold
+        SetNumeric(Source.DefringeThresh, LoadedSettings.BasicSettings.DefringeThreshold)
         Source.TabGroup.SelectedIndex = LoadedSettings.BasicSettings.SelectedTab
 
         'Load Expert UI Settings
@@ -69,17 +69,24 @@
         Source.ExpertSettingsBox.Text = LoadedSettings.ExpertSettings.ExpertFlags
         Source.CleanupCheckBox.Checked = LoadedSettings.ExpertSettings.ClearInput
         Source.SeamsBox.SelectedIndex = LoadedSettings.ExpertSettings.SeamlessMode
-        Source.SeamScale.Value = ResetDefault(LoadedSettings.ExpertSettings.SeamlessScale, 1, 2)
-        Source.SeamMargin.Value = ResetDefault(LoadedSettings.ExpertSettings.SeamlessMargin, 1, 16)
+        SetNumeric(Source.SeamScale, ResetDefault(LoadedSettings.ExpertSettings.SeamlessScale, 1, 2))
+        SetNumeric(Source.SeamMargin, ResetDefault(LoadedSettings.ExpertSettings.SeamlessMargin, 1, 16))
         Source.AlphaComboBox.SelectedIndex = LoadedSettings.ExpertSettings.AlphaMode
         Source.HotKeyCheckbox.Checked = LoadedSettings.ExpertSettings.SendHotkey
         Source.PortableCheckBox.Checked = LoadedSettings.ExpertSettings.Portable
 
         'Load Internal Settings
-        Source.ChainList = LoadedSettings.Chain
-        For Each ChainItem As ChainObject In Source.ChainList
-            Source.ChainControl.ListItems.Add(New DragDropList.DragDropItem(Source.ChainList.IndexOf(ChainItem), ChainItem.Name, Source.ChainThumbs.Item(ChainItem.IconIndex)))
-        Next
+        ' An empty <Chain /> deserialises to Nothing, which used to throw in the For Each below.
+        If LoadedSettings.Chain Is Nothing Then
+            Source.ChainList = New List(Of ChainObject)
+        Else
+            Source.ChainList = LoadedSettings.Chain
+        End If
+        ' Rebuild the preview from the chain data: it derives each caption from the real model,
+        ' and it numbers the items positionally.  The old loop used ChainList.IndexOf(ChainItem),
+        ' which compares ChainObject by value, so two identical steps both got the index of the
+        ' first one and every later item pointed at the wrong model.
+        Source.RebuildChainPreview()
     End Sub
 
     Private Shared Function GetFilters(Source As CheckedListBox) As Integer
@@ -104,6 +111,18 @@
     Private Shared Function ResetDefault(Value As Integer, MinValue As Integer, DefaultValue As Integer) As Integer
         Return IIf(Value >= MinValue, Value, DefaultValue)
     End Function
+
+    ' Assigning an out-of-range value to a NumericUpDown throws ArgumentOutOfRangeException,
+    ' which aborted loading the entire settings file.  This clamps stored values into the
+    ' control's current [Minimum, Maximum] range first, so widening a range (e.g. Tile Size
+    ' now allowing 0 for "No Tiling") can never break an existing settings.xml.
+    Private Shared Sub SetNumeric(Source As NumericUpDown, Value As Decimal)
+        If Source Is Nothing Then Return
+        Dim Clamped As Decimal = Value
+        If Clamped < Source.Minimum Then Clamped = Source.Minimum
+        If Clamped > Source.Maximum Then Clamped = Source.Maximum
+        Source.Value = Clamped
+    End Sub
 
     <Xml.Serialization.XmlInclude(GetType(Waifu2xCaffePackage))>
     <Xml.Serialization.XmlInclude(GetType(VulkanNcnnPackage))>
@@ -141,8 +160,11 @@
             ExpertSettings = New AdvancedSettings(Source.DebugCheckbox.Checked, Source.ExpertSettingsBox.Text, Source.CleanupCheckBox.Checked, Source.SeamsBox.SelectedIndex, Source.SeamScale.Value, Source.SeamMargin.Value, Source.AlphaComboBox.SelectedIndex, Source.HotKeyCheckbox.Checked, Source.PortableCheckBox.Checked)
             Chain = Source.ChainList
         End Sub
-        Public Function GetPyStr(PyList As List(Of String), Index As Integer) As String
-            If PyList.Count > 0 Then
+        ' Shared so ChainObject can use it too.  The old version only checked that the list was
+        ' non-empty and then indexed it anyway, so a -1 SelectedIndex (no ESRGAN models found)
+        ' threw instead of yielding an empty model path.
+        Public Shared Function GetPyStr(PyList As List(Of String), Index As Integer) As String
+            If PyList IsNot Nothing AndAlso Index >= 0 AndAlso Index < PyList.Count Then
                 Return PyList(Index)
             End If
             Return ""
@@ -240,7 +262,7 @@
                 Case "xBRZ"
                     Package = New xBRZPackage(Source.xBRZScale.Value)
                 Case "ESRGAN"
-                    Package = New PythonPackage(Source.PyModels(Source.PyModel.SelectedIndex), Source.PyTileSize.Value, Source.PyCPU.Checked)
+                    Package = New PythonPackage(Settings.GetPyStr(Source.PyModels, Source.PyModel.SelectedIndex), Source.PyTileSize.Value, Source.PyCPU.Checked)
             End Select
         End Sub
     End Structure

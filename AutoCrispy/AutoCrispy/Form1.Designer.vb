@@ -35,6 +35,7 @@ Partial Class Form1
         Me.Label3 = New System.Windows.Forms.Label()
         Me.CaffeMode = New System.Windows.Forms.ComboBox()
         Me.WatchDog = New System.Windows.Forms.Timer(Me.components)
+        Me.ProgressPollTimer = New System.Windows.Forms.Timer(Me.components)
         Me.WatchDogButton = New System.Windows.Forms.Button()
         Me.SettingsGroup = New System.Windows.Forms.GroupBox()
         Me.PS2Check = New System.Windows.Forms.CheckBox()
@@ -85,6 +86,7 @@ Partial Class Form1
         Me.PyModel = New System.Windows.Forms.ComboBox()
         Me.Label25 = New System.Windows.Forms.Label()
         Me.Label26 = New System.Windows.Forms.Label()
+        Me.TileSizeHint = New System.Windows.Forms.Label()
         Me.WorkHorse = New System.ComponentModel.BackgroundWorker()
         Me.ChainGroup = New System.Windows.Forms.TabPage()
         Me.ChainPreview = New System.Windows.Forms.PictureBox()
@@ -284,6 +286,10 @@ Partial Class Form1
         'WatchDog
         '
         Me.WatchDog.Interval = 1000
+        '
+        'ProgressPollTimer
+        '
+        Me.ProgressPollTimer.Interval = 1000
         '
         'WatchDogButton
         '
@@ -800,6 +806,7 @@ Partial Class Form1
         'PyGroup
         '
         Me.PyGroup.Controls.Add(Me.PyCPU)
+        Me.PyGroup.Controls.Add(Me.TileSizeHint)
         Me.PyGroup.Controls.Add(Me.PyTileSize)
         Me.PyGroup.Controls.Add(Me.PyModel)
         Me.PyGroup.Controls.Add(Me.Label25)
@@ -826,8 +833,8 @@ Partial Class Form1
         'PyTileSize
         '
         Me.PyTileSize.Location = New System.Drawing.Point(351, 31)
-        Me.PyTileSize.Maximum = New Decimal(New Integer() {1024, 0, 0, 0})
-        Me.PyTileSize.Minimum = New Decimal(New Integer() {64, 0, 0, 0})
+        Me.PyTileSize.Maximum = New Decimal(New Integer() {4096, 0, 0, 0})
+        Me.PyTileSize.Minimum = New Decimal(New Integer() {0, 0, 0, 0})
         Me.PyTileSize.Name = "PyTileSize"
         Me.PyTileSize.Size = New System.Drawing.Size(169, 26)
         Me.PyTileSize.TabIndex = 4
@@ -862,6 +869,17 @@ Partial Class Form1
         Me.Label26.Size = New System.Drawing.Size(56, 20)
         Me.Label26.TabIndex = 1
         Me.Label26.Text = "Model:"
+        '
+        'TileSizeHint
+        '
+        Me.TileSizeHint.AutoSize = True
+        Me.TileSizeHint.ForeColor = System.Drawing.SystemColors.GrayText
+        Me.TileSizeHint.Location = New System.Drawing.Point(9, 75)
+        Me.TileSizeHint.Margin = New System.Windows.Forms.Padding(4, 0, 4, 0)
+        Me.TileSizeHint.Name = "TileSizeHint"
+        Me.TileSizeHint.Size = New System.Drawing.Size(265, 20)
+        Me.TileSizeHint.TabIndex = 6
+        Me.TileSizeHint.Text = "Tile Size 0 = No Tiling (uses full VRAM)"
         '
         'WorkHorse
         '
@@ -1474,6 +1492,7 @@ Partial Class Form1
     End Sub
     Friend WithEvents CaffeGroup As GroupBox
     Friend WithEvents WatchDog As Timer
+    Friend WithEvents ProgressPollTimer As Timer
     Friend WithEvents WatchDogButton As Button
     Friend WithEvents SettingsGroup As GroupBox
     Friend WithEvents CleanupCheckBox As CheckBox
@@ -1582,6 +1601,7 @@ Partial Class Form1
     Friend WithEvents PyCPU As CheckBox
     Friend WithEvents PyTileSize As NumericUpDown
     Friend WithEvents Label25 As Label
+    Friend WithEvents TileSizeHint As Label
     Friend WithEvents HotKeyCheckbox As CheckBox
     Friend WithEvents AlphaComboBox As ComboBox
 End Class

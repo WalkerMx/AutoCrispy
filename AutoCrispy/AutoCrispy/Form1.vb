@@ -11,6 +11,10 @@ Public Class Form1
     Dim SettingsLoc As Point = New Point(240, 166)
     Dim LoadedSettings As FormSettings.Settings
     Dim SkipList As New List(Of String)
+    ' Chain entries that were added implicitly for a single run (empty chain + watchdog / Run
+    ' Once).  They live in ChainList so MakeUpscale has something to walk, but they are never
+    ' shown in the preview and are removed again when the run ends.
+    Dim ImplicitChainCount As Integer = 0
 
     Const HotToggle As String = "%`"
 
@@ -51,6 +55,133 @@ Public Class Form1
 
 #End Region
 
+#Region "Backend Processes"
+
+    ' A backend process paired with its asynchronously captured stdout/stderr.
+    '
+    ' The old code redirected both pipes and then blocked in WaitForExit() (or spun on HasExited)
+    ' without ever reading from them.  As soon as the backend wrote more than the ~4 KB the OS
+    ' buffers for a pipe, it blocked on write while AutoCrispy blocked on WaitForExit: a hard
+    ' deadlock that looked like a frozen program.  "Threads: All" hit this constantly, because a
+    ' single process then reports progress for every texture in the queue.
+    '
+    ' BeginOutputReadLine/BeginErrorReadLine drain both pipes on thread-pool threads, so the
+    ' backend can never block on write, and the captured text is still there for the log option.
+    Private Class BackendJob
+        Implements IDisposable
+
+        Private ReadOnly BackendProcess As Process
+        Private ReadOnly OutputBuffer As New Text.StringBuilder
+        Private ReadOnly ErrorBuffer As New Text.StringBuilder
+        Private ReadOnly BufferLock As New Object
+        Private IsDisposed As Boolean
+
+        Public Sub New(StartInfo As ProcessStartInfo)
+            BackendProcess = New Process()
+            BackendProcess.StartInfo = StartInfo
+            AddHandler BackendProcess.OutputDataReceived, AddressOf OnOutputReceived
+            AddHandler BackendProcess.ErrorDataReceived, AddressOf OnErrorReceived
+        End Sub
+
+        Public ReadOnly Property CommandLine As String
+            Get
+                Return BackendProcess.StartInfo.FileName & " " & BackendProcess.StartInfo.Arguments
+            End Get
+        End Property
+
+        Public ReadOnly Property ProcessId As Integer
+            Get
+                Try
+                    Return BackendProcess.Id
+                Catch ex As Exception
+                    Return 0
+                End Try
+            End Get
+        End Property
+
+        Public ReadOnly Property HasExited As Boolean
+            Get
+                Try
+                    Return BackendProcess.HasExited
+                Catch ex As Exception
+                    Return True
+                End Try
+            End Get
+        End Property
+
+        Public Function GetOutput() As String
+            SyncLock BufferLock
+                Return OutputBuffer.ToString()
+            End SyncLock
+        End Function
+
+        Public Function GetErrors() As String
+            SyncLock BufferLock
+                Return ErrorBuffer.ToString()
+            End SyncLock
+        End Function
+
+        Public Sub Start()
+            BackendProcess.Start()
+            ' Only valid after Start(): the redirected streams do not exist before then.
+            BackendProcess.BeginOutputReadLine()
+            BackendProcess.BeginErrorReadLine()
+        End Sub
+
+        Public Sub Wait(Cancelled As Func(Of Boolean))
+            Do While Not HasExited
+                If Cancelled IsNot Nothing AndAlso Cancelled() Then
+                    Try
+                        BackendProcess.Kill()
+                    Catch ex As Exception
+                        ' Already gone or not killable; either way there is nothing left to wait for.
+                    End Try
+                    Exit Do
+                End If
+                ' Sleep rather than the old tight Do/Loop, which pinned a core at 100 %.
+                Threading.Thread.Sleep(50)
+            Loop
+            ' The parameterless overload also waits for the async output handlers to finish, so
+            ' GetOutput()/GetErrors() are complete once it returns.
+            Try
+                BackendProcess.WaitForExit()
+            Catch ex As Exception
+            End Try
+        End Sub
+
+        Private Sub OnOutputReceived(sender As Object, e As DataReceivedEventArgs)
+            If e.Data IsNot Nothing Then
+                SyncLock BufferLock
+                    OutputBuffer.AppendLine(e.Data)
+                End SyncLock
+            End If
+        End Sub
+
+        Private Sub OnErrorReceived(sender As Object, e As DataReceivedEventArgs)
+            If e.Data IsNot Nothing Then
+                SyncLock BufferLock
+                    ErrorBuffer.AppendLine(e.Data)
+                End SyncLock
+            End If
+        End Sub
+
+        Public Sub Dispose() Implements IDisposable.Dispose
+            If IsDisposed Then Return
+            IsDisposed = True
+            Try
+                BackendProcess.CancelOutputRead()
+                BackendProcess.CancelErrorRead()
+            Catch ex As Exception
+                ' Async reading was never started, or has already been torn down.
+            End Try
+            RemoveHandler BackendProcess.OutputDataReceived, AddressOf OnOutputReceived
+            RemoveHandler BackendProcess.ErrorDataReceived, AddressOf OnErrorReceived
+            BackendProcess.Dispose()
+        End Sub
+    End Class
+
+#End Region
+
 #Region "Loading"
 
     Private Sub Form1_Load(sender As Object, e As EventArgs) Handles MyBase.Load
@@ -59,6 +190,9 @@ Public Class Form1
         Application.CurrentCulture = New Globalization.CultureInfo("EN-US")
         PreloadImageList()
         ChainControl = New DragDropList(ChainPreview, 7)
+        ' ChainControl is created at runtime, so the reorder notification has to be attached
+        ' with AddHandler rather than Handles.
+        AddHandler ChainControl.ListReordered, AddressOf ChainReordered
         Try
             If File.Exists(Root & "\portable.xml") Then
                 FormSettings.LoadSettings(Me, Deserialize(Of FormSettings.Settings)(File.ReadAllText(Root & "\portable.xml")))
@@ -84,6 +218,9 @@ Public Class Form1
         End If
         ChainControl.DrawList(ChainControl.ListItems)
         WatchDogButton.Select()
+        ' Show the real state of the dump straight away instead of waiting for the first tick.
+        ProgressPollTimer.Enabled = True
+        ProgressPollTimer_Tick(ProgressPollTimer, EventArgs.Empty)
         If Environment.GetCommandLineArgs.Count > 1 Then
             WatchDogButton_Click(sender, e)
         End If
@@ -199,52 +336,144 @@ Public Class Form1
     Private Sub ChainLoad_Click(sender As Object, e As EventArgs) Handles ChainLoad.Click
         Using OFD As New OpenFileDialog With {.Filter = "XML Files|*.xml|All Files|*.*"}
             If OFD.ShowDialog = DialogResult.OK Then
-                ChainControl.ListItems.Clear()
-                ChainList.Clear()
-                ChainList = Deserialize(Of List(Of FormSettings.ChainObject))(File.ReadAllText(OFD.FileName))
-                For Each ChainItem As FormSettings.ChainObject In ChainList
-                    ChainControl.ListItems.Add(New DragDropList.DragDropItem(ChainList.IndexOf(ChainItem), ChainItem.Name, ChainThumbs.Item(ChainItem.IconIndex)))
-                Next
-                ChainControl.DrawList(ChainControl.ListItems)
+                Dim LoadedChain As List(Of FormSettings.ChainObject) = Nothing
+                Try
+                    LoadedChain = Deserialize(Of List(Of FormSettings.ChainObject))(File.ReadAllText(OFD.FileName))
+                Catch ex As Exception
+                    LoadedChain = Nothing
+                End Try
+                If LoadedChain Is Nothing Then
+                    MsgBox("Error: That file could not be parsed as a chain.", MsgBoxStyle.Exclamation)
+                    Return
+                End If
+                ChainList = LoadedChain
+                RebuildChainPreview()
             End If
         End Using
     End Sub
+
+    ' Rebuilds the preview from ChainList.  Captions come from GetChainDisplayName, so a chain
+    ' loaded from a settings file or an .xml preset shows the real model again - the persisted Name
+    ' only identifies the backend.
+    Public Sub RebuildChainPreview()
+        If ChainControl Is Nothing Then Return
+        ChainControl.SelectedIndex = -1
+        ChainControl.ListItems.Clear()
+        For i = 0 To ChainList.Count - 1
+            ChainControl.ListItems.Add(New DragDropList.DragDropItem(i, GetChainDisplayName(ChainList(i)), GetChainThumb(ChainList(i).IconIndex)))
+        Next
+        ChainControl.ReorderList()
+        ChainControl.DrawList(ChainControl.ListItems)
+    End Sub
+
+    Private Function GetChainThumb(IconIndex As Integer) As Bitmap
+        If IconIndex < 0 OrElse IconIndex >= ChainThumbs.Count Then IconIndex = 0
+        Return TryCast(ChainThumbs.Item(IconIndex), Bitmap)
+    End Function
+
+    ' Caption shown under a chain thumbnail, derived from the model that will actually run.
+    '
+    ' ChainObject.Name cannot carry it: MakeUpscale compares Name against "TexConv" to decide where
+    ' the pre/post-processing steps belong, so Name has to stay the backend id.  ESRGAN is the case
+    ' that matters - it is the only backend where the user picks an actual model file, and every
+    ' ESRGAN step used to be labelled just "ESRGAN", making two different models indistinguishable.
+    Public Shared Function GetChainDisplayName(Item As FormSettings.ChainObject) As String
+        If Item.PackageType = "ESRGAN" Then
+            Try
+                Dim PyPackage As FormSettings.PythonPackage = DirectCast(Item.Package, FormSettings.PythonPackage)
+                If Not String.IsNullOrEmpty(PyPackage.Model) Then
+                    Dim ModelName As String = Path.GetFileNameWithoutExtension(PyPackage.Model)
+                    If ModelName.Length > 0 Then Return ModelName
+                End If
+            Catch ex As Exception
+                ' Unboxing fails on a hand-edited or older preset; fall back to the backend id.
+            End Try
+        End If
+        If String.IsNullOrEmpty(Item.Name) Then Return Item.PackageType
+        Return Item.Name
+    End Function
 
     Private Sub ChainAdd_Click(sender As Object, e As EventArgs) Handles ChainAdd.Click
         AddModelToChain(ExeComboBox.SelectedItem)
     End Sub
 
-    Private Sub RemoveItemFromChain(sender As Object, e As EventArgs) Handles ChainContextDelete.Click
-        Dim Remove As Integer = ChainControl.GetCurrentIndex
-        ChainList.RemoveAt(Remove)
-        ChainControl.ListItems.RemoveAt(Remove)
-        ChainControl.ReorderList()
-        ChainControl.DrawList(ChainControl.ListItems)
+    ' The item the context menu was opened on, resolved while the cursor is still over the
+    ' thumbnail.  -1 when the menu was opened on empty space.
+    Private ContextIndex As Integer = -1
+
+    Private Sub ChainContext_Opening(sender As Object, e As System.ComponentModel.CancelEventArgs) Handles ChainContext.Opening
+        ' Once the menu is on screen the mouse is over the MENU, not over the preview.  Asking for
+        ' the index inside the click handlers therefore returned a stale value, and Edit/Delete hit
+        ' whichever model happened to be clicked last - or threw on an out-of-range index.
+        ContextIndex = ChainControl.GetIndexAt(ChainPreview.PointToClient(Control.MousePosition))
+        Dim Valid As Boolean = ContextIndex >= 0 AndAlso ContextIndex < ChainList.Count
+        ChainContextEdit.Enabled = Valid
+        ChainContextDelete.Enabled = Valid
     End Sub
 
     Private Sub ChainContextEdit_Click(sender As Object, e As EventArgs) Handles ChainContextEdit.Click
-        Dim ItemIndex As Integer = ChainControl.GetCurrentIndex
-        Using ECD As New EditChainDialog(Serialize(ChainList(ItemIndex)))
+        If ContextIndex < 0 OrElse ContextIndex >= ChainList.Count Then Return
+        Using ECD As New EditChainDialog(Serialize(ChainList(ContextIndex)))
             If ECD.ShowDialog = DialogResult.OK Then
                 Try
-                    Dim NewChainItem As FormSettings.ChainObject = Deserialize(Of FormSettings.ChainObject)(ECD.ResultText)
-                    ChainList(ItemIndex) = NewChainItem
+                    ChainList(ContextIndex) = Deserialize(Of FormSettings.ChainObject)(ECD.ResultText)
                 Catch ex As Exception
                     MsgBox("Error: New settings could not be parsed.")
+                    Return
                 End Try
+                ' The edited XML can point the step at a different model, so refresh the caption.
+                RefreshChainNames()
             End If
         End Using
     End Sub
 
-    Private Sub ChainPreview_MouseUp(sender As Object, e As MouseEventArgs) Handles ChainPreview.MouseUp
-        If e.Button = MouseButtons.Left Then
-            Dim TempList As New List(Of FormSettings.ChainObject)
-            For Each Item As DragDropList.DragDropItem In ChainControl.ListItems
-                TempList.Add(ChainList(Item.Index))
-            Next
-            ChainList = TempList
-            ChainControl.ReorderList()
-        End If
+    Private Sub ChainContextDelete_Click(sender As Object, e As EventArgs) Handles ChainContextDelete.Click
+        RemoveChainItemAt(ContextIndex)
+        ContextIndex = -1
+    End Sub
+
+    Private Sub ChainRemove_Click(sender As Object, e As EventArgs) Handles ChainRemove.Click
+        ' This button was in the UI but had no handler at all, so it silently did nothing.
+        RemoveChainItemAt(ChainControl.SelectedIndex)
+    End Sub
+
+    Private Sub RemoveChainItemAt(Index As Integer)
+        If ChainControl Is Nothing Then Return
+        If Index < 0 Then Return
+        If Index >= ChainList.Count OrElse Index >= ChainControl.ListItems.Count Then Return
+        ChainList.RemoveAt(Index)
+        ChainControl.ListItems.RemoveAt(Index)
+        ChainControl.ReorderList()
+        ChainControl.DrawList(ChainControl.ListItems)
+    End Sub
+
+    ' Rewrites only the captions, keeping order, selection and thumbnails intact.
+    Private Sub RefreshChainNames()
+        If ChainControl Is Nothing Then Return
+        If ChainControl.ListItems.Count <> ChainList.Count Then Return
+        For i = 0 To ChainControl.ListItems.Count - 1
+            Dim Item As DragDropList.DragDropItem = ChainControl.ListItems(i)
+            ChainControl.ListItems(i) = New DragDropList.DragDropItem(Item.Index, GetChainDisplayName(ChainList(i)), GetChainThumb(ChainList(i).IconIndex))
+        Next
+        ChainControl.DrawList(ChainControl.ListItems)
+    End Sub
+
+    ' A drag has been committed.  DragDropList raises this BEFORE it renumbers the items, so
+    ' Item.Index is still the ChainList position that thumbnail came from.
+    '
+    ' The old code did this from ChainPreview's MouseUp event.  WinForms runs that handler before
+    ' DragDropList commits the drag, so it rebuilt ChainList from the pre-drag order - the reorder
+    ' was thrown away and the renumbering that followed made the two lists disagree, which is how
+    ' models ended up overwritten.
+    Private Sub ChainReordered(sender As Object, e As EventArgs)
+        If ChainControl Is Nothing Then Return
+        If ChainControl.ListItems.Count <> ChainList.Count Then Return
+        Dim Reordered As New List(Of FormSettings.ChainObject)
+        For Each Item As DragDropList.DragDropItem In ChainControl.ListItems
+            If Item.Index < 0 OrElse Item.Index >= ChainList.Count Then Return
+            Reordered.Add(ChainList(Item.Index))
+        Next
+        ChainList = Reordered
     End Sub
 
     Private Sub DDxFormatListBox_SelectedIndexChanged(sender As Object, e As EventArgs) Handles DDxFormatListBox.SelectedIndexChanged
@@ -270,7 +499,7 @@ Public Class Form1
                         File.Copy(OFD.FileName, TempPath & "\" & Path.GetFileName(SFD.FileName), True)
                         LoadedSettings = New FormSettings.Settings(Me)
                         LoadedSettings.Paths = New FormSettings.ProgramPaths(TempPath, Directory.GetParent(SFD.FileName).FullName, Root)
-                        If ChainControl.ListItems.Count = 0 Then
+                        If ChainList.Count = 0 Then
                             AddModelToChain(ExeComboBox.SelectedItem, False)
                         End If
                         SwitchGroups(False)
@@ -394,12 +623,46 @@ Public Class Form1
             WaitScale = 0
             WatchDog.Interval = 1000
             LoadedSettings = New FormSettings.Settings(Me)
-            If ChainControl.ListItems.Count = 0 Then
+            If ChainList.Count = 0 Then
                 AddModelToChain(ExeComboBox.SelectedItem, False)
             End If
             WorkHorse.RunWorkerAsync()
         End If
     End Sub
+
+    ' The progress bar shows how much of the dump is upscaled overall - how many input files
+    ' already have a counterpart in the output folder - rather than how far the current batch got.
+    '
+    ' Reporting once per batch cannot express that: with "Threads: All" a whole run is a single
+    ' batch, so the bar sat at 0 for the entire queue, jumped to 100 at the end, and went back to 0
+    ' when the watchdog started the next run.  Polling the two folders keeps it meaningful across
+    ' batches, across runs, and even while nothing is running at all.
+    Private Sub ProgressPollTimer_Tick(sender As Object, e As EventArgs) Handles ProgressPollTimer.Tick
+        Try
+            Dim Percent As Integer = GetOverallProgress()
+            If Percent < UpscaleProgress.Minimum Then Percent = UpscaleProgress.Minimum
+            If Percent > UpscaleProgress.Maximum Then Percent = UpscaleProgress.Maximum
+            UpscaleProgress.Value = Percent
+        Catch ex As Exception
+            ' A folder on a removable or network drive can vanish mid-scan; never take the UI down.
+        End Try
+        ' Both folder trees are walked on the UI thread every tick, so poll once a second while
+        ' textures are actually being written and back off to five seconds when idle.
+        ProgressPollTimer.Interval = IIf(WorkHorse.IsBusy, 1000, 5000)
+    End Sub
+
+    Private Function GetOverallProgress() As Integer
+        Dim InputPath As String = InputTextBox.Text
+        Dim OutputPath As String = OutputTextBox.Text
+        If Not Directory.Exists(InputPath) OrElse Not Directory.Exists(OutputPath) Then Return 0
+        Dim InputFiles As String() = Directory.GetFiles(InputPath, "*.*", SearchOption.AllDirectories)
+        If InputFiles.Count = 0 Then Return 0
+        Dim Done As Integer = InputFiles.Count - GetMissingFiles(InputFiles, OutputPath).Count
+        If Done <= 0 Then Return 0
+        If Done >= InputFiles.Count Then Return 100
+        ' Double arithmetic: an Integer Done * 100 would overflow on an absurdly large dump.
+        Return CInt(Math.Floor((Done * 100.0R) / InputFiles.Count))
+    End Function
 
     Private Sub WorkHorse_DoWork(sender As Object, e As System.ComponentModel.DoWorkEventArgs) Handles WorkHorse.DoWork
         WatchDog.Stop()
@@ -410,7 +673,9 @@ Public Class Form1
     End Sub
 
     Private Sub WorkHorse_ProgressChanged(sender As Object, e As System.ComponentModel.ProgressChangedEventArgs) Handles WorkHorse.ProgressChanged
-        UpscaleProgress.Value = e.ProgressPercentage
+        ' The progress bar is deliberately not touched here - ProgressPollTimer owns it, because
+        ' this event only fires once per batch.  What this handler is for is poking the emulator to
+        ' reload its textures as soon as a batch has landed.
         If (HotKeyCheckbox.Checked = True) AndAlso (GetActiveWindow <> Me.Handle) Then
             SendKeys.Send(HotToggle)
             Threading.Thread.Sleep(200)
@@ -419,9 +684,14 @@ Public Class Form1
     End Sub
 
     Private Sub WorkHorse_RunWorkerCompleted(sender As Object, e As System.ComponentModel.RunWorkerCompletedEventArgs) Handles WorkHorse.RunWorkerCompleted
-        UpscaleProgress.Value = 0
-        If ChainControl.ListItems.Count = 0 Then
-            ChainList.Clear()
+        ' Drop the backend that was added implicitly for this run.  The old check tested the
+        ' preview, which the implicit entry had already been added to, so it never cleared: the
+        ' silently added model stayed in the chain and was written to settings.xml on exit.
+        If ImplicitChainCount > 0 Then
+            For i = 1 To ImplicitChainCount
+                If ChainList.Count > 0 Then ChainList.RemoveAt(ChainList.Count - 1)
+            Next
+            ImplicitChainCount = 0
         End If
         If e.Cancelled = True Then
             WatchDog.Enabled = False
@@ -444,8 +714,17 @@ Public Class Form1
 
     Private Sub MakeUpscale()
         Dim TempPath As String = GetChainPath("Temp", 0)
-        Dim ThreadCount As Integer = GetThreads(LoadedSettings.BasicSettings.ThreadIndex, LoadedSettings.BasicSettings.ThreadCount)
         Dim Source As String() = GetMissingFiles(LoadedSettings.Paths.InputPath, LoadedSettings.Paths.OutputPath)
+        Dim ThreadCount As Integer = GetThreads(LoadedSettings.BasicSettings.ThreadIndex, LoadedSettings.BasicSettings.ThreadCount, Source.Count)
+        ' "Threads: All" now hands the whole queue over in a single batch.  That is exactly what
+        ' the folder-based backends (ESRGAN / *-ncnn-vulkan) want: one Python/Vulkan launch for
+        ' every pending texture instead of a restart per batch.  A per-image backend however
+        ' spawns one process per texture, so in that mode its concurrency is capped at the core
+        ' count to keep a large queue from flooding the system with processes.
+        Dim PerImageLimit As Integer = ThreadCount
+        If LoadedSettings.BasicSettings.ThreadIndex = 2 Then
+            PerImageLimit = Math.Max(1, Environment.ProcessorCount)
+        End If
         For i = 0 To Source.Count - 1 Step ThreadCount
             Dim ChainPaths As New List(Of String)
             Dim DeletedChainPaths As New List(Of String)
@@ -479,7 +758,7 @@ Public Class Form1
                         End If
                     End If
                 Next
-                StartBuilder(ChainPaths(0), ChainPaths(1), NewImages, Model)
+                StartBuilder(ChainPaths(0), ChainPaths(1), NewImages, Model, PerImageLimit)
                 DeletedChainPaths.Add(ChainPaths(0))
                 ChainPaths.RemoveAt(0)
                 If (ChainList.IndexOf(Model) = ChainList.Count - 1 AndAlso Model.Name <> "TexConv") OrElse (ChainList(ChainList.Count - 1).Name = "TexConv" AndAlso ChainList.IndexOf(Model) = ChainList.Count - 2) Then
@@ -518,7 +797,9 @@ Public Class Form1
             For Each ChainDir As String In DeletedChainPaths
                 Directory.Delete(ChainDir, True)
             Next
-            WorkHorse.ReportProgress(Math.Floor(((i * 100) + 1) / Source.Count))
+            ' Drives the texture-reload hotkey, once per batch.  ReportProgress throws outside
+            ' 0-100, so the value is clamped; the bar itself is owned by ProgressPollTimer.
+            WorkHorse.ReportProgress(Math.Max(0, Math.Min(100, CInt(Math.Floor(((i + ThreadCount) * 100) / Source.Count)))))
         Next
         If CleanupCheckBox.Checked = True Then
             For Each SourceImage As String In Source
@@ -561,52 +842,97 @@ Public Class Form1
         Loop
     End Sub
 
-    Private Sub StartBuilder(SourcePath As String, DestPath As String, ImageList As List(Of String), Model As FormSettings.ChainObject)
-        If ImageList.Count > 0 Then
-            Dim BuildProcess As ProcessStartInfo
-            If Model.PackageType = "ESRGAN" OrElse Model.PackageType.Contains("Vulkan") Then
-                BuildProcess = New ProcessStartInfo(Root & Model.FileLocation, MakeCommand(SourcePath, DestPath, Model.PackageType, Model.Package))
-                BuildProcess.WorkingDirectory = Directory.GetParent(Root & Model.FileLocation).FullName
-                BuildProcess.RedirectStandardOutput = True
-                BuildProcess.RedirectStandardError = True
-                BuildProcess.UseShellExecute = False
-                BuildProcess.CreateNoWindow = True
-                Dim BatchProcess As Process = Process.Start(BuildProcess)
-                BatchProcess.WaitForExit()
-                If LoadedSettings.ExpertSettings.Logging = True Then
-                    WriteLog(BatchProcess, LoadedSettings.Paths.OutputPath)
-                End If
-            Else
-                Dim ProcessBag As New List(Of Process)
+    Private Sub StartBuilder(SourcePath As String, DestPath As String, ImageList As List(Of String), Model As FormSettings.ChainObject, Optional PerImageLimit As Integer = 0)
+        If ImageList.Count = 0 Then Return
+
+        Dim ExePath As String = Root & Model.FileLocation
+        Dim WorkingDir As String = Directory.GetParent(ExePath).FullName
+
+        If Model.PackageType = "ESRGAN" OrElse Model.PackageType.Contains("Vulkan") Then
+            ' Folder-based backend: a single process consumes the whole batch, so "Threads: All"
+            ' means exactly one Python/Vulkan launch for the entire queue.
+            Dim FolderJob As New BackendJob(MakeStartInfo(ExePath, WorkingDir, MakeCommand(SourcePath, DestPath, Model.PackageType, Model.Package)))
+            Try
+                FolderJob.Start()
+                FolderJob.Wait(AddressOf IsCancelled)
+                LogJob(FolderJob)
+            Finally
+                FolderJob.Dispose()
+            End Try
+        Else
+            ' Per-image backend: one process per texture.  A full "Threads: All" queue would
+            ' otherwise spawn hundreds of processes at once, so the number in flight is capped.
+            Dim MaxConcurrent As Integer = ImageList.Count
+            If PerImageLimit > 0 AndAlso PerImageLimit < MaxConcurrent Then MaxConcurrent = PerImageLimit
+
+            Dim Active As New List(Of BackendJob)
+            Try
                 For j = 0 To ImageList.Count - 1
                     Dim NewImage As String = DestPath & "\" & Path.GetFileName(ImageList(j))
-                    BuildProcess = New ProcessStartInfo(Root & Model.FileLocation, MakeCommand(ImageList(j), NewImage, Model.PackageType, Model.Package))
-                    BuildProcess.WorkingDirectory = Directory.GetParent(Root & Model.FileLocation).FullName
-                    BuildProcess.RedirectStandardOutput = True
-                    BuildProcess.RedirectStandardError = True
-                    BuildProcess.UseShellExecute = False
-                    BuildProcess.CreateNoWindow = True
-                    Dim BatchProcess As Process = Process.Start(BuildProcess)
-                    ProcessBag.Add(BatchProcess)
-                    If LoadedSettings.ExpertSettings.Logging = True Then
-                        WriteLog(BatchProcess, LoadedSettings.Paths.OutputPath)
+                    Dim ItemJob As BackendJob = New BackendJob(MakeStartInfo(ExePath, WorkingDir, MakeCommand(ImageList(j), NewImage, Model.PackageType, Model.Package)))
+                    Active.Add(ItemJob)
+                    ItemJob.Start()
+
+                    If Active.Count >= MaxConcurrent Then
+                        RetireFinished(Active)
+                        If Active.Count >= MaxConcurrent Then
+                            ' Still saturated: block on the oldest job until a slot frees up.
+                            Active(0).Wait(AddressOf IsCancelled)
+                            LogJob(Active(0))
+                            Active(0).Dispose()
+                            Active.RemoveAt(0)
+                        End If
                     End If
                 Next
-                Do
-                    Dim CompletionStatus As New List(Of Boolean)
-                    For Each Job As Process In ProcessBag
-                        CompletionStatus.Add(Job.HasExited)
-                    Next
-                    If Not CompletionStatus.Contains(False) Then
-                        Exit Do
-                    End If
-                Loop
+                For Each Pending As BackendJob In Active
+                    Pending.Wait(AddressOf IsCancelled)
+                    LogJob(Pending)
+                Next
+            Finally
+                For Each Remaining As BackendJob In Active
+                    Remaining.Dispose()
+                Next
+                Active.Clear()
+            End Try
+        End If
+
+        For Each TempImage As String In Directory.GetFiles(SourcePath)
+            File.Delete(TempImage)
+        Next
+    End Sub
+
+    Private Function MakeStartInfo(ExePath As String, WorkingDir As String, Arguments As String) As ProcessStartInfo
+        Dim Result As New ProcessStartInfo(ExePath, Arguments)
+        Result.WorkingDirectory = WorkingDir
+        Result.RedirectStandardOutput = True
+        Result.RedirectStandardError = True
+        Result.UseShellExecute = False
+        Result.CreateNoWindow = True
+        Return Result
+    End Function
+
+    ' Logs and releases every job that has already finished.  Iterating backwards keeps the
+    ' remaining indices valid while items are removed.
+    Private Sub RetireFinished(Active As List(Of BackendJob))
+        For i = Active.Count - 1 To 0 Step -1
+            If Active(i).HasExited Then
+                Active(i).Wait(AddressOf IsCancelled) ' cheap: already exited, only drains the pipes
+                LogJob(Active(i))
+                Active(i).Dispose()
+                Active.RemoveAt(i)
             End If
-            For Each TempImage As String In Directory.GetFiles(SourcePath)
-                File.Delete(TempImage)
-            Next
+        Next
+    End Sub
+
+    Private Sub LogJob(Job As BackendJob)
+        If LoadedSettings.ExpertSettings.Logging = True Then
+            WriteLog(Job, LoadedSettings.Paths.OutputPath)
         End If
     End Sub
+
+    Private Function IsCancelled() As Boolean
+        Return WorkHorse.CancellationPending
+    End Function
 
     Private Function GetChainPath(PathType As String, PathIndex As Integer) As String
         Return Path.GetTempPath & PathType & "_" & PathIndex & "_" & LoadedSettings.ExpertSettings.AlphaMode
@@ -643,38 +969,43 @@ Public Class Form1
     End Function
 
     Private Sub AddModelToChain(Mode As String, Optional AddPreview As Boolean = True)
+        If String.IsNullOrEmpty(Mode) Then Return
+        Dim NewItem As FormSettings.ChainObject
         Select Case Mode
             Case "Waifu2x Caffe"
-                ChainControl.ListItems.Add(New DragDropList.DragDropItem(ChainList.Count, "Caffe", ChainThumbs.Item(0)))
-                ChainList.Add(New FormSettings.ChainObject("Caffe", 0, CaffePath, "Waifu2x Caffe", Me))
+                NewItem = New FormSettings.ChainObject("Caffe", 0, CaffePath, "Waifu2x Caffe", Me)
             Case "Waifu2x Vulkan"
-                ChainControl.ListItems.Add(New DragDropList.DragDropItem(ChainList.Count, "Waifu Vulkan", ChainThumbs.Item(1)))
-                ChainList.Add(New FormSettings.ChainObject("Waifu Vulkan", 1, WaifuNcnnPath, "Waifu2x Vulkan", Me))
+                NewItem = New FormSettings.ChainObject("Waifu Vulkan", 1, WaifuNcnnPath, "Waifu2x Vulkan", Me)
             Case "RealSR Vulkan"
-                ChainControl.ListItems.Add(New DragDropList.DragDropItem(ChainList.Count, "RealSR Vulkan", ChainThumbs.Item(2)))
-                ChainList.Add(New FormSettings.ChainObject("RealSR Vulkan", 2, RealSRNcnnPath, "RealSR Vulkan", Me))
+                NewItem = New FormSettings.ChainObject("RealSR Vulkan", 2, RealSRNcnnPath, "RealSR Vulkan", Me)
             Case "RealESRGAN Vulkan"
-                ChainControl.ListItems.Add(New DragDropList.DragDropItem(ChainList.Count, "RealESRGAN Vulkan", ChainThumbs.Item(8)))
-                ChainList.Add(New FormSettings.ChainObject("RealESRGAN Vulkan", 8, RealESRGNcnnPath, "RealESRGAN Vulkan", Me))
+                NewItem = New FormSettings.ChainObject("RealESRGAN Vulkan", 8, RealESRGNcnnPath, "RealESRGAN Vulkan", Me)
             Case "SRMD Vulkan"
-                ChainControl.ListItems.Add(New DragDropList.DragDropItem(ChainList.Count, "SRMD Vulkan", ChainThumbs.Item(3)))
-                ChainList.Add(New FormSettings.ChainObject("SRMD Vulkan", 3, SRMDNcnnPath, "SRMD Vulkan", Me))
+                NewItem = New FormSettings.ChainObject("SRMD Vulkan", 3, SRMDNcnnPath, "SRMD Vulkan", Me)
             Case "Waifu2x CPP"
-                ChainControl.ListItems.Add(New DragDropList.DragDropItem(ChainList.Count, "Waifu CPP", ChainThumbs.Item(4)))
-                ChainList.Add(New FormSettings.ChainObject("Waifu CPP", 4, WaifuCppPath, "Waifu2x CPP", Me))
+                NewItem = New FormSettings.ChainObject("Waifu CPP", 4, WaifuCppPath, "Waifu2x CPP", Me)
             Case "Anime4k CPP"
-                ChainControl.ListItems.Add(New DragDropList.DragDropItem(ChainList.Count, "Anime4k", ChainThumbs.Item(5)))
-                ChainList.Add(New FormSettings.ChainObject("Anime4k", 5, Anime4kPath, "Anime4k CPP", Me))
+                NewItem = New FormSettings.ChainObject("Anime4k", 5, Anime4kPath, "Anime4k CPP", Me)
             Case "TexConv"
-                ChainControl.ListItems.Add(New DragDropList.DragDropItem(ChainList.Count, "TexConv", ChainThumbs.Item(7)))
-                ChainList.Add(New FormSettings.ChainObject("TexConv", 7, TexConvPath, "TexConv", Me))
+                NewItem = New FormSettings.ChainObject("TexConv", 7, TexConvPath, "TexConv", Me)
             Case "xBRZ"
-                ChainControl.ListItems.Add(New DragDropList.DragDropItem(ChainList.Count, "xBRZ", ChainThumbs.Item(0)))
-                ChainList.Add(New FormSettings.ChainObject("xBRZ", 0, xBRZPath, "xBRZ", Me))
+                NewItem = New FormSettings.ChainObject("xBRZ", 0, xBRZPath, "xBRZ", Me)
             Case "ESRGAN"
-                ChainControl.ListItems.Add(New DragDropList.DragDropItem(ChainList.Count, "ESRGAN", ChainThumbs.Item(6)))
-                ChainList.Add(New FormSettings.ChainObject("ESRGAN", 6, PyPath, "ESRGAN", Me))
+                NewItem = New FormSettings.ChainObject("ESRGAN", 6, PyPath, "ESRGAN", Me)
+            Case Else
+                Return ' Backend not present in the ExeComboBox, nothing to add.
         End Select
+
+        ChainList.Add(NewItem)
+
+        ' AddPreview was declared but never honoured: a backend picked implicitly for one run was
+        ' added to the visible chain as well, and then never removed again.
+        If Not AddPreview Then
+            ImplicitChainCount += 1
+            Return
+        End If
+
+        ChainControl.ListItems.Add(New DragDropList.DragDropItem(ChainList.Count - 1, GetChainDisplayName(NewItem), GetChainThumb(NewItem.IconIndex)))
         ChainControl.DrawList(ChainControl.ListItems)
     End Sub
 
@@ -842,50 +1173,71 @@ Public Class Form1
     End Function
 
     Private Sub Defringe(Source As String, Threshold As Integer)
-        Dim NewImage As New DirectBitmap(GetUnlockedImage(Source))
-        For X = 0 To NewImage.Width - 1
-            For Y = 0 To NewImage.Height - 1
-                If NewImage.GetPixel(X, Y).A < Threshold Then
-                    NewImage.SetPixel(X, Y, Color.Transparent)
+        Using NewImage As DirectBitmap = LoadDirectBitmap(Source)
+            ' Work straight on the pinned buffer: one array reference, one pass, pure integer
+            ' math.  The old GetPixel/SetPixel path built a Color structure (and re-resolved
+            ' the Bits property) for every single pixel, twice over.
+            Dim Bits As Integer() = NewImage.Bits
+            For i = 0 To Bits.Length - 1
+                ' Alpha is the high byte.  VB's >> is an arithmetic shift, so mask afterwards
+                ' to get an unsigned 0-255 value even when the packed ARGB integer is negative.
+                If ((Bits(i) >> 24) And &HFF) < Threshold Then
+                    Bits(i) = 0 ' Color.Transparent.ToArgb()
                 End If
             Next
-        Next
-        NewImage.Bitmap.Save(Source)
+            NewImage.Bitmap.Save(Source)
+        End Using
     End Sub
 
     Private Sub RemovePS2Alpha(Source As String)
-        Dim NewImage As New DirectBitmap(GetUnlockedImage(Source))
-        Dim AlphaMax As Integer = 0
-        For X = 0 To NewImage.Width - 1
-            For Y = 0 To NewImage.Height - 1
-                Dim TempColor As Color = NewImage.GetPixel(X, Y)
-                If TempColor.A > AlphaMax Then
-                    AlphaMax = TempColor.A
-                End If
-                If Not AlphaMax <= 128 Then
-                    NewImage.Dispose()
-                    Exit Sub
-                End If
-                If TempColor.A <> 0 Then
-                    NewImage.SetPixel(X, Y, Color.FromArgb((TempColor.A * 2) - 1, TempColor.R, TempColor.G, TempColor.B))
+        Using NewImage As DirectBitmap = LoadDirectBitmap(Source)
+            Dim Bits As Integer() = NewImage.Bits
+            Dim AlphaMax As Integer = 0
+            For i = 0 To Bits.Length - 1
+                Dim Pixel As Integer = Bits(i)
+                Dim Alpha As Integer = (Pixel >> 24) And &HFF
+                If Alpha > AlphaMax Then AlphaMax = Alpha
+                ' PCSX2 dumps carry 0-128 alpha.  If this texture already uses the full 0-255
+                ' range it is not a PS2 dump, so leave the file completely untouched.
+                If AlphaMax > 128 Then Return
+                If Alpha <> 0 Then
+                    ' Keep the low 24 bits as-is and swap in the doubled alpha byte.  Alpha is
+                    ' <= 128 here, so (Alpha * 2) - 1 can never exceed 255.
+                    Bits(i) = (((Alpha * 2) - 1) << 24) Or (Pixel And &HFFFFFF)
                 End If
             Next
-        Next
-        NewImage.Bitmap.Save(Source)
+            NewImage.Bitmap.Save(Source)
+        End Using
     End Sub
 
     Private Sub AddPS2Alpha(Source As String)
-        Dim NewImage As New DirectBitmap(GetUnlockedImage(Source))
-        For X = 0 To NewImage.Width - 1
-            For Y = 0 To NewImage.Height - 1
-                Dim TempColor As Color = NewImage.GetPixel(X, Y)
-                If TempColor.A <> 0 Then
-                    NewImage.SetPixel(X, Y, Color.FromArgb((TempColor.A + 1) / 2, TempColor.R, TempColor.G, TempColor.B))
+        Using NewImage As DirectBitmap = LoadDirectBitmap(Source)
+            Dim Bits As Integer() = NewImage.Bits
+            For i = 0 To Bits.Length - 1
+                Dim Pixel As Integer = Bits(i)
+                Dim Alpha As Integer = (Pixel >> 24) And &HFF
+                If Alpha <> 0 Then
+                    ' Explicit CInt preserves VB's banker's rounding, which is what the old
+                    ' implicit Double -> Integer conversion at Color.FromArgb did.
+                    Dim NewAlpha As Integer = CInt((Alpha + 1) / 2)
+                    Bits(i) = (NewAlpha << 24) Or (Pixel And &HFFFFFF)
                 End If
             Next
-        Next
-        NewImage.Bitmap.Save(Source)
+            NewImage.Bitmap.Save(Source)
+        End Using
     End Sub
+
+    ' Loads a file into a pinned DirectBitmap and immediately releases the intermediate GDI+
+    ' copy.  The old post-processing code disposed neither the source Bitmap nor the
+    ' DirectBitmap, leaking a GDI+ handle and a pinned GCHandle for every texture processed.
+    Private Function LoadDirectBitmap(Source As String) As DirectBitmap
+        Dim SourceImage As Bitmap = GetUnlockedImage(Source)
+        Try
+            Return New DirectBitmap(SourceImage)
+        Finally
+            SourceImage.Dispose()
+        End Try
+    End Function
 
 #End Region
 
@@ -933,30 +1285,48 @@ Public Class Form1
     Private Declare Function GetActiveWindow Lib "user32" Alias "GetActiveWindow" () As IntPtr
 
     Private Function GetMissingFiles(Path1 As String, Path2 As String) As String()
+        If Not Directory.Exists(Path1) Then Return New String() {}
+        Return GetMissingFiles(Directory.GetFiles(Path1, "*.*", SearchOption.AllDirectories), Path2)
+    End Function
+
+    ' Files from InputFiles that have no counterpart in Path2 yet, matched on the file name without
+    ' its extension (so a .png dump counts as done once TexConv has written the .dds).
+    '
+    ' The lookup runs through a HashSet rather than List.Contains: the old version did an O(n*m)
+    ' string comparison per call, which was tolerable once per batch but is now also called once
+    ' per second by the progress poller on dumps with thousands of textures.
+    Private Function GetMissingFiles(InputFiles As String(), Path2 As String) As String()
+        Dim DoneNames As New HashSet(Of String)
+        If Directory.Exists(Path2) Then
+            For Each DoneFile As String In Directory.GetFiles(Path2, "*.*", SearchOption.AllDirectories)
+                DoneNames.Add(Path.GetFileNameWithoutExtension(DoneFile).ToLower)
+            Next
+        End If
         Dim Result As New List(Of String)
-        Dim Path1MasterList = Directory.GetFiles(Path1, "*.*", SearchOption.AllDirectories)
-        Dim Path1List = Directory.GetFiles(Path1, "*.*", SearchOption.AllDirectories).ToList
-        Dim Path2List = Directory.GetFiles(Path2, "*.*", SearchOption.AllDirectories).ToList
-        For i = 0 To Path1List.Count - 1
-            Path1List(i) = Path.GetFileNameWithoutExtension(Path1List(i)).ToLower
-        Next
-        For i = 0 To Path2List.Count - 1
-            Path2List(i) = Path.GetFileNameWithoutExtension(Path2List(i)).ToLower
-        Next
-        For i = 0 To Path1List.Count - 1
-            If Not Path2List.Contains(Path1List(i)) Then Result.Add(Path1MasterList(i))
+        For Each InputFile As String In InputFiles
+            If Not DoneNames.Contains(Path.GetFileNameWithoutExtension(InputFile).ToLower) Then
+                Result.Add(InputFile)
+            End If
         Next
         Return Result.ToArray
     End Function
 
-    Private Function GetThreads(Index As Integer, Count As Integer)
+    ' Batch size used by MakeUpscale.  Index matches ThreadComboBox:
+    '   0 = Single, 1 = Custom, 2 = All, 3 = Max (512)
+    ' "All" returns the number of files still waiting, so the Step loop in MakeUpscale runs a
+    ' single time and the backend receives the entire queue in one batch.  Folder-based
+    ' backends (ESRGAN, *-ncnn-vulkan) therefore start Python/Vulkan exactly once instead of
+    ' once per batch, which is what made the queue stutter on large dumps.
+    Private Function GetThreads(Index As Integer, Count As Integer, TotalFiles As Integer) As Integer
         Select Case Index
             Case 0
                 Return 1
             Case 1
-                Return Count
+                Return Math.Max(1, Count)
             Case 2
-                Return Environment.ProcessorCount
+                Return Math.Max(1, TotalFiles)
+            Case 3
+                Return 512
         End Select
         Return 512
     End Function
@@ -981,16 +1351,25 @@ Public Class Form1
         Return ControlChars.Quote & Source & ControlChars.Quote
     End Function
 
-    Private Sub WriteLog(Source As Process, SaveLoc As String)
-        Dim Filename As String = SaveLoc & "\Log_" & Now.ToString("yyyy-MM-dd_HH-mm-ss") & ".txt"
-        Dim Output As String = ""
-        Output += Source.StartInfo.FileName & " "
-        Output += Source.StartInfo.Arguments
-        Output += vbNewLine & vbNewLine
-        Output += Source.StandardOutput.ReadToEnd
-        Output += vbNewLine & vbNewLine
-        Output += Source.StandardError.ReadToEnd
-        File.WriteAllText(Filename, Output)
+    ' Writes the output captured by a BackendJob.  Reading StandardOutput/StandardError here
+    ' is no longer possible (and was itself a deadlock source): the pipes are drained
+    ' asynchronously while the process runs.
+    Private Sub WriteLog(Job As BackendJob, SaveLoc As String)
+        Try
+            Directory.CreateDirectory(SaveLoc)
+            ' The process id keeps concurrent per-image backends that finish within the same
+            ' second from overwriting each other's log file.
+            Dim Filename As String = SaveLoc & "\Log_" & Now.ToString("yyyy-MM-dd_HH-mm-ss") & "_" & Job.ProcessId & ".txt"
+            Dim Output As New Text.StringBuilder
+            Output.AppendLine(Job.CommandLine)
+            Output.AppendLine()
+            Output.AppendLine(Job.GetOutput())
+            Output.AppendLine()
+            Output.AppendLine(Job.GetErrors())
+            File.WriteAllText(Filename, Output.ToString())
+        Catch ex As Exception
+            ' Logging must never take the pipeline down with it.
+        End Try
     End Sub
 
 #End Region
