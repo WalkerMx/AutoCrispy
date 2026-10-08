@@ -113,7 +113,8 @@
     <Model></Model>
     <InputFlag>--input</InputFlag>
     <OutputFlag>--output</OutputFlag>
-    <TileSize>512</TileSize>
+    <TileSize>1024</TileSize>
+    <NormalMapMode>none</NormalMapMode>
     <CPUOnly>false</CPUOnly>
     <FileTypes>
       <string>.png</string>

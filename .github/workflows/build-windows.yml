@@ -1,0 +1,88 @@
+name: Build AutoCrispy
+
+on:
+  push:
+    branches:
+      - master
+      - "arena/**"
+  pull_request:
+    branches:
+      - master
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: windows-2022
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v4
+
+      - name: Set up Python for runner tests
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install image-processing test dependencies
+        run: python -m pip install --disable-pip-version-check numpy Pillow
+
+      - name: Run Spandrel runner tests
+        run: python -m unittest discover -s AutoCrispy/AutoCrispy/tests -v
+
+      - name: Add MSBuild to PATH
+        uses: microsoft/setup-msbuild@v2
+
+      - name: Build Release
+        shell: pwsh
+        run: |
+          $buildOutput = @(& msbuild AutoCrispy\AutoCrispy.sln /t:Rebuild /m /p:Configuration=Release /p:Platform="Any CPU" /verbosity:minimal 2>&1 | ForEach-Object { "$_" })
+          $buildExitCode = $LASTEXITCODE
+          $buildOutput | ForEach-Object { Write-Output $_ }
+          if ($buildExitCode -ne 0) {
+            foreach ($line in $buildOutput | Where-Object { $_ -match '\berror\s+(BC\d+|MSB\d+)' }) {
+              Write-Output "::error::$line"
+            }
+          }
+          exit $buildExitCode
+
+      - name: Verify Python helpers were copied
+        shell: pwsh
+        run: |
+          $helpers = @(
+            "AutoCrispy\AutoCrispy\bin\Release\spandrel_upscale.py",
+            "AutoCrispy\AutoCrispy\bin\Release\openmodeldb_catalog.py"
+          )
+          foreach ($helper in $helpers) {
+            if (-not (Test-Path $helper)) {
+              throw "Expected build output to contain $helper"
+            }
+          }
+
+      - name: Check main window layout (overlaps and clipping)
+        shell: pwsh
+        timeout-minutes: 6
+        run: |
+          $csc = "C:\Windows\Microsoft.NET\Framework64\v4.0.30319\csc.exe"
+          & $csc /nologo /target:exe /out:layout-check.exe /r:System.Windows.Forms.dll /r:System.Drawing.dll .github\layout-check\LayoutCheck.cs
+          if ($LASTEXITCODE -ne 0) { throw "layout checker did not compile" }
+          & .\layout-check.exe "AutoCrispy\AutoCrispy\bin\Release\AutoCrispy.exe"
+          if ($LASTEXITCODE -ne 0) { throw "layout check found overlapping or clipped controls" }
+
+      - name: Upload layout screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: AutoCrispy-layout-screenshots
+          path: layout-screens/*.png
+          if-no-files-found: ignore
+          retention-days: 7
+
+      - name: Upload Release build
+        uses: actions/upload-artifact@v4
+        with:
+          name: AutoCrispy-Windows-Release
+          path: AutoCrispy/AutoCrispy/bin/Release/**
+          if-no-files-found: error
+          retention-days: 7

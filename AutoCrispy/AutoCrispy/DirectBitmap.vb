@@ -20,7 +20,7 @@ Public Class DirectBitmap
         Height = _Height
         Bits = New Integer(Width * Height - 1) {}
         BitsHandle = GCHandle.Alloc(Bits, GCHandleType.Pinned)
-        Bitmap = New Bitmap(Width, Height, Width * 4, PixelFormat.Format32bppPArgb, BitsHandle.AddrOfPinnedObject())
+        Bitmap = New Bitmap(Width, Height, Width * 4, PixelFormat.Format32bppArgb, BitsHandle.AddrOfPinnedObject())
     End Sub
 
     Public Sub New(Source As Bitmap)
@@ -42,10 +42,13 @@ Public Class DirectBitmap
 
     Protected Overridable Sub Dispose(Disposing As Boolean)
         If Not Disposed Then
-            If Disposing Then Bitmap.Dispose()
-            BitsHandle.Free()
+            Try
+                If Bitmap IsNot Nothing Then Bitmap.Dispose()
+            Finally
+                If BitsHandle.IsAllocated Then BitsHandle.Free()
+                Disposed = True
+            End Try
         End If
-        Disposed = True
     End Sub
 
     Protected Overrides Sub Finalize()

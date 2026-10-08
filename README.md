@@ -9,6 +9,8 @@ Automatically apply AI upscaling on Dumped Textures.
 
    - Defringing - Basic, GDI+ defringing scheme.  Removes ugly halo artifacts ('fringes') from textures with transparency.  This works best where all textures are roughly the same size.
 
+   - Crash-safe batch resume - AutoCrispy records in-progress textures in the user's local app data. After an unexpected shutdown, click **Resume batch** to keep confirmed outputs and safely retry unfinished work. Backends that only report completion for a whole batch may still need that active batch retried.
+
 ## Backend Features
 
 The following are the features supported in AutoCrispy. Any feature listed is not necessarily the same as the features or requirements of the program. To work, AutoCrispy requires one of the following to be downloaded, or ESRGAN to be installed.  <a href="https://github.com/WalkerMx/AutoCrispy/blob/master/COMPARE.md" target="_blank">More about the Backends and Comparison shots can be found here</a>
@@ -35,6 +37,14 @@ It is possible to use ESRGAN. A PyInstalled version is provided here for use wit
 https://github.com/WalkerMx/ESRGAN_Python_Embedded/releases
 
 This does not include any models. [They can be found here.](https://openmodeldb.info/)
+
+## Spandrel upscalers
+
+AutoCrispy provides one **Spandrel** backend with a model selector; PLKSR V3 and DAT2 V4 are models in that selector, not separate backend choices. Put all checkpoints in one `models` folder. The selector lists Spandrel-recognized 1× RGB restoration or 4× RGB super-resolution models, including 1× DXT artifact-removal models. Spandrel uses its own runner, separate from legacy ESRGAN; neither the full PBRify workflow nor map generation is included. Checkpoints and the Python/PyTorch runtime must be installed separately. See the [setup guide](PLKSR_SETUP.md).
+
+The Spandrel panel's **Catalog…** button opens a filtered OpenModelDB browser. It lists only core-Spandrel architecture families with RGB input/output, 1× or 4× scale, PTH or SafeTensors files, and direct HTTPS GitHub/Hugging Face downloads; other catalog records, including PBRify/map-generation entries, are intentionally omitted. Downloads are checked against the catalog's size and SHA-256, then tested with the installed Spandrel loader before being atomically placed in the shared `models` folder. Review the model's license and source first: the catalog contains third-party checkpoints, and a valid hash does not make an untrusted PyTorch checkpoint safe. The browser requires the configured Python/Spandrel environment and an internet connection.
+
+When two or more 4× models are installed, the optional **Auto Texture Routing** mode lets you pick any compatible model for the Architect (solid textures) and Painter (repeating textures) roles. Routing is opt-in; regular model selection stays single-checkpoint. Auto Texture Routing includes a preview-only assignment browser with per-texture thumbnails and feature diagnostics, and can export the analyzed sample’s assignments and feature scores as CSV. The Painter share cap applies to every batch and is floored to a whole-texture count, so small samples can legitimately contain zero Painter assignments. Users can adjust the share cap and minimum score (the underlying feature weights remain fixed). Spandrel-family inference also offers Auto/FP16/FP32 precision and optional normal-map output cleanup: normalize XYZ or rebuild positive Z from R/G for tangent-space maps. This repairs vector encoding; it does not make general models normal-aware or generate PBR maps. See the [setup guide](PLKSR_SETUP.md) for CUDA, checkpoint-support, TF32, and normal-map details.
 
 ## How to use:
     -Toss AutoCrispy into the folder from the backend(s) you chose, and run it.
