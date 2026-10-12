@@ -8,6 +8,7 @@ RealSR Vulkan|RealSR's image output is great for more realistic images.  The Alp
 SRMD Vulkan|SRMD excels at upscaling poor-quality material.  Great for reworking a bad upscale, and also good for upscaling realistic images.
 Waifu2x CPP|Waifu2x CPP's output is visually close to Caffe's (if, a little muddier), but is quite fast with low requirements.  It does poorly on images with Alpha (but the results are acceptable with defringing turned on and calibrated).
 Anime4K CPP|Anime4K CPP is the fastest of the supported backends.  It has a high range of input settings, and is intended for Anime or Manga style images.  Visual quality has quite a bit of variance, but can look quite good once the settings are dialed in.
+Spandrel (PLKSR / DAT2 / generic)|Fixed 4× PBRify texture upscalers (PLKSR V3 or DAT2 V4), plus a separate selector for recognized 4× RGB SR checkpoints. Requires a Python/PyTorch/Spandrel runtime; it does not generate PBR maps. See [setup](PLKSR_SETUP.md).
 
 # Reference Images:
 Images for comparison. The source is not mine, and these images exist purely for edification.

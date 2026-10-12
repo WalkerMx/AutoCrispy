@@ -111,6 +111,7 @@
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="FormSettings.vb" />
+    <Compile Include="AutoRoutePreviewDialog.vb" />
     <Compile Include="My Project\AssemblyInfo.vb" />
     <Compile Include="My Project\Application.Designer.vb">
       <AutoGen>True</AutoGen>
@@ -156,6 +157,9 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="crisp2.ico" />
+    <Content Include="spandrel_upscale.py">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <None Include="Resources\8.png" />
     <None Include="Resources\7.png" />
     <None Include="Resources\default.txt" />
