@@ -5,7 +5,11 @@ AutoCrispy has some features.  I'll explain them here.
 
 AutoCrispy will try to detect any Executables it supports on startup.  They can be in the folder with AutoCrispy, or in their own subfolders.  Note that, AutoCrispy only searches one folder deep (that is to say, it doesn't check any folders inside of folders for the Executables).
 
-Autocrispy also searches in these subfolders for Python Scrips and ESRGAN Models.  For ESRGAN Models, AutoCrispy searches down one level further (So, two directorys down).  The intent, is to have a folder for ESRGAN, with the scripts inside it, and a folder with your models inside that (and, if you have the portable build provided, that in the folder with the scripts as well.)
+AutoCrispy also searches in these subfolders for Python scripts and ESRGAN models. For ESRGAN models, it searches two directory levels down. Put Spandrel checkpoints in one shared `models` folder under the program or configured backend root. PLKSR V3 and DAT2 V4 appear in the single Spandrel model selector when recognized; there are no separate PLKSR/DAT2 backend choices. The selector lists Spandrel-recognized 1× RGB restoration or 4× RGB super-resolution models. Older `Spandrel` folders remain supported. This selector is separate from the legacy ESRGAN backend. See [PLKSR_SETUP.md](PLKSR_SETUP.md) for folder and Python/PyTorch setup. When at least two compatible 4× RGB models are found, the selector offers **Auto texture routing**. The role dropdowns let you choose any eligible model for **Architect — solid textures** and **Painter — repeating textures**; model filenames do not need to be special. Routing is opt-in: selecting a regular model runs only that checkpoint. In Auto Texture Routing, set the Painter share cap (used for batches of 10+) and minimum feature score, then use **Preview assignments...** to see per-texture thumbnails, role, score, feature values, and assignment reason without running either upscaler. Details and limitations are in [PLKSR_SETUP.md](PLKSR_SETUP.md).
+
+## Multiple PCSX2 game folders
+
+Open the **Paths** tab and choose **Manage game paths...** to save input/output folder pairs for your games. Add one profile per game (for example, `SLUS-20111`), choose its input and replacement output folders, and check the rows AutoCrispy should watch. The watcher scans the checked profiles and processes pending games sequentially; the progress display aggregates their completion. Profiles are saved with AutoCrispy settings. Existing single input/output settings are migrated into a checked profile automatically, and **Run Once** remains a separate one-image operation.
 
 ## Special Notes about Python
 
@@ -13,11 +17,13 @@ AutoCrispy does its best to detect Python installations.  First, it checks for t
 
 Otherwise, AutoCrispy will try to send Python commands directly through the shell (sometimes this works even without PATH set, somehow).  Be aware, that if Python runs commands via the shell, Output Logging will be Disabled, and you will see the Python Interpreter open in your taskbar, minimized.
 
+The Spandrel model runner is separate from the legacy ESRGAN Python bundle. It needs Python 3.10 or newer with PyTorch, `spandrel==0.4.2`, Pillow, and NumPy. It looks for `python.exe` on PATH or beside AutoCrispy; set `AUTOCRISPY_PYTHON` to the full executable path for a custom install. See [PLKSR_SETUP.md](PLKSR_SETUP.md) for checkpoint and GPU setup.
+
 ## Chains
 
 AutoCripsy supports chaining models together.  This is agnostic of process and platform; you can chain any of the backends together, with any other backend, and with any script and/or model from ESRGAN.
 
-To add a model to the chain, first set the settings you'd like to add to the chain in the UI.  Then, under "Chaining", click the "Add" button.  This "snapshots" your settings, and adds them to the chain.  Chain objects can be re-arranged, by clicking and draging them.  Be aware that only ~5 models should be added to the chain (after this, you will encounter strange/unexpected behaviour.  You can make longer chains, using a text editor on an existing saved chain, and they will work, however the UI will misbehave if you try to edit it).
+To add a model to the chain, first set the settings you'd like to add to the chain in the UI.  Then, under "Chaining", click the "Add" button.  This "snapshots" your settings, and adds them to the chain. Changing the model selector later does not change an existing chain item; remove an old Auto Texture Routing item and add the regular model if you want to stop routing.  Chain objects can be re-arranged, by clicking and draging them.  Be aware that only ~5 models should be added to the chain (after this, you will encounter strange/unexpected behaviour.  You can make longer chains, using a text editor on an existing saved chain, and they will work, however the UI will misbehave if you try to edit it).
 
 In addition to adding, re-arranging, and removing, you can also Edit and Rename models in the chain.  This is done through the Right Click -> Edit menu.  This will bring up an XML representation of the chain object, letting you edit its Name, Icon, and internal settings.
 

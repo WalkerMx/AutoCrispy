@@ -35,6 +35,10 @@ Partial Class Form1
         Me.Label3 = New System.Windows.Forms.Label()
         Me.CaffeMode = New System.Windows.Forms.ComboBox()
         Me.WatchDog = New System.Windows.Forms.Timer(Me.components)
+        Me.ProgressPollTimer = New System.Windows.Forms.Timer(Me.components)
+        Me.QueueSummaryLabel = New System.Windows.Forms.Label()
+        Me.QueueActivityLabel = New System.Windows.Forms.Label()
+        Me.BackendStatusLabel = New System.Windows.Forms.Label()
         Me.WatchDogButton = New System.Windows.Forms.Button()
         Me.SettingsGroup = New System.Windows.Forms.GroupBox()
         Me.PS2Check = New System.Windows.Forms.CheckBox()
@@ -81,10 +85,32 @@ Partial Class Form1
         Me.Label20 = New System.Windows.Forms.Label()
         Me.PyGroup = New System.Windows.Forms.GroupBox()
         Me.PyCPU = New System.Windows.Forms.CheckBox()
+        Me.PyPrecisionLabel = New System.Windows.Forms.Label()
+        Me.PyPrecisionComboBox = New System.Windows.Forms.ComboBox()
+        Me.PyNormalMapModeLabel = New System.Windows.Forms.Label()
+        Me.PyNormalMapModeComboBox = New System.Windows.Forms.ComboBox()
         Me.PyTileSize = New System.Windows.Forms.NumericUpDown()
         Me.PyModel = New System.Windows.Forms.ComboBox()
         Me.Label25 = New System.Windows.Forms.Label()
         Me.Label26 = New System.Windows.Forms.Label()
+        Me.TileSizeHint = New System.Windows.Forms.Label()
+        Me.SpandrelModelInfoLabel = New System.Windows.Forms.Label()
+        Me.SpandrelScanStatusLabel = New System.Windows.Forms.Label()
+        Me.RefreshSpandrelModelsButton = New System.Windows.Forms.Button()
+        Me.AutoPainterShareLabel = New System.Windows.Forms.Label()
+        Me.AutoPainterSharePercent = New System.Windows.Forms.NumericUpDown()
+        Me.AutoPainterShareSuffix = New System.Windows.Forms.Label()
+        Me.AutoPainterThresholdLabel = New System.Windows.Forms.Label()
+        Me.AutoPainterThreshold = New System.Windows.Forms.NumericUpDown()
+        Me.AutoPainterThresholdSuffix = New System.Windows.Forms.Label()
+        Me.AutoRoutePreviewButton = New System.Windows.Forms.Button()
+        Me.AutoRoutePreviewStatusLabel = New System.Windows.Forms.Label()
+        Me.AutoRoutePreviewSampleLabel = New System.Windows.Forms.Label()
+        Me.AutoRoutePreviewSampleCount = New System.Windows.Forms.NumericUpDown()
+        Me.AutoArchitectModelLabel = New System.Windows.Forms.Label()
+        Me.AutoArchitectModelComboBox = New System.Windows.Forms.ComboBox()
+        Me.AutoPainterModelLabel = New System.Windows.Forms.Label()
+        Me.AutoPainterModelComboBox = New System.Windows.Forms.ComboBox()
         Me.WorkHorse = New System.ComponentModel.BackgroundWorker()
         Me.ChainGroup = New System.Windows.Forms.TabPage()
         Me.ChainPreview = New System.Windows.Forms.PictureBox()
@@ -102,6 +128,8 @@ Partial Class Form1
         Me.ExeTextBox = New System.Windows.Forms.TextBox()
         Me.OutputTextBox = New System.Windows.Forms.TextBox()
         Me.InputBrowse = New System.Windows.Forms.Button()
+        Me.ManageGamePathsButton = New System.Windows.Forms.Button()
+        Me.GamePathsSummaryLabel = New System.Windows.Forms.Label()
         Me.Label1 = New System.Windows.Forms.Label()
         Me.Label23 = New System.Windows.Forms.Label()
         Me.Label2 = New System.Windows.Forms.Label()
@@ -152,6 +180,9 @@ Partial Class Form1
         CType(Me.AnimeCPPScale, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.PyGroup.SuspendLayout()
         CType(Me.PyTileSize, System.ComponentModel.ISupportInitialize).BeginInit()
+        CType(Me.AutoPainterSharePercent, System.ComponentModel.ISupportInitialize).BeginInit()
+        CType(Me.AutoPainterThreshold, System.ComponentModel.ISupportInitialize).BeginInit()
+        CType(Me.AutoRoutePreviewSampleCount, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.ChainGroup.SuspendLayout()
         CType(Me.ChainPreview, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.ChainContext.SuspendLayout()
@@ -285,6 +316,10 @@ Partial Class Form1
         '
         Me.WatchDog.Interval = 1000
         '
+        'ProgressPollTimer
+        '
+        Me.ProgressPollTimer.Interval = 1000
+        '
         'WatchDogButton
         '
         Me.WatchDogButton.Location = New System.Drawing.Point(189, 528)
@@ -300,10 +335,13 @@ Partial Class Form1
         Me.SettingsGroup.Controls.Add(Me.PS2Check)
         Me.SettingsGroup.Controls.Add(Me.DefringeThresh)
         Me.SettingsGroup.Controls.Add(Me.DefringeCheck)
+        Me.SettingsGroup.Controls.Add(Me.QueueActivityLabel)
+        Me.SettingsGroup.Controls.Add(Me.QueueSummaryLabel)
         Me.SettingsGroup.Controls.Add(Me.UpscaleProgress)
         Me.SettingsGroup.Controls.Add(Me.NumericThreads)
         Me.SettingsGroup.Controls.Add(Me.ThreadComboBox)
         Me.SettingsGroup.Controls.Add(Me.ExeComboBox)
+        Me.SettingsGroup.Controls.Add(Me.BackendStatusLabel)
         Me.SettingsGroup.Controls.Add(Me.Label21)
         Me.SettingsGroup.Controls.Add(Me.Label22)
         Me.SettingsGroup.Controls.Add(Me.Label12)
@@ -319,7 +357,7 @@ Partial Class Form1
         'PS2Check
         '
         Me.PS2Check.AutoSize = True
-        Me.PS2Check.Location = New System.Drawing.Point(9, 150)
+        Me.PS2Check.Location = New System.Drawing.Point(9, 142)
         Me.PS2Check.Name = "PS2Check"
         Me.PS2Check.Size = New System.Drawing.Size(134, 24)
         Me.PS2Check.TabIndex = 12
@@ -329,7 +367,7 @@ Partial Class Form1
         'DefringeThresh
         '
         Me.DefringeThresh.Enabled = False
-        Me.DefringeThresh.Location = New System.Drawing.Point(212, 111)
+        Me.DefringeThresh.Location = New System.Drawing.Point(212, 107)
         Me.DefringeThresh.Margin = New System.Windows.Forms.Padding(4, 5, 4, 5)
         Me.DefringeThresh.Maximum = New Decimal(New Integer() {255, 0, 0, 0})
         Me.DefringeThresh.Name = "DefringeThresh"
@@ -340,7 +378,7 @@ Partial Class Form1
         'DefringeCheck
         '
         Me.DefringeCheck.AutoSize = True
-        Me.DefringeCheck.Location = New System.Drawing.Point(9, 112)
+        Me.DefringeCheck.Location = New System.Drawing.Point(9, 108)
         Me.DefringeCheck.Margin = New System.Windows.Forms.Padding(4, 5, 4, 5)
         Me.DefringeCheck.Name = "DefringeCheck"
         Me.DefringeCheck.Size = New System.Drawing.Size(96, 24)
@@ -356,9 +394,29 @@ Partial Class Form1
         Me.UpscaleProgress.Size = New System.Drawing.Size(310, 35)
         Me.UpscaleProgress.TabIndex = 9
         '
+        'QueueSummaryLabel
+        '
+        Me.QueueSummaryLabel.AutoEllipsis = True
+        Me.QueueSummaryLabel.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Bold)
+        Me.QueueSummaryLabel.Location = New System.Drawing.Point(14, 177)
+        Me.QueueSummaryLabel.Name = "QueueSummaryLabel"
+        Me.QueueSummaryLabel.Size = New System.Drawing.Size(310, 18)
+        Me.QueueSummaryLabel.TabIndex = 13
+        Me.QueueSummaryLabel.Text = "0 / 0 textures complete (0%)"
+        '
+        'QueueActivityLabel
+        '
+        Me.QueueActivityLabel.AutoEllipsis = True
+        Me.QueueActivityLabel.ForeColor = System.Drawing.SystemColors.GrayText
+        Me.QueueActivityLabel.Location = New System.Drawing.Point(14, 196)
+        Me.QueueActivityLabel.Name = "QueueActivityLabel"
+        Me.QueueActivityLabel.Size = New System.Drawing.Size(310, 18)
+        Me.QueueActivityLabel.TabIndex = 14
+        Me.QueueActivityLabel.Text = "Ready"
+        '
         'NumericThreads
         '
-        Me.NumericThreads.Location = New System.Drawing.Point(264, 71)
+        Me.NumericThreads.Location = New System.Drawing.Point(264, 68)
         Me.NumericThreads.Margin = New System.Windows.Forms.Padding(4, 5, 4, 5)
         Me.NumericThreads.Maximum = New Decimal(New Integer() {64, 0, 0, 0})
         Me.NumericThreads.Minimum = New Decimal(New Integer() {1, 0, 0, 0})
@@ -372,7 +430,7 @@ Partial Class Form1
         Me.ThreadComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
         Me.ThreadComboBox.FormattingEnabled = True
         Me.ThreadComboBox.Items.AddRange(New Object() {"Single", "Custom", "All", "Max (512) (!!)"})
-        Me.ThreadComboBox.Location = New System.Drawing.Point(98, 71)
+        Me.ThreadComboBox.Location = New System.Drawing.Point(98, 68)
         Me.ThreadComboBox.Margin = New System.Windows.Forms.Padding(4, 5, 4, 5)
         Me.ThreadComboBox.Name = "ThreadComboBox"
         Me.ThreadComboBox.Size = New System.Drawing.Size(156, 28)
@@ -388,6 +446,17 @@ Partial Class Form1
         Me.ExeComboBox.Size = New System.Drawing.Size(224, 28)
         Me.ExeComboBox.TabIndex = 4
         '
+        'BackendStatusLabel
+        '
+        Me.BackendStatusLabel.AutoEllipsis = True
+        Me.BackendStatusLabel.ForeColor = System.Drawing.SystemColors.GrayText
+        Me.BackendStatusLabel.Location = New System.Drawing.Point(14, 59)
+        Me.BackendStatusLabel.Name = "BackendStatusLabel"
+        Me.BackendStatusLabel.Size = New System.Drawing.Size(310, 16)
+        Me.BackendStatusLabel.TabIndex = 15
+        Me.BackendStatusLabel.Text = "Spandrel model scan pending."
+        Me.BackendStatusLabel.Visible = False
+        '
         'Label21
         '
         Me.Label21.AutoSize = True
@@ -401,7 +470,7 @@ Partial Class Form1
         'Label22
         '
         Me.Label22.AutoSize = True
-        Me.Label22.Location = New System.Drawing.Point(117, 114)
+        Me.Label22.Location = New System.Drawing.Point(117, 110)
         Me.Label22.Margin = New System.Windows.Forms.Padding(4, 0, 4, 0)
         Me.Label22.Name = "Label22"
         Me.Label22.Size = New System.Drawing.Size(83, 20)
@@ -411,7 +480,7 @@ Partial Class Form1
         'Label12
         '
         Me.Label12.AutoSize = True
-        Me.Label12.Location = New System.Drawing.Point(9, 74)
+        Me.Label12.Location = New System.Drawing.Point(9, 71)
         Me.Label12.Margin = New System.Windows.Forms.Padding(4, 0, 4, 0)
         Me.Label12.Name = "Label12"
         Me.Label12.Size = New System.Drawing.Size(71, 20)
@@ -800,7 +869,29 @@ Partial Class Form1
         'PyGroup
         '
         Me.PyGroup.Controls.Add(Me.PyCPU)
+        Me.PyGroup.Controls.Add(Me.PyPrecisionLabel)
+        Me.PyGroup.Controls.Add(Me.PyPrecisionComboBox)
+        Me.PyGroup.Controls.Add(Me.PyNormalMapModeLabel)
+        Me.PyGroup.Controls.Add(Me.PyNormalMapModeComboBox)
+        Me.PyGroup.Controls.Add(Me.AutoPainterShareSuffix)
+        Me.PyGroup.Controls.Add(Me.AutoPainterThresholdSuffix)
+        Me.PyGroup.Controls.Add(Me.AutoPainterThreshold)
+        Me.PyGroup.Controls.Add(Me.AutoPainterThresholdLabel)
+        Me.PyGroup.Controls.Add(Me.AutoRoutePreviewStatusLabel)
+        Me.PyGroup.Controls.Add(Me.AutoRoutePreviewSampleLabel)
+        Me.PyGroup.Controls.Add(Me.AutoRoutePreviewSampleCount)
+        Me.PyGroup.Controls.Add(Me.AutoRoutePreviewButton)
+        Me.PyGroup.Controls.Add(Me.AutoArchitectModelComboBox)
+        Me.PyGroup.Controls.Add(Me.AutoArchitectModelLabel)
+        Me.PyGroup.Controls.Add(Me.AutoPainterModelComboBox)
+        Me.PyGroup.Controls.Add(Me.AutoPainterModelLabel)
+        Me.PyGroup.Controls.Add(Me.AutoPainterSharePercent)
+        Me.PyGroup.Controls.Add(Me.AutoPainterShareLabel)
+        Me.PyGroup.Controls.Add(Me.TileSizeHint)
         Me.PyGroup.Controls.Add(Me.PyTileSize)
+        Me.PyGroup.Controls.Add(Me.SpandrelScanStatusLabel)
+        Me.PyGroup.Controls.Add(Me.SpandrelModelInfoLabel)
+        Me.PyGroup.Controls.Add(Me.RefreshSpandrelModelsButton)
         Me.PyGroup.Controls.Add(Me.PyModel)
         Me.PyGroup.Controls.Add(Me.Label25)
         Me.PyGroup.Controls.Add(Me.Label26)
@@ -808,45 +899,219 @@ Partial Class Form1
         Me.PyGroup.Margin = New System.Windows.Forms.Padding(4, 5, 4, 5)
         Me.PyGroup.Name = "PyGroup"
         Me.PyGroup.Padding = New System.Windows.Forms.Padding(4, 5, 4, 5)
-        Me.PyGroup.Size = New System.Drawing.Size(594, 308)
+        Me.PyGroup.Size = New System.Drawing.Size(594, 360)
         Me.PyGroup.TabIndex = 12
         Me.PyGroup.TabStop = False
         Me.PyGroup.Text = "ESRGAN"
         '
+        'AutoPainterShareLabel
+        '
+        Me.AutoPainterShareLabel.AutoSize = True
+        Me.AutoPainterShareLabel.Location = New System.Drawing.Point(9, 234)
+        Me.AutoPainterShareLabel.Name = "AutoPainterShareLabel"
+        Me.AutoPainterShareLabel.Size = New System.Drawing.Size(83, 20)
+        Me.AutoPainterShareLabel.TabIndex = 10
+        Me.AutoPainterShareLabel.Text = "Painter cap:"
+        Me.AutoPainterShareLabel.Visible = False
+        '
+        'AutoPainterSharePercent
+        '
+        Me.AutoPainterSharePercent.Location = New System.Drawing.Point(105, 230)
+        Me.AutoPainterSharePercent.Minimum = New Decimal(New Integer() {10, 0, 0, 0})
+        Me.AutoPainterSharePercent.Maximum = New Decimal(New Integer() {90, 0, 0, 0})
+        Me.AutoPainterSharePercent.Increment = New Decimal(New Integer() {5, 0, 0, 0})
+        Me.AutoPainterSharePercent.Name = "AutoPainterSharePercent"
+        Me.AutoPainterSharePercent.Size = New System.Drawing.Size(64, 26)
+        Me.AutoPainterSharePercent.TabIndex = 11
+        Me.AutoPainterSharePercent.TextAlign = System.Windows.Forms.HorizontalAlignment.Center
+        Me.AutoPainterSharePercent.Value = New Decimal(New Integer() {30, 0, 0, 0})
+        Me.AutoPainterSharePercent.Visible = False
+        '
+        'AutoPainterShareSuffix
+        '
+        Me.AutoPainterShareSuffix.AutoEllipsis = True
+        Me.AutoPainterShareSuffix.Location = New System.Drawing.Point(176, 234)
+        Me.AutoPainterShareSuffix.Name = "AutoPainterShareSuffix"
+        Me.AutoPainterShareSuffix.Size = New System.Drawing.Size(98, 20)
+        Me.AutoPainterShareSuffix.TabIndex = 12
+        Me.AutoPainterShareSuffix.Text = "strict cap (floored)"
+        Me.AutoPainterShareSuffix.Visible = False
+        '
+        'AutoPainterThresholdLabel
+        '
+        Me.AutoPainterThresholdLabel.Location = New System.Drawing.Point(280, 234)
+        Me.AutoPainterThresholdLabel.Name = "AutoPainterThresholdLabel"
+        Me.AutoPainterThresholdLabel.Size = New System.Drawing.Size(72, 20)
+        Me.AutoPainterThresholdLabel.TabIndex = 17
+        Me.AutoPainterThresholdLabel.Text = "Min score:"
+        Me.AutoPainterThresholdLabel.Visible = False
+        '
+        'AutoPainterThreshold
+        '
+        Me.AutoPainterThreshold.DecimalPlaces = 2
+        Me.AutoPainterThreshold.Increment = New Decimal(New Integer() {1, 0, 0, 131072})
+        Me.AutoPainterThreshold.Location = New System.Drawing.Point(354, 230)
+        Me.AutoPainterThreshold.Maximum = New Decimal(New Integer() {1, 0, 0, 0})
+        Me.AutoPainterThreshold.Minimum = New Decimal(New Integer() {5, 0, 0, 131072})
+        Me.AutoPainterThreshold.Name = "AutoPainterThreshold"
+        Me.AutoPainterThreshold.Size = New System.Drawing.Size(66, 26)
+        Me.AutoPainterThreshold.TabIndex = 18
+        Me.AutoPainterThreshold.TextAlign = System.Windows.Forms.HorizontalAlignment.Center
+        Me.AutoPainterThreshold.Value = New Decimal(New Integer() {34, 0, 0, 131072})
+        Me.AutoPainterThreshold.Visible = False
+        '
+        'AutoPainterThresholdSuffix
+        '
+        Me.AutoPainterThresholdSuffix.AutoEllipsis = True
+        Me.AutoPainterThresholdSuffix.Location = New System.Drawing.Point(426, 234)
+        Me.AutoPainterThresholdSuffix.Name = "AutoPainterThresholdSuffix"
+        Me.AutoPainterThresholdSuffix.Size = New System.Drawing.Size(153, 20)
+        Me.AutoPainterThresholdSuffix.TabIndex = 19
+        Me.AutoPainterThresholdSuffix.Text = "below uses Architect"
+        Me.AutoPainterThresholdSuffix.Visible = False
+        '
+        'AutoRoutePreviewButton
+        '
+        Me.AutoRoutePreviewButton.Location = New System.Drawing.Point(9, 328)
+        Me.AutoRoutePreviewButton.Name = "AutoRoutePreviewButton"
+        Me.AutoRoutePreviewButton.Size = New System.Drawing.Size(162, 27)
+        Me.AutoRoutePreviewButton.TabIndex = 20
+        Me.AutoRoutePreviewButton.Text = "Preview sample..."
+        Me.AutoRoutePreviewButton.UseVisualStyleBackColor = True
+        Me.AutoRoutePreviewButton.Visible = False
+        '
+        'AutoRoutePreviewStatusLabel
+        '
+        Me.AutoRoutePreviewStatusLabel.AutoEllipsis = True
+        Me.AutoRoutePreviewStatusLabel.ForeColor = System.Drawing.SystemColors.GrayText
+        Me.AutoRoutePreviewStatusLabel.Location = New System.Drawing.Point(294, 332)
+        Me.AutoRoutePreviewStatusLabel.Name = "AutoRoutePreviewStatusLabel"
+        Me.AutoRoutePreviewStatusLabel.Size = New System.Drawing.Size(285, 20)
+        Me.AutoRoutePreviewStatusLabel.TabIndex = 21
+        Me.AutoRoutePreviewStatusLabel.Text = "textures · read-only preview"
+        Me.AutoRoutePreviewStatusLabel.Visible = False
+        '
+        'AutoRoutePreviewSampleLabel
+        '
+        Me.AutoRoutePreviewSampleLabel.AutoSize = True
+        Me.AutoRoutePreviewSampleLabel.Location = New System.Drawing.Point(180, 332)
+        Me.AutoRoutePreviewSampleLabel.Name = "AutoRoutePreviewSampleLabel"
+        Me.AutoRoutePreviewSampleLabel.Size = New System.Drawing.Size(39, 20)
+        Me.AutoRoutePreviewSampleLabel.TabIndex = 22
+        Me.AutoRoutePreviewSampleLabel.Text = "First:"
+        Me.AutoRoutePreviewSampleLabel.Visible = False
+        '
+        'AutoRoutePreviewSampleCount
+        '
+        Me.AutoRoutePreviewSampleCount.Location = New System.Drawing.Point(222, 328)
+        Me.AutoRoutePreviewSampleCount.Maximum = New Decimal(New Integer() {1000, 0, 0, 0})
+        Me.AutoRoutePreviewSampleCount.Minimum = New Decimal(New Integer() {1, 0, 0, 0})
+        Me.AutoRoutePreviewSampleCount.Name = "AutoRoutePreviewSampleCount"
+        Me.AutoRoutePreviewSampleCount.Size = New System.Drawing.Size(64, 26)
+        Me.AutoRoutePreviewSampleCount.TabIndex = 23
+        Me.AutoRoutePreviewSampleCount.TextAlign = System.Windows.Forms.HorizontalAlignment.Center
+        Me.AutoRoutePreviewSampleCount.Value = New Decimal(New Integer() {10, 0, 0, 0})
+        Me.AutoRoutePreviewSampleCount.Visible = False
+        '
+        'AutoArchitectModelLabel
+        '
+        Me.AutoArchitectModelLabel.AutoEllipsis = True
+        Me.AutoArchitectModelLabel.Location = New System.Drawing.Point(9, 263)
+        Me.AutoArchitectModelLabel.Name = "AutoArchitectModelLabel"
+        Me.AutoArchitectModelLabel.Size = New System.Drawing.Size(178, 24)
+        Me.AutoArchitectModelLabel.TabIndex = 13
+        Me.AutoArchitectModelLabel.Text = "Architect — solid textures:"
+        Me.AutoArchitectModelLabel.Visible = False
+        '
+        'AutoArchitectModelComboBox
+        '
+        Me.AutoArchitectModelComboBox.DisplayMember = "SelectorText"
+        Me.AutoArchitectModelComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
+        Me.AutoArchitectModelComboBox.DropDownWidth = 520
+        Me.AutoArchitectModelComboBox.FormattingEnabled = True
+        Me.AutoArchitectModelComboBox.Location = New System.Drawing.Point(190, 258)
+        Me.AutoArchitectModelComboBox.Name = "AutoArchitectModelComboBox"
+        Me.AutoArchitectModelComboBox.Size = New System.Drawing.Size(389, 28)
+        Me.AutoArchitectModelComboBox.TabIndex = 14
+        Me.AutoArchitectModelComboBox.Visible = False
+        '
+        'AutoPainterModelLabel
+        '
+        Me.AutoPainterModelLabel.AutoEllipsis = True
+        Me.AutoPainterModelLabel.Location = New System.Drawing.Point(9, 299)
+        Me.AutoPainterModelLabel.Name = "AutoPainterModelLabel"
+        Me.AutoPainterModelLabel.Size = New System.Drawing.Size(178, 24)
+        Me.AutoPainterModelLabel.TabIndex = 15
+        Me.AutoPainterModelLabel.Text = "Painter — repeating textures:"
+        Me.AutoPainterModelLabel.Visible = False
+        '
+        'AutoPainterModelComboBox
+        '
+        Me.AutoPainterModelComboBox.DisplayMember = "SelectorText"
+        Me.AutoPainterModelComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
+        Me.AutoPainterModelComboBox.DropDownWidth = 520
+        Me.AutoPainterModelComboBox.FormattingEnabled = True
+        Me.AutoPainterModelComboBox.Location = New System.Drawing.Point(190, 294)
+        Me.AutoPainterModelComboBox.Name = "AutoPainterModelComboBox"
+        Me.AutoPainterModelComboBox.Size = New System.Drawing.Size(389, 28)
+        Me.AutoPainterModelComboBox.TabIndex = 16
+        Me.AutoPainterModelComboBox.Visible = False
+        '
         'PyCPU
         '
         Me.PyCPU.AutoSize = True
-        Me.PyCPU.Location = New System.Drawing.Point(452, 75)
+        Me.PyCPU.Location = New System.Drawing.Point(250, 142)
         Me.PyCPU.Name = "PyCPU"
         Me.PyCPU.Size = New System.Drawing.Size(68, 24)
         Me.PyCPU.TabIndex = 5
-        Me.PyCPU.Text = "CPU"
+        Me.PyCPU.Text = "CPU only"
         Me.PyCPU.UseVisualStyleBackColor = True
+        '
+        'PyPrecisionLabel
+        '
+        Me.PyPrecisionLabel.AutoSize = True
+        Me.PyPrecisionLabel.Location = New System.Drawing.Point(330, 143)
+        Me.PyPrecisionLabel.Name = "PyPrecisionLabel"
+        Me.PyPrecisionLabel.Size = New System.Drawing.Size(72, 20)
+        Me.PyPrecisionLabel.TabIndex = 6
+        Me.PyPrecisionLabel.Text = "Precision:"
+        '
+        'PyPrecisionComboBox
+        '
+        Me.PyPrecisionComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
+        Me.PyPrecisionComboBox.FormattingEnabled = True
+        Me.PyPrecisionComboBox.Items.AddRange(New Object() {"Auto", "FP16", "FP32"})
+        Me.PyPrecisionComboBox.Location = New System.Drawing.Point(405, 139)
+        Me.PyPrecisionComboBox.Name = "PyPrecisionComboBox"
+        Me.PyPrecisionComboBox.Size = New System.Drawing.Size(174, 28)
+        Me.PyPrecisionComboBox.TabIndex = 7
+        Me.PyPrecisionComboBox.SelectedIndex = 0
         '
         'PyTileSize
         '
-        Me.PyTileSize.Location = New System.Drawing.Point(351, 31)
-        Me.PyTileSize.Maximum = New Decimal(New Integer() {1024, 0, 0, 0})
-        Me.PyTileSize.Minimum = New Decimal(New Integer() {64, 0, 0, 0})
+        Me.PyTileSize.Location = New System.Drawing.Point(90, 139)
+        Me.PyTileSize.Maximum = New Decimal(New Integer() {4096, 0, 0, 0})
+        Me.PyTileSize.Minimum = New Decimal(New Integer() {0, 0, 0, 0})
         Me.PyTileSize.Name = "PyTileSize"
-        Me.PyTileSize.Size = New System.Drawing.Size(169, 26)
+        Me.PyTileSize.Size = New System.Drawing.Size(130, 26)
         Me.PyTileSize.TabIndex = 4
-        Me.PyTileSize.Value = New Decimal(New Integer() {512, 0, 0, 0})
+        Me.PyTileSize.Value = New Decimal(New Integer() {1024, 0, 0, 0})
         '
         'PyModel
         '
         Me.PyModel.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
         Me.PyModel.FormattingEnabled = True
+        Me.PyModel.DropDownWidth = 500
         Me.PyModel.Location = New System.Drawing.Point(90, 31)
         Me.PyModel.Margin = New System.Windows.Forms.Padding(4, 5, 4, 5)
         Me.PyModel.Name = "PyModel"
-        Me.PyModel.Size = New System.Drawing.Size(169, 28)
+        Me.PyModel.Size = New System.Drawing.Size(375, 28)
         Me.PyModel.TabIndex = 2
         '
         'Label25
         '
         Me.Label25.AutoSize = True
-        Me.Label25.Location = New System.Drawing.Point(270, 35)
+        Me.Label25.Location = New System.Drawing.Point(9, 143)
         Me.Label25.Margin = New System.Windows.Forms.Padding(4, 0, 4, 0)
         Me.Label25.Name = "Label25"
         Me.Label25.Size = New System.Drawing.Size(72, 20)
@@ -862,6 +1127,66 @@ Partial Class Form1
         Me.Label26.Size = New System.Drawing.Size(56, 20)
         Me.Label26.TabIndex = 1
         Me.Label26.Text = "Model:"
+        '
+        'TileSizeHint
+        '
+        Me.TileSizeHint.AutoSize = False
+        Me.TileSizeHint.AutoEllipsis = True
+        Me.TileSizeHint.ForeColor = System.Drawing.SystemColors.GrayText
+        Me.TileSizeHint.Location = New System.Drawing.Point(9, 167)
+        Me.TileSizeHint.Margin = New System.Windows.Forms.Padding(4, 0, 4, 0)
+        Me.TileSizeHint.Name = "TileSizeHint"
+        Me.TileSizeHint.Size = New System.Drawing.Size(570, 20)
+        Me.TileSizeHint.TabIndex = 8
+        Me.TileSizeHint.Text = "1024 is recommended for 16 GB GPUs; retries smaller tiles on GPU OOM."
+        '
+        'PyNormalMapModeLabel
+        '
+        Me.PyNormalMapModeLabel.AutoSize = True
+        Me.PyNormalMapModeLabel.Location = New System.Drawing.Point(9, 194)
+        Me.PyNormalMapModeLabel.Name = "PyNormalMapModeLabel"
+        Me.PyNormalMapModeLabel.Size = New System.Drawing.Size(86, 20)
+        Me.PyNormalMapModeLabel.TabIndex = 9
+        Me.PyNormalMapModeLabel.Text = "Normal map:"
+        '
+        'PyNormalMapModeComboBox
+        '
+        Me.PyNormalMapModeComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
+        Me.PyNormalMapModeComboBox.FormattingEnabled = True
+        Me.PyNormalMapModeComboBox.Items.AddRange(New Object() {"Off (color / data)", "Normalize XYZ", "Rebuild Z from R/G"})
+        Me.PyNormalMapModeComboBox.Location = New System.Drawing.Point(100, 190)
+        Me.PyNormalMapModeComboBox.Name = "PyNormalMapModeComboBox"
+        Me.PyNormalMapModeComboBox.Size = New System.Drawing.Size(320, 28)
+        Me.PyNormalMapModeComboBox.TabIndex = 10
+        Me.PyNormalMapModeComboBox.SelectedIndex = 0
+        '
+        'SpandrelModelInfoLabel
+        '
+        Me.SpandrelModelInfoLabel.AutoEllipsis = True
+        Me.SpandrelModelInfoLabel.Location = New System.Drawing.Point(9, 69)
+        Me.SpandrelModelInfoLabel.Name = "SpandrelModelInfoLabel"
+        Me.SpandrelModelInfoLabel.Size = New System.Drawing.Size(570, 34)
+        Me.SpandrelModelInfoLabel.TabIndex = 7
+        Me.SpandrelModelInfoLabel.Text = "Select a supported model to see its scale and architecture."
+        '
+        'SpandrelScanStatusLabel
+        '
+        Me.SpandrelScanStatusLabel.AutoEllipsis = True
+        Me.SpandrelScanStatusLabel.ForeColor = System.Drawing.SystemColors.GrayText
+        Me.SpandrelScanStatusLabel.Location = New System.Drawing.Point(9, 109)
+        Me.SpandrelScanStatusLabel.Name = "SpandrelScanStatusLabel"
+        Me.SpandrelScanStatusLabel.Size = New System.Drawing.Size(570, 20)
+        Me.SpandrelScanStatusLabel.TabIndex = 8
+        Me.SpandrelScanStatusLabel.Text = "Model scan has not started."
+        '
+        'RefreshSpandrelModelsButton
+        '
+        Me.RefreshSpandrelModelsButton.Location = New System.Drawing.Point(474, 30)
+        Me.RefreshSpandrelModelsButton.Name = "RefreshSpandrelModelsButton"
+        Me.RefreshSpandrelModelsButton.Size = New System.Drawing.Size(105, 30)
+        Me.RefreshSpandrelModelsButton.TabIndex = 9
+        Me.RefreshSpandrelModelsButton.Text = "Refresh"
+        Me.RefreshSpandrelModelsButton.UseVisualStyleBackColor = True
         '
         'WorkHorse
         '
@@ -963,6 +1288,8 @@ Partial Class Form1
         Me.PathGroup.Controls.Add(Me.Label1)
         Me.PathGroup.Controls.Add(Me.Label23)
         Me.PathGroup.Controls.Add(Me.Label2)
+        Me.PathGroup.Controls.Add(Me.ManageGamePathsButton)
+        Me.PathGroup.Controls.Add(Me.GamePathsSummaryLabel)
         Me.PathGroup.Location = New System.Drawing.Point(4, 29)
         Me.PathGroup.Margin = New System.Windows.Forms.Padding(4, 5, 4, 5)
         Me.PathGroup.Name = "PathGroup"
@@ -1026,6 +1353,26 @@ Partial Class Form1
         Me.InputBrowse.Text = "..."
         Me.InputBrowse.UseVisualStyleBackColor = True
         '
+        'ManageGamePathsButton
+        '
+        Me.ManageGamePathsButton.Location = New System.Drawing.Point(9, 135)
+        Me.ManageGamePathsButton.Margin = New System.Windows.Forms.Padding(4, 5, 4, 5)
+        Me.ManageGamePathsButton.Name = "ManageGamePathsButton"
+        Me.ManageGamePathsButton.Size = New System.Drawing.Size(205, 32)
+        Me.ManageGamePathsButton.TabIndex = 6
+        Me.ManageGamePathsButton.Text = "Manage game paths..."
+        Me.ManageGamePathsButton.UseVisualStyleBackColor = True
+        '
+        'GamePathsSummaryLabel
+        '
+        Me.GamePathsSummaryLabel.AutoEllipsis = True
+        Me.GamePathsSummaryLabel.Location = New System.Drawing.Point(226, 141)
+        Me.GamePathsSummaryLabel.Margin = New System.Windows.Forms.Padding(4, 0, 4, 0)
+        Me.GamePathsSummaryLabel.Name = "GamePathsSummaryLabel"
+        Me.GamePathsSummaryLabel.Size = New System.Drawing.Size(689, 20)
+        Me.GamePathsSummaryLabel.TabIndex = 7
+        Me.GamePathsSummaryLabel.Text = "No saved game profiles; using the Input/Output folders above."
+        '
         'Label1
         '
         Me.Label1.AutoSize = True
@@ -1034,7 +1381,7 @@ Partial Class Form1
         Me.Label1.Name = "Label1"
         Me.Label1.Size = New System.Drawing.Size(99, 20)
         Me.Label1.TabIndex = 0
-        Me.Label1.Text = "Input Folder:"
+        Me.Label1.Text = "Fallback Input:"
         '
         'Label23
         '
@@ -1054,7 +1401,7 @@ Partial Class Form1
         Me.Label2.Name = "Label2"
         Me.Label2.Size = New System.Drawing.Size(111, 20)
         Me.Label2.TabIndex = 0
-        Me.Label2.Text = "Output Folder:"
+        Me.Label2.Text = "Fallback Output:"
         '
         'TabGroup
         '
@@ -1414,7 +1761,7 @@ Partial Class Form1
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(9.0!, 20.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
-        Me.ClientSize = New System.Drawing.Size(2184, 978)
+        Me.ClientSize = New System.Drawing.Size(980, 640)
         Me.Controls.Add(Me.xBRZGroup)
         Me.Controls.Add(Me.DDxGroup)
         Me.Controls.Add(Me.TabGroup)
@@ -1454,6 +1801,9 @@ Partial Class Form1
         Me.PyGroup.ResumeLayout(False)
         Me.PyGroup.PerformLayout()
         CType(Me.PyTileSize, System.ComponentModel.ISupportInitialize).EndInit()
+        CType(Me.AutoPainterSharePercent, System.ComponentModel.ISupportInitialize).EndInit()
+        CType(Me.AutoPainterThreshold, System.ComponentModel.ISupportInitialize).EndInit()
+        CType(Me.AutoRoutePreviewSampleCount, System.ComponentModel.ISupportInitialize).EndInit()
         Me.ChainGroup.ResumeLayout(False)
         CType(Me.ChainPreview, System.ComponentModel.ISupportInitialize).EndInit()
         Me.ChainContext.ResumeLayout(False)
@@ -1474,6 +1824,10 @@ Partial Class Form1
     End Sub
     Friend WithEvents CaffeGroup As GroupBox
     Friend WithEvents WatchDog As Timer
+    Friend WithEvents ProgressPollTimer As Timer
+    Friend WithEvents QueueSummaryLabel As Label
+    Friend WithEvents QueueActivityLabel As Label
+    Friend WithEvents BackendStatusLabel As Label
     Friend WithEvents WatchDogButton As Button
     Friend WithEvents SettingsGroup As GroupBox
     Friend WithEvents CleanupCheckBox As CheckBox
@@ -1537,6 +1891,8 @@ Partial Class Form1
     Friend WithEvents InputTextBox As TextBox
     Friend WithEvents OutputTextBox As TextBox
     Friend WithEvents InputBrowse As Button
+    Friend WithEvents ManageGamePathsButton As Button
+    Friend WithEvents GamePathsSummaryLabel As Label
     Friend WithEvents Label1 As Label
     Friend WithEvents Label2 As Label
     Friend WithEvents TabGroup As TabControl
@@ -1580,8 +1936,30 @@ Partial Class Form1
     Friend WithEvents PS2Check As CheckBox
     Friend WithEvents ChainPreview As PictureBox
     Friend WithEvents PyCPU As CheckBox
+    Friend WithEvents PyPrecisionLabel As Label
+    Friend WithEvents PyPrecisionComboBox As ComboBox
+    Friend WithEvents PyNormalMapModeLabel As Label
+    Friend WithEvents PyNormalMapModeComboBox As ComboBox
     Friend WithEvents PyTileSize As NumericUpDown
     Friend WithEvents Label25 As Label
+    Friend WithEvents TileSizeHint As Label
+    Friend WithEvents SpandrelModelInfoLabel As Label
+    Friend WithEvents SpandrelScanStatusLabel As Label
+    Friend WithEvents RefreshSpandrelModelsButton As Button
+    Friend WithEvents AutoPainterShareLabel As Label
+    Friend WithEvents AutoPainterSharePercent As NumericUpDown
+    Friend WithEvents AutoPainterShareSuffix As Label
+    Friend WithEvents AutoPainterThresholdLabel As Label
+    Friend WithEvents AutoPainterThreshold As NumericUpDown
+    Friend WithEvents AutoPainterThresholdSuffix As Label
+    Friend WithEvents AutoRoutePreviewButton As Button
+    Friend WithEvents AutoRoutePreviewStatusLabel As Label
+    Friend WithEvents AutoRoutePreviewSampleLabel As Label
+    Friend WithEvents AutoRoutePreviewSampleCount As NumericUpDown
+    Friend WithEvents AutoArchitectModelLabel As Label
+    Friend WithEvents AutoArchitectModelComboBox As ComboBox
+    Friend WithEvents AutoPainterModelLabel As Label
+    Friend WithEvents AutoPainterModelComboBox As ComboBox
     Friend WithEvents HotKeyCheckbox As CheckBox
     Friend WithEvents AlphaComboBox As ComboBox
 End Class

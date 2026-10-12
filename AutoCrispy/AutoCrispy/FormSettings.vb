@@ -50,11 +50,22 @@
         'Load ESRGAN Settings
         Source.PyTileSize.Value = LoadedSettings.PythonPak.TileSize
         Source.PyCPU.Checked = LoadedSettings.PythonPak.CPUOnly
+        Source.LoadInferencePrecision(LoadedSettings.PythonPak.Precision)
+        Source.LoadNormalMapMode(LoadedSettings.PythonPak.NormalMapMode)
+        Source.LoadSpandrelModelPreferences(LoadedSettings.PythonPak.Model,
+            LoadedSettings.PythonPak.ArchitectModel, LoadedSettings.PythonPak.PainterModel)
+        Dim SavedPainterShare As Integer = LoadedSettings.PythonPak.PainterShare
+        If SavedPainterShare < 10 OrElse SavedPainterShare > 90 Then SavedPainterShare = 30
+        Source.AutoPainterSharePercent.Value = SavedPainterShare
+        Dim SavedPainterThreshold As Decimal = LoadedSettings.PythonPak.PainterThreshold
+        If SavedPainterThreshold < 0.05D OrElse SavedPainterThreshold > 1D Then SavedPainterThreshold = 0.34D
+        Source.AutoPainterThreshold.Value = SavedPainterThreshold
 
         'Load UI Paths
         Source.InputTextBox.Text = LoadedSettings.Paths.InputPath
         Source.OutputTextBox.Text = LoadedSettings.Paths.OutputPath
         Source.ExeTextBox.Text = LoadedSettings.Paths.ExePath
+        Source.LoadGamePathProfiles(LoadedSettings.GamePathProfiles, LoadedSettings.GamePathProfilesConfigured)
 
         'Load Basic UI Settings
         Source.ThreadComboBox.SelectedIndex = LoadedSettings.BasicSettings.ThreadIndex
@@ -116,6 +127,7 @@
     <Xml.Serialization.XmlInclude(GetType(ProgramSettings))>
     <Xml.Serialization.XmlInclude(GetType(AdvancedSettings))>
     <Xml.Serialization.XmlInclude(GetType(ChainObject))>
+    <Xml.Serialization.XmlInclude(GetType(GamePathProfile))>
     <Serializable()> Public Structure Settings
         Public Property CaffePak As Waifu2xCaffePackage
         Public Property VulkanPak As VulkanNcnnPackage
@@ -125,6 +137,8 @@
         Public Property xBRZPak As xBRZPackage
         Public Property PythonPak As PythonPackage
         Public Property Paths As ProgramPaths
+        Public Property GamePathProfiles As List(Of GamePathProfile)
+        Public Property GamePathProfilesConfigured As Boolean
         Public Property BasicSettings As ProgramSettings
         Public Property ExpertSettings As AdvancedSettings
         Public Property Chain As List(Of ChainObject)
@@ -135,8 +149,12 @@
             AnimePak = New Anime4kPackage(Source.AnimeCPPScale.Value, Source.AnimeCppPre.Checked, Source.AnimeCppPost.Checked, Source.AnimeCppPreFilter.Checked, Source.AnimeCppPostFilter.Checked, GetFilters(Source.AnimeCppPreFilters), GetFilters(Source.AnimeCppPostFilters), Source.AnimeCPPGpu.Checked, Source.AnimeCPPCnn.Checked)
             TexConvPak = New DDxPackage(Source.DDxModeBox.SelectedItem, Source.DDxFormatLabel.Text.Replace("Format: ", ""), Source.DDxConvFormat.SelectedItem, Source.FlComboBox.SelectedItem, Source.Dx9CheckBox.Checked, Source.Dx10Checkbox.Checked, Source.SepAlphaCheckBox.Checked, Source.PmAlphaCheckBox.Checked, Source.AlphaCheckBox.Checked)
             xBRZPak = New xBRZPackage(Source.xBRZScale.Value)
-            PythonPak = New PythonPackage(GetPyStr(Source.PyModels, Source.PyModel.SelectedIndex), Source.PyTileSize.Value, Source.PyCPU.Checked)
+            Dim SavedPythonPackage As PythonPackage = Source.GetSelectedPythonPackage()
+            SavedPythonPackage.PreserveRoutePreferencesWhenSerializing = True
+            PythonPak = SavedPythonPackage
             Paths = New ProgramPaths(Source.InputTextBox.Text, Source.OutputTextBox.Text, Source.ExeTextBox.Text)
+            GamePathProfiles = Source.GetGamePathProfileSnapshot()
+            GamePathProfilesConfigured = True
             BasicSettings = New ProgramSettings(Source.ExeComboBox.SelectedItem, Source.ThreadComboBox.SelectedIndex, Source.NumericThreads.Value, Source.DefringeCheck.Checked, Source.PS2Check.Checked, Source.DefringeThresh.Value, Source.TabGroup.SelectedIndex)
             ExpertSettings = New AdvancedSettings(Source.DebugCheckbox.Checked, Source.ExpertSettingsBox.Text, Source.CleanupCheckBox.Checked, Source.SeamsBox.SelectedIndex, Source.SeamScale.Value, Source.SeamMargin.Value, Source.AlphaComboBox.SelectedIndex, Source.HotKeyCheckbox.Checked, Source.PortableCheckBox.Checked)
             Chain = Source.ChainList
@@ -148,6 +166,27 @@
             Return ""
         End Function
     End Structure
+
+    <Serializable()> Public Class GamePathProfile
+        Public Property Name As String
+        Public Property InputPath As String
+        Public Property OutputPath As String
+        Public Property Enabled As Boolean
+
+        Public Sub New()
+            Name = ""
+            InputPath = ""
+            OutputPath = ""
+            Enabled = True
+        End Sub
+
+        Public Sub New(_Name As String, _InputPath As String, _OutputPath As String, Optional _Enabled As Boolean = True)
+            Name = _Name
+            InputPath = _InputPath
+            OutputPath = _OutputPath
+            Enabled = _Enabled
+        End Sub
+    End Class
 
     <Serializable()> Public Structure ProgramPaths
         Public Property InputPath As String
@@ -240,7 +279,13 @@
                 Case "xBRZ"
                     Package = New xBRZPackage(Source.xBRZScale.Value)
                 Case "ESRGAN"
-                    Package = New PythonPackage(Source.PyModels(Source.PyModel.SelectedIndex), Source.PyTileSize.Value, Source.PyCPU.Checked)
+                    Package = New PythonPackage(Source.GetSelectedUpscaleModel(), Source.PyTileSize.Value, Source.PyCPU.Checked)
+                Case "RealPLKSR"
+                    Package = New PythonPackage(Source.GetSelectedUpscaleModel(), Source.PyTileSize.Value, Source.PyCPU.Checked, True, _Precision:=Source.GetSelectedInferencePrecision(), _NormalMapMode:=Source.GetSelectedNormalMapMode())
+                Case "DAT2"
+                    Package = New PythonPackage(Source.GetSelectedUpscaleModel(), Source.PyTileSize.Value, Source.PyCPU.Checked, True, _Precision:=Source.GetSelectedInferencePrecision(), _NormalMapMode:=Source.GetSelectedNormalMapMode())
+                Case "Spandrel"
+                    Package = Source.GetSelectedPythonPackage(False)
             End Select
         End Sub
     End Structure
@@ -367,12 +412,46 @@
         Public Property Model As String
         Public Property TileSize As Integer
         Public Property CPUOnly As Boolean
+        Public Property AutoRouteEnabled As Boolean
+        Public Property ArchitectModel As String
+        Public Property PainterModel As String
+        Public Property PainterShare As Integer
+        Public Property PainterThreshold As Decimal
+        Public Property Precision As String
+        Public Property NormalMapMode As String
         Public Property FileTypes As List(Of String)
-        Public Sub New(_Model As String, _TileSize As Integer, _CPUOnly As Boolean)
+        <Xml.Serialization.XmlIgnore()>
+        Public Property PreserveRoutePreferencesWhenSerializing As Boolean
+
+        Public Function ShouldSerializeArchitectModel() As Boolean
+            Return AutoRouteEnabled OrElse PreserveRoutePreferencesWhenSerializing
+        End Function
+
+        Public Function ShouldSerializePainterModel() As Boolean
+            Return AutoRouteEnabled OrElse PreserveRoutePreferencesWhenSerializing
+        End Function
+
+        Public Sub New(_Model As String, _TileSize As Integer, _CPUOnly As Boolean, Optional _UseSpandrelFormats As Boolean = False,
+                       Optional _AutoRouteEnabled As Boolean = False, Optional _ArchitectModel As String = "",
+                       Optional _PainterModel As String = "", Optional _PainterShare As Integer = 30,
+                       Optional _PainterThreshold As Decimal = 0.34D, Optional _Precision As String = "auto",
+                       Optional _NormalMapMode As String = "none")
             Model = _Model
             TileSize = _TileSize
             CPUOnly = _CPUOnly
-            FileTypes = {".png", ".jpg", ".bmp"}.ToList
+            AutoRouteEnabled = _AutoRouteEnabled
+            ArchitectModel = _ArchitectModel
+            PainterModel = _PainterModel
+            PainterShare = _PainterShare
+            PainterThreshold = _PainterThreshold
+            Precision = If(String.IsNullOrWhiteSpace(_Precision), "auto", _Precision.Trim().ToLowerInvariant())
+            NormalMapMode = If(String.IsNullOrWhiteSpace(_NormalMapMode), "none", _NormalMapMode.Trim().ToLowerInvariant())
+            If NormalMapMode <> "normalize-xyz" AndAlso NormalMapMode <> "rebuild-z" Then NormalMapMode = "none"
+            If _UseSpandrelFormats Then
+                FileTypes = {".png", ".jpg", ".jpeg", ".bmp", ".tif", ".tiff", ".webp", ".tga"}.ToList
+            Else
+                FileTypes = {".png", ".jpg", ".bmp"}.ToList
+            End If
         End Sub
     End Structure
 
